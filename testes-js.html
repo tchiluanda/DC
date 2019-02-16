@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans|Open+Sans+Condensed:300" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Open Sans', sans-serif;
+        }
+
+        .conceito {
+            border: 1px dotted dodgerblue;
+            background-color: lightblue;
+            cursor: pointer;
+        }
+
+        .conceito-descricao {
+            border: 1px dotted dodgerblue;
+            background-color: lightblue;
+            margin: 2px;
+            padding: 2px;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Deleniti aperiam laborum ullam reiciendis, dolorem enim recusandae perspiciatis, qui in commodi veritatis itaque aliquid ipsa neque praesentium nostrum maxime porro totam?
+    Odio expedita nam eveniet maiores vero iste architecto recusandae? Eaque ab voluptas dolorum consectetur iste harum beatae. Cum facilis doloremque, in alias earum, aspernatur exercitationem corporis nulla architecto ratione ullam.
+    Dolor architecto hic iste <span class="conceito">conceito muito bonito</span> voluptates vero quo temporibus inventore ut, voluptate aliquam sit, magni consequatur? Dolor quisquam aliquam accusamus iure, non nobis tempora iste aliquid officiis, dolorum laudantium odio? Aspernatur!
+    Minus voluptate quis, totam numquam quod nisi unde eaque? Nemo voluptatum enim deserunt soluta fuga, provident aut eius, aspernatur quos a obcaecati! Explicabo sit corporis praesentium quasi ratione necessitatibus et!</p>
+    <p class="conceito-descricao">  non nobis tempora iste aliquid officiis, dolorum laudantium odio? Aspernatur! Minus voluptate quis, totam numquam quod nisi unde eaque? Nemo voluptatum enim deserunt soluta fuga non nobis tempora iste aliquid officiis, dolorum laudantium odio? Aspernatur! Minus voluptate quis, totam numquam quod nisi unde eaque? Nemo voluptatum enim deserunt soluta fuga non nobis tempora iste aliquid officiis, dolorum laudantium odio? Aspernatur! non nobis tempora iste aliquid officiis, dolorum laudantium odio? Aspernatur! Minus voluptate quis, totam numquam quod nisi unde eaque? Nemo voluptatum enim deserunt soluta fuga non nobis tempora iste aliquid officiis, dolorum laudantium odio? Aspernatur! Minus voluptate quis, totam numquam quod nisi unde eaque? Nemo voluptatum enim deserunt soluta fuga non nobis tempora iste aliquid officiis, dolorum laudantium odio? Aspernatur!</p>
+    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Laboriosam rerum commodi iste temporibus necessitatibus esse amet quia nemo, quam incidunt, perspiciatis magnam sunt et facilis dignissimos ipsam natus quaerat veniam? Lorem ipsum dolor sit amet consectetur adipisicing elit. Quia minima quae, ad accusantium, laborum corporis sit dolores delectus aliquam, a perferendis et. Iusto aut repudiandae similique iure quibusdam libero aperiam?
+    Dolores neque recusandae, ipsum voluptates perferendis nobis in perspiciatis aut aspernatur? Sit fugiat provident explicabo nobis temporibus labore laudantium veritatis accusamus atque, eaque mollitia natus error impedit, qui voluptatum id.
+    Velit earum harum dignissimos fuga non omnis eaque nostrum eos quasi hic, ipsa cumque rem voluptatum, ut nisi corrupti tempora doloribus illo pariatur minus maxime in accusamus dolorum! Assumenda, fugiat!
+    Nulla porro quos delectus, voluptatem impedit totam aliquid quas et veniam quasi nesciunt voluptate praesentium corrupti ea ratione, aspernatur temporibus reprehenderit illo. Magnam cupiditate dicta fugit asperiores, inventore accusantium ipsa.</p>
+    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Commodi mollitia nulla necessitatibus odit at accusamus quaerat numquam perferendis aut autem vitae, illum amet inventore facere obcaecati rerum qui recusandae sit.Quibusdam ipsam incidunt repudiandae quas laboriosam totam, ullam magnam fugit illum, quis exercitationem harum consectetur, asperiores excepturi eveniet! Sapiente ad eum ipsum animi maiores assumenda distinctio excepturi dolorem nesciunt facilis.</p>
+    <script>
+        const conceito = document.querySelector('.conceito');
+        const conceitoDescricao = document.querySelector('.conceito-descricao');
+
+        conceitoDescricao.style.display = "none";
+        //conceitoDescricao.style.visibility = "hidden";
+        //conceitoDescricao.style.opacity = "0";   
+        //conceitoDescricao.style.transition = "visibility 0s, opacity 1s linear";
+
+        jaClicou = false;
+
+        conceito.addEventListener('click', function () {
+            if (jaClicou) {
+                conceitoDescricao.style.display = 'none';
+                //conceitoDescricao.style.visibility = "hidden";
+                //conceitoDescricao.style.opacity = "0";  
+            } else {
+                conceitoDescricao.style.display = '';
+                //conceitoDescricao.style.visibility = "visible";
+                //conceitoDescricao.style.opacity = "1";  
+            }
+            jaClicou = !jaClicou;
+        }
+        );
+    </script>
+</body>
+
+</html>
