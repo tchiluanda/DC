@@ -1,0 +1,256 @@
+---
+title: "Dívida Consolidada"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+	echo = TRUE,
+	message = FALSE,
+	warning = FALSE
+)
+```
+
+```{css, echo=FALSE}
+* {
+  font-family: "Open Sans";
+}
+
+h1, h2, h3, h4 {
+  color: #1E4C7A;
+}
+
+.destaque {
+  margin: 10px 50px;
+  font-size: 12px;
+  color: "white";
+  background-color: #f0f5f7;
+  padding: 5px 10px;
+  border: 2px solid #BA3917;
+}
+
+.destaque > p {
+  margin: 0px;
+}
+
+```
+
+## Dívida Consolidada
+
+### Leitura dos dados
+
+```{r libraries}
+library(tidyverse)
+library(scales)
+library(readxl)
+#library(ipeaData)
+library(extrafont)
+library(gganimate)
+library(RColorBrewer)
+library(ckanr)
+library(skimr)
+
+tema <- function(){
+    theme_minimal() +
+    theme(
+      text = element_text(family = "Open Sans", colour = "grey20"),
+      title = element_text(face = "bold", size = 10, color = "#1E4C7A"), 
+      plot.subtitle = element_text(family = "Open Sans Condensed", 
+                                   color = "grey20", face = "plain", size = 10),
+      axis.text = element_text(family = "Open Sans", colour = "grey20", size = 8),
+      plot.caption = element_text(face = "italic"),
+      panel.grid.major = element_blank(), 
+      panel.grid.minor = element_blank(),
+      legend.text = element_text(size = 8),
+      legend.title = element_text(size = 8),
+      axis.ticks = element_line(size = 0.5),
+      axis.ticks.length = unit(.25, "cm"),
+      axis.title = element_text(size = 8, colour = "grey20"),
+      legend.position = 'none')
+}
+
+tema_gif <- function() {
+  theme(legend.position = 'none',
+        panel.grid.major.y = element_blank(),
+        panel.grid.major.x = element_blank(),
+        axis.title.y = element_blank(),
+        axis.text.y = element_blank(),
+        axis.ticks.y = element_blank(),
+        plot.background = element_rect(color = "#f0f5f7", linetype = "solid", size = 2))
+}
+
+vermelho <- brewer.pal(3, name = "Set1")[1]
+azul <- "#1f476a" 
+
+vermelho_claro <- "#ee7576"
+azul_claro     <- "#2c90bf" # "#87b1d4"
+
+tres_cores <-c("#F8AC08","#028063","#6E287C")
+tres_cores_pasteis <- c("#FECE60","#63BEAF", "#BE8EBF")
+
+```
+
+Dados disponíveis no Siconfi.
+
+```{r}
+tabela_estados <- read.csv2("./dados/finbraRGF_estados.csv", skip = 5) %>%
+  mutate(Escopo    = "Estados",
+         Exercicio = 2018)
+
+tabela_mun1 <- read.csv2("./dados/finbraRGF_mun.csv", skip = 5) 
+tabela_mun2 <- read.csv2("./dados/finbraRGF_mun_semestre.csv", skip = 5)
+
+tabela_mun <- rbind(tabela_mun1, tabela_mun2) %>%
+  mutate(Escopo    = "Municípios",
+         Exercicio = 2018)
+
+# testando população total para tabela estados
+pop_total_est <- tabela_estados %>% 
+  group_by(UF) %>% 
+  summarise(pop = first(`População`)) %>% 
+  group_by() %>% 
+  summarise(pop = sum(pop))
+
+# dados municípios
+perfil_mun <- read_excel("./dados/Base MUNIC 2017.xls", sheet = "Variáveis externas")
+
+# população atualizada
+pop_UFs <- perfil_mun %>%
+  group_by(UF, REGIAO) %>%
+  summarise(pop = sum(`POP EST`))
+
+tabela_estados <- tabela_estados %>%
+  inner_join(pop_UFs) %>%
+  mutate(`CLASSE POP` = NA)
+
+tabela_municipios <- perfil_mun %>%
+  select(Cod.IBGE = CodMun, REGIAO, pop = `POP EST`, `CLASSE POP`) %>%
+  right_join(tabela_mun)
+
+tabela_completa <- rbind(tabela_estados, tabela_municipios)
+
+### depois melhorar isso aqui
+# cabecalho_estados <- read.csv2("./dados/finbraRGF_estados.csv", nrows = 5, header = FALSE)
+# cabecalho_estados <- cabecalho_estados %>% 
+#   mutate(V1 = as.character(V1)) %>% 
+#   separate(1, into = c("Info", "Valor"), sep = ":") %>% 
+#   t() %>%
+#   as.data.frame() %>%
+#   select(-4)
+
+tabela_estados %>% skim()
+tabela_estados %>% str()
+```
+
+Uma observação sobre cobertura dos dados...
+
+```{r, fig.height=3, fig.width=6}
+# total populacao e qde municipios
+
+pop_total <- perfil_mun %>%
+  summarise(qde = n(),
+            pop = sum(`POP EST`)) %>%
+  mutate(escopo = "Total")
+
+pop_RGF <- tabela_municipios %>%
+  group_by(Cod.IBGE, pop) %>%
+  summarise_all(first) %>%
+  group_by() %>%
+  summarise(qde = n(),
+            pop = sum(pop)) %>%
+  mutate(escopo = "RGF")
+  
+abrangencia <- rbind(pop_total, pop_RGF) %>%
+  gather(qde, pop, key = Variavel, value = Valor) %>%
+  spread(escopo, value = Valor) %>%
+  mutate(faltantes = Total - RGF) %>%
+  gather("RGF":"faltantes", key = categorias, value = Valor) %>%
+  filter(categorias != "Total")
+
+ggplot(abrangencia, aes(y = Valor, x = Variavel, fill = categorias)) +
+  geom_col(position = "fill", width=0.6, color = "white", size = 1) +
+  scale_fill_manual(values = c("RGF" = azul, "faltantes" = azul_claro), 
+                    labels = c("RGF" = "Entregues", "faltantes" = "Não entregues")) +
+  scale_y_continuous(labels = percent) +
+  scale_x_discrete(labels = c("qde" = "Quantidade de municípios",
+                              "pop" = "População contemplada")) +
+  coord_flip() + 
+  labs(x = NULL, y = NULL, 
+       title = "Abrangência das informações municipais",
+       fill = NULL) +
+  tema() + theme(legend.position = "bottom")
+
+```
+
+dívida consolidada líquida - estados e municípios
+
+```{r, fig.height=7.5, fig.width=6, fig.align=center}
+total_DCL <- tabela_completa %>%
+  filter(Conta %in% c("DÍVIDA CONSOLIDADA LÍQUIDA (DCL) (III) = (I - II)",
+                      "RECEITA CORRENTE LÍQUIDA - RCL")) %>%
+  filter(Coluna == "Até o 3º Quadrimestre") %>%
+  group_by(UF, REGIAO, Escopo, Conta) %>%
+  summarise(Valor = sum(Valor)) %>%
+  spread(Conta, value = Valor) %>%
+  rename(
+    DCL = "DÍVIDA CONSOLIDADA LÍQUIDA (DCL) (III) = (I - II)",
+    RCL = "RECEITA CORRENTE LÍQUIDA - RCL") %>%
+  ungroup() %>%
+  mutate(DCL_percent = round(DCL/RCL, 4),
+         UF = fct_reorder(UF, DCL_percent, first, .desc = FALSE)) # atenção ao first
+
+total_DCL <- total_DCL %>%
+  select(UF, Escopo, DCL_percent) %>%
+  spread(Escopo, value = DCL_percent) %>%
+  mutate(Estado_Maior = Estados > `Municípios`,
+         Estado_Maior = replace_na(Estado_Maior, TRUE)) %>%
+  select(UF, Estado_Maior) %>%
+  right_join(total_DCL)
+
+ggplot(total_DCL, aes(y = UF, color = Escopo, x = DCL_percent)) +
+  geom_vline(xintercept = 2, linetype = 'dotted') +
+  geom_path(color = "lightgrey", size = 1.5) +
+  geom_point(size = 3) + 
+  geom_text(aes(x = ifelse(Estado_Maior,
+                           ifelse(Escopo == "Estados",
+                                  DCL_percent + 0.18,
+                                  DCL_percent - 0.15),
+                           ifelse(Escopo == "Estados",
+                                  DCL_percent - 0.15,
+                                  DCL_percent + 0.18)),
+                label = percent(DCL_percent)), family = "Open Sans", size = 3) +
+  scale_x_continuous(labels = percent) +
+  scale_color_manual(values = c("Estados" = tres_cores[1], "Municípios" = tres_cores[2])) +
+  labs(x = "Percentual DCL/RCL",
+       y = NULL,
+       title = "Dívida Consolidada Líquida",
+       subtitle = "Estados e Municípios do Estado",
+       color = NULL) +
+  tema() + theme(legend.position = "top")
+```
+
+Rankings
+
+```{r, fig.height=7.5}
+sumario_estados <- tabela_estados %>%
+  filter(Conta %in% c("DÍVIDA CONSOLIDADA - DC (I)",
+                      "DÍVIDA CONSOLIDADA LÍQUIDA (DCL) (III) = (I - II)",
+                      "% da DC sobre a RCL (I/RCL)",
+                      "% da DCL sobre a RCL (III/RCL)")) %>%
+  filter(Coluna == "Até o 3º Quadrimestre") %>%
+  select(UF, REGIAO, Conta, pop, Valor) %>%
+  spread(Conta, value = Valor) %>%
+  mutate(`DC / Pop`  = `DÍVIDA CONSOLIDADA - DC (I)` / pop,
+         `DCL / Pop` = `DÍVIDA CONSOLIDADA LÍQUIDA (DCL) (III) = (I - II)` / pop)
+
+ranking_estados <- sumario_estados %>%
+  mutate_at(vars(c(-UF, -pop, -REGIAO)), .funs = ~dense_rank(-.)) %>%
+  gather(-UF, -pop, - REGIAO, key = Variavel, value = Valor)
+
+ggplot(ranking_estados, aes(x = Variavel, y = Valor, color = REGIAO, fill = REGIAO, group = UF)) +
+  geom_line() + 
+  geom_label(aes(label = UF), color = "white", family = "Open Sans") + 
+  scale_y_reverse(labels = 1:25, breaks = 1:25) +
+  tema()
+```
+
