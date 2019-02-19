@@ -335,7 +335,9 @@ leaflet(mapa_brasil, options = leafletOptions(minZoom = 4, maxZoom = 4)) %>%
       bringToFront = TRUE),
     label = labels,
     labelOptions = labelOptions(
-      style = list("font-weight" = "normal", padding = "3px 8px"),
+      style = list("font-weight" = "normal", 
+                   "font-family" = "'Open Sans'",
+                   padding = "3px 8px"),
       textsize = "15px",
       direction = "auto"))
 
