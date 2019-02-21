@@ -36,6 +36,10 @@ h1, h2, h3, h4 {
   margin: 0px;
 }
 
+.card-estados {
+  border: 1px dotted #353E57;
+}
+
 ```
 
 ## Dívida Consolidada
@@ -54,6 +58,8 @@ library(RColorBrewer)
 #library(skimr)
 library(shiny)
 library(leaflet)
+library(ggbeeswarm)
+library(plotly)
 
 tema <- function(){
     theme_minimal() +
@@ -433,10 +439,10 @@ plota_card_estado <- function(dados) {
     geom_col(position = "stack", width = 0.5) +
     geom_tile(aes(y = valor_media), color = azul, width = 0.7, height = 1, linetype = "dotted") +
     geom_text(aes(y = valor_media, 
-                  label = paste0(medias, "\nR$", 
+                  label = paste0(medias, "\nR$ ", 
                                  format(round(valor_media/1e9, 2), big.mark = ".", decimal.mark = ","), " bi"), 
-                  vjust = ifelse(medias == "Média Nacional", 3.2, -2.2)), family = "Open Sans Condensed", size = 3,
-              hjust = "inward") +
+                  vjust = ifelse(medias == "Média Nacional", 2.7, -1.9)), family = "Open Sans Condensed", 
+              size = 3.5, color = "dimgrey", hjust = "inward") +
     geom_label(aes(label = ifelse(tipo_valor == "valor_de_verdade" & medias == "Média da Região",
                                  paste0("R$ ", format(round(valor/1e9, 2), 
                                                       big.mark = ".", 
@@ -450,23 +456,23 @@ plota_card_estado <- function(dados) {
     scale_fill_identity() + 
     scale_color_identity() +
     scale_y_continuous(labels=function(x) {format(x/1e9, big.mark = ".", decimal.mark=",", scientific = FALSE)}) +
-    scale_x_discrete(labels = c("ded" = "Deduções", "dc" = "DC", "dcl" = "DCL")) +
+    scale_x_discrete(labels = c("ded" = "Deduções", 
+                                "dc"  = "Dívida\nConsolidada", 
+                                "dcl" = "Dívida\nConsolidada\nLíquida")) +
     labs(x = NULL, y = "R$ bilhões") +
     coord_flip() +
-    tema() + theme(axis.text.y = element_text(size = 12))
+    tema() + theme(axis.text.y = element_text(size = 12)) + theme(axis.line.x = element_line())
 }
 
 # plota_card_estado(teste_df)
 ```
 
 
-
-
 ## A Dívida de cada estado
 
 Selecione o Estado no mapa para obter mais informações.
 
-
+<div class = "card-estados">
 
 ```{r}
 mapa_brasil <- geojsonio::geojson_read("./dados/brazil_geo.geojson", what = "sp")
@@ -498,8 +504,8 @@ labels <- sprintf(
 
 
 faz_mapa <- function() {
-  leaflet(mapa_brasil, options = leafletOptions(minZoom = 4, maxZoom = 4)) %>%
-    setView(lat=-14.235, lng=-51.9253 , zoom=4) %>%
+  leaflet(mapa_brasil, options = leafletOptions(minZoom = 3.7, maxZoom = 3.7)) %>%
+    setView(lat=-14.235, lng=-51.9253 , zoom=3.7) %>%
     addPolygons(
       fillColor = ~pal(DCL),
       weight = 3,
@@ -518,9 +524,7 @@ faz_mapa <- function() {
                      "font-family" = "'Open Sans'",
                      padding = "3px 8px"),
         textsize = "15px",
-        direction = "auto")) %>% 
-    addLegend(pal = pal, values = ~percent(DCL/100), opacity = 0.7, title = NULL,
-    position = "bottomleft")
+        direction = "auto"))
 }
 
 #  addProviderTiles("MapBox", options = providerTileOptions(
@@ -534,7 +538,7 @@ retorna_texto <- function(estado, variavel) {
   return (as.character(resultado[1,1]))
 }
 
-retorna_texto("AC", "nomes") 
+# retorna_texto("AC", "nomes") 
 
 mainPanel(
   leafletOutput("mapa"),
@@ -544,6 +548,7 @@ mainPanel(
   #textOutput("DCLperCap"),
   tags$style(type="text/css", "#Estado {font-family: 'Open Sans Condensed'; font-size: 2em; color: #1f476a; padding-bottom: 5px; font-weight: 400;}"),
   tags$style(type="text/css", "#regiao {font-family: 'Open Sans Condensed'; font-size: 1.5em; padding-bottom: 5px;}"),
+  tagAppendAttributes(textOutput("DCL_RCL"), style="font-family: 'Open Sans Condensed'"),
   tagAppendAttributes(textOutput("DCLperCap"), style="font-family: 'Open Sans Condensed'"),
   plotOutput("card")
   )
@@ -573,15 +578,19 @@ output$DCLperCap <- renderText(paste0("DCL por habitante: R$ ",
    format(round(as.numeric(retorna_texto(obtem_estado_click(), "DCL_pop")),2),
                                        big.mark = ".", decimal.mark = ",")))
 
-output$card <- renderPlot(height = 300,
+output$DCLperCap <- renderText(paste0("DCL / RCL: ",
+   format(round(as.numeric(retorna_texto(obtem_estado_click(), "% da DCL sobre a RCL (III/RCL)"))/100,2),
+                                       big.mark = ".", decimal.mark = ",")))
+
+output$card <- renderPlot(
   plota_card_estado(sumario_grafico(obtem_estado_click()))
 )
 
-observeEvent(input$mapa_shape_click, {
-  p <- input$mapa_shape_click
-  print(p)
-  print(p$id)
-})
+# observeEvent(input$mapa_shape_click, {
+#   p <- input$mapa_shape_click
+#   print(p)
+#   print(p$id)
+# })
 
 
 
@@ -589,4 +598,27 @@ observeEvent(input$mapa_shape_click, {
 
 ```
 
+</div>
+
+Municípios
+
+```{r}
+sumario_municipios <- tabela_municipios %>%
+  filter(
+    Coluna == "Até o 3º Quadrimestre" & Conta %in% c("% da DCL sobre a RCL (III/RCL)", 
+                                                     "DÍVIDA CONSOLIDADA LÍQUIDA (DCL) (III) = (I - II)")) %>%
+  select(REGIAO, `Instituição`, Valor, Conta, pop, UF, Escopo) %>%
+  spread(Conta, Valor) %>%
+  filter(`Instituição` != "Prefeitura Municipal de Itaíba - PE") %>%
+  rename("dcl_rcl" = "% da DCL sobre a RCL (III/RCL)",
+         "dcl" = "DÍVIDA CONSOLIDADA LÍQUIDA (DCL) (III) = (I - II)")
+
+a <- ggplot(sumario_municipios, aes(y = dcl_rcl, x = REGIAO, color = dcl_rcl > 0, label = `Instituição`)) +
+  #geom_jitter() +
+  geom_quasirandom(varwidth = TRUE) +
+  scale_color_manual(values = c("TRUE" = "dodgerblue", "FALSE" = "firebrick")) +
+  tema()
+
+ggplotly(a)
+```
 
