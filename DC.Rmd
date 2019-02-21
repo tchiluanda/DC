@@ -10,8 +10,7 @@ output:
 knitr::opts_chunk$set(
 	echo = TRUE,
 	message = FALSE,
-	warning = FALSE,
-	cache = TRUE
+	warning = FALSE
 )
 ```
 
@@ -144,8 +143,8 @@ tabela_completa <- rbind(tabela_estados, tabela_municipios)
 #   as.data.frame() %>%
 #   select(-4)
 
-tabela_estados %>% skim()
-tabela_estados %>% str()
+#tabela_estados %>% skim()
+#tabela_estados %>% str()
 ```
 
 Uma observação sobre cobertura dos dados...
@@ -374,20 +373,33 @@ ggplot(dados_composicoes, aes(y = valor/100, x = UF, fill = variavel)) +
 Gráficos da ficha dos estados
 
 ```{r}
-# sumario_grafico <- function(estado) {
-#   sumario_estados_regionalizado %>%
-#     filter(UF == estado) %>%
-#     select(ded = `DEDUÇÕES (II)`, 
-#            dc = `DÍVIDA CONSOLIDADA - DC (I)`,
-#            dcl = `DÍVIDA CONSOLIDADA LÍQUIDA (DCL) (III) = (I - II)`,
-#            media_regiao,
-#            media_nacional) %>%
-#     mutate(em_branco = dcl)
-#     gather(ded, dc, key = variavel, value = valor)
-# }
-# 
-# sumario_grafico("DF")
-    
+sumario_grafico <- function(estado) {
+  sumario_estados_regionalizado %>%
+    filter(UF == estado) %>%
+    select(ded = `DEDUÇÕES (II)`,
+           dc = `DÍVIDA CONSOLIDADA - DC (I)`,
+           dcl = `DÍVIDA CONSOLIDADA LÍQUIDA (DCL) (III) = (I - II)`,
+           media_regiao,
+           media_nacional) %>%
+    mutate(em_branco = dcl) %>%
+    gather(-em_branco, key = variavel, value = valor_de_verdade)  %>%
+    mutate(em_branco = ifelse(variavel == "ded", em_branco, 0)) %>%
+    gather(valor_de_verdade, em_branco, key = tipo_valor, value = valor) %>%
+    mutate(cores = case_when(tipo_valor == "em_branco" ~ NA,
+                             variavel == "dc" ~ azul,
+                             variavel == "ded" ~ vermelho,
+                             TRUE ~ azul_claro),
+           tipo_valor = factor(tipo_valor, levels = c("valor_de_verdade", "em_branco")),
+           variavel = factor(variavel, levels = rev(c("dc", "ded", "dcl", "media_regiao", "media_nacional"))))
+}
+
+teste_df <- sumario_grafico("DF")
+ 
+ggplot(teste_df, aes(x = variavel, y = valor, fill = cores)) + 
+  geom_col(position = "stack", width = 0.5) +
+  scale_fill_identity() + 
+  coord_flip() +
+  tema()
 ```
 
 
@@ -480,25 +492,25 @@ output$mapa <- renderLeaflet({
   faz_mapa()
   })
 
-# obtem_estado_click <- function() {
-#    uf <- req(input$mapa_shape_click$id)
-#    if (is.na(uf)) {uf <- "AC"}
-#    return(uf)
-# }
+obtem_estado_click <- function() {
+   uf <- req(input$mapa_shape_click$id)
+   if (is.na(uf)) {uf <- "AC"}
+   return(uf)
+}
 
-output$Estado    <- renderText(paste0("Estado: ", retorna_texto(input$mapa_shape_click$id, "nomes")))
-output$regiao    <- renderText(retorna_texto(input$mapa_shape_click$id, "REGIAO"))
+output$Estado    <- renderText(paste0("Estado: ", retorna_texto(obtem_estado_click(), "nomes")))
+output$regiao    <- renderText(retorna_texto(obtem_estado_click(), "REGIAO"))
 output$pop       <- renderText(paste0("População: ",
                                       format(
                                         round(
                                           as.numeric(
-                                            retorna_texto(input$mapa_shape_click$id, "pop")
+                                            retorna_texto(obtem_estado_click(), "pop")
                                             ),
                                           2),
                                         big.mark = ".", decimal.mark = ","), 
                                       " pessoas"))
 output$DCLperCap <- renderText(paste0("DCL por habitante: R$ ",
-   format(round(as.numeric(retorna_texto(input$mapa_shape_click$id, "DCL_pop")),2),
+   format(round(as.numeric(retorna_texto(obtem_estado_click(), "DCL_pop")),2),
                                        big.mark = ".", decimal.mark = ",")))
 
 observeEvent(input$mapa_shape_click, {
