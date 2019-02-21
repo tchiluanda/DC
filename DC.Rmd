@@ -373,6 +373,36 @@ ggplot(dados_composicoes, aes(y = valor/100, x = UF, fill = variavel)) +
 Gráficos da ficha dos estados
 
 ```{r}
+# sumario_grafico <- function(estado) {
+#   sumario_estados_regionalizado %>%
+#     filter(UF == estado) %>%
+#     select(ded = `DEDUÇÕES (II)`,
+#            dc = `DÍVIDA CONSOLIDADA - DC (I)`,
+#            dcl = `DÍVIDA CONSOLIDADA LÍQUIDA (DCL) (III) = (I - II)`,
+#            media_regiao,
+#            media_nacional) %>%
+#     mutate(em_branco = dcl) %>%
+#     gather(-em_branco, key = variavel, value = valor_de_verdade)  %>%
+#     mutate(em_branco = ifelse(variavel == "ded", em_branco, 0)) %>%
+#     gather(valor_de_verdade, em_branco, key = tipo_valor, value = valor) %>%
+#     mutate(cores = case_when(tipo_valor == "em_branco" ~ NA,
+#                              variavel == "dc" ~ azul,
+#                              variavel == "ded" ~ vermelho,
+#                              TRUE ~ azul_claro),
+#            tipo_valor = factor(tipo_valor, levels = c("valor_de_verdade", "em_branco")),
+#            variavel = factor(variavel, levels = rev(c("dc", "ded", "dcl", "media_regiao", "media_nacional"))))
+# }
+#
+# teste_df <- sumario_grafico("DF")
+#
+# ggplot(teste_df, aes(x = variavel, y = valor, fill = cores)) + 
+#   geom_col(aes(y = ifelse(variavel %in% c("dc", "ded", "dcl"),
+#                           valor,
+#                           NA)), position = "stack", width = 0.5) +
+#   scale_fill_identity() + 
+#   coord_flip() +
+#   tema()
+
 sumario_grafico <- function(estado) {
   sumario_estados_regionalizado %>%
     filter(UF == estado) %>%
@@ -382,30 +412,59 @@ sumario_grafico <- function(estado) {
            media_regiao,
            media_nacional) %>%
     mutate(em_branco = dcl) %>%
-    gather(-em_branco, key = variavel, value = valor_de_verdade)  %>%
-    mutate(em_branco = ifelse(variavel == "ded", em_branco, 0)) %>%
-    gather(valor_de_verdade, em_branco, key = tipo_valor, value = valor) %>%
-    mutate(cores = case_when(tipo_valor == "em_branco" ~ NA,
+    gather(-em_branco, -media_regiao, -media_nacional, key = variavel, value = valor_de_verdade)  %>%
+    gather(media_regiao, media_nacional, key = medias, value = valor_media) %>%
+    mutate(em_branco = ifelse(variavel == "ded", em_branco, NA)) %>%
+    gather(em_branco, valor_de_verdade, key = tipo_valor, value = valor) %>%
+    mutate(valor_media = ifelse(variavel == "dcl" & tipo_valor == "valor_de_verdade", valor_media, NA),
+           cores = case_when(tipo_valor == "em_branco" ~ "NA",
                              variavel == "dc" ~ azul,
                              variavel == "ded" ~ vermelho,
                              TRUE ~ azul_claro),
-           tipo_valor = factor(tipo_valor, levels = c("valor_de_verdade", "em_branco")),
-           variavel = factor(variavel, levels = rev(c("dc", "ded", "dcl", "media_regiao", "media_nacional"))))
+           tipo_valor = factor(tipo_valor, 
+                               levels = c("valor_de_verdade", "em_branco")),
+           variavel = factor(variavel, levels = rev(c("dc", "ded", "dcl"))),
+           medias = replace(medias, medias == "media_regiao", "Média da Região"),
+           medias = replace(medias, medias == "media_nacional", "Média Nacional"))
 }
 
-teste_df <- sumario_grafico("DF")
- 
-ggplot(teste_df, aes(x = variavel, y = valor, fill = cores)) + 
-  geom_col(position = "stack", width = 0.5) +
-  scale_fill_identity() + 
-  coord_flip() +
-  tema()
+plota_card_estado <- function(dados) {
+  ggplot(dados, aes(x = variavel, y = valor, fill = cores)) + 
+    geom_col(position = "stack", width = 0.5) +
+    geom_tile(aes(y = valor_media), color = azul, width = 0.7, height = 1, linetype = "dotted") +
+    geom_text(aes(y = valor_media, 
+                  label = paste0(medias, "\nR$", 
+                                 format(round(valor_media/1e9, 2), big.mark = ".", decimal.mark = ","), " bi"), 
+                  vjust = ifelse(medias == "Média Nacional", 3.2, -2.2)), family = "Open Sans Condensed", size = 3,
+              hjust = "inward") +
+    geom_label(aes(label = ifelse(tipo_valor == "valor_de_verdade" & medias == "Média da Região",
+                                 paste0("R$ ", format(round(valor/1e9, 2), 
+                                                      big.mark = ".", 
+                                                      decimal.mark = ","),
+                                        " bi"), 
+                                 NA),
+                  y = valor,
+                  color = cores), 
+              family = "Open Sans", size = 3.5, hjust = "center", 
+              position = "stack", vjust = "center", fill = "white") +
+    scale_fill_identity() + 
+    scale_color_identity() +
+    scale_y_continuous(labels=function(x) {format(x/1e9, big.mark = ".", decimal.mark=",", scientific = FALSE)}) +
+    scale_x_discrete(labels = c("ded" = "Deduções", "dc" = "DC", "dcl" = "DCL")) +
+    labs(x = NULL, y = "R$ bilhões") +
+    coord_flip() +
+    tema() + theme(axis.text.y = element_text(size = 12))
+}
+
+# plota_card_estado(teste_df)
 ```
 
 
 
 
-Shiny
+## A Dívida de cada estado
+
+Selecione o Estado no mapa para obter mais informações.
 
 
 
@@ -485,7 +544,8 @@ mainPanel(
   #textOutput("DCLperCap"),
   tags$style(type="text/css", "#Estado {font-family: 'Open Sans Condensed'; font-size: 2em; color: #1f476a; padding-bottom: 5px; font-weight: 400;}"),
   tags$style(type="text/css", "#regiao {font-family: 'Open Sans Condensed'; font-size: 1.5em; padding-bottom: 5px;}"),
-  tagAppendAttributes(textOutput("DCLperCap"), style="font-family: 'Open Sans Condensed'")
+  tagAppendAttributes(textOutput("DCLperCap"), style="font-family: 'Open Sans Condensed'"),
+  plotOutput("card")
   )
 
 output$mapa <- renderLeaflet({
@@ -513,11 +573,16 @@ output$DCLperCap <- renderText(paste0("DCL por habitante: R$ ",
    format(round(as.numeric(retorna_texto(obtem_estado_click(), "DCL_pop")),2),
                                        big.mark = ".", decimal.mark = ",")))
 
+output$card <- renderPlot(height = 300,
+  plota_card_estado(sumario_grafico(obtem_estado_click()))
+)
+
 observeEvent(input$mapa_shape_click, {
   p <- input$mapa_shape_click
   print(p)
   print(p$id)
 })
+
 
 
 
