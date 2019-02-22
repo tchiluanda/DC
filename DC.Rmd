@@ -123,7 +123,7 @@ pop_total_est <- tabela_estados %>%
   summarise(pop = sum(pop))
 
 # dados municípios
-perfil_mun <- read_excel("./dados/Base MUNIC 2017.xls", sheet = "Variáveis externas")
+perfil_mun <- read_excel('./dados/Base MUNIC 2017.xls', sheet = "Variáveis externas")
 
 # população atualizada
 pop_UFs <- perfil_mun %>%

@@ -1,0 +1,624 @@
+---
+title: "Dívida Consolidada"
+output: 
+  html_document:
+    runtime: shiny
+    code_folding: hide
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+	echo = TRUE,
+	message = FALSE,
+	warning = FALSE
+)
+```
+
+```{css, echo=FALSE}
+* {
+  font-family: "Open Sans";
+}
+
+h1, h2, h3, h4 {
+  color: #353E57 // #1E4C7A;
+}
+
+.destaque {
+  margin: 10px 50px;
+  font-size: 12px;
+  color: "white";
+  background-color: #f0f5f7;
+  padding: 5px 10px;
+  border: 2px solid #BA3917;
+}
+
+.destaque > p {
+  margin: 0px;
+}
+
+.card-estados {
+  border: 1px dotted #353E57;
+}
+
+```
+
+## Dívida Consolidada
+
+### Leitura dos dados
+
+```{r libraries}
+library(tidyverse)
+library(scales)
+library(readxl)
+#library(ipeaData)
+library(extrafont)
+library(gganimate)
+library(RColorBrewer)
+#library(ckanr)
+#library(skimr)
+library(shiny)
+library(leaflet)
+library(ggbeeswarm)
+library(plotly)
+
+tema <- function(){
+    theme_minimal() +
+    theme(
+      text = element_text(family = "Open Sans", colour = "grey20"),
+      title = element_text(face = "bold", size = 10, color = "#1E4C7A"), 
+      plot.subtitle = element_text(family = "Open Sans Condensed", 
+                                   color = "grey20", face = "plain", size = 10),
+      axis.text = element_text(family = "Open Sans", colour = "grey20", size = 8),
+      plot.caption = element_text(face = "italic"),
+      panel.grid.major = element_blank(), 
+      panel.grid.minor = element_blank(),
+      legend.text = element_text(size = 8),
+      legend.title = element_text(size = 8),
+      axis.ticks = element_line(size = 0.5),
+      axis.ticks.length = unit(.25, "cm"),
+      axis.title = element_text(size = 8, colour = "grey20"),
+      legend.position = 'none')
+}
+
+tema_gif <- function() {
+  theme(legend.position = 'none',
+        panel.grid.major.y = element_blank(),
+        panel.grid.major.x = element_blank(),
+        axis.title.y = element_blank(),
+        axis.text.y = element_blank(),
+        axis.ticks.y = element_blank(),
+        plot.background = element_rect(color = "#f0f5f7", linetype = "solid", size = 2))
+}
+
+vermelho <- brewer.pal(3, name = "Set1")[1]
+azul <- "#1f476a" 
+
+vermelho_claro <- "#ee7576"
+azul_claro     <- "#2c90bf" # "#87b1d4"
+
+tres_cores <-c("#F8AC08","#028063","#6E287C")
+tres_cores_pasteis <- c("#FECE60","#63BEAF", "#BE8EBF")
+
+```
+
+Dados disponíveis no Siconfi.
+
+```{r}
+tabela_estados <- read.csv2("./dados/finbraRGF_estados.csv", skip = 5) %>%
+  mutate(Escopo    = "Estados",
+         Exercicio = 2018)
+
+tabela_mun1 <- read.csv2("./dados/finbraRGF_mun.csv", skip = 5) 
+tabela_mun2 <- read.csv2("./dados/finbraRGF_mun_semestre.csv", skip = 5)
+
+tabela_mun <- rbind(tabela_mun1, tabela_mun2) %>%
+  mutate(Escopo    = "Municípios",
+         Exercicio = 2018)
+
+# testando população total para tabela estados
+pop_total_est <- tabela_estados %>% 
+  group_by(UF) %>% 
+  summarise(pop = first(`População`)) %>% 
+  group_by() %>% 
+  summarise(pop = sum(pop))
+
+# dados municípios
+perfil_mun <- read_excel('./dados/Base MUNIC 2017.xls', sheet = "Variáveis externas")
+
+# população atualizada
+pop_UFs <- perfil_mun %>%
+  group_by(UF, REGIAO) %>%
+  summarise(pop = sum(`POP EST`))
+
+tabela_estados <- tabela_estados %>%
+  inner_join(pop_UFs) %>%
+  mutate(`CLASSE POP` = NA)
+
+tabela_municipios <- perfil_mun %>%
+  select(Cod.IBGE = CodMun, REGIAO, pop = `POP EST`, `CLASSE POP`) %>%
+  right_join(tabela_mun)
+
+tabela_completa <- rbind(tabela_estados, tabela_municipios)
+
+### depois melhorar isso aqui
+# cabecalho_estados <- read.csv2("./dados/finbraRGF_estados.csv", nrows = 5, header = FALSE)
+# cabecalho_estados <- cabecalho_estados %>% 
+#   mutate(V1 = as.character(V1)) %>% 
+#   separate(1, into = c("Info", "Valor"), sep = ":") %>% 
+#   t() %>%
+#   as.data.frame() %>%
+#   select(-4)
+
+#tabela_estados %>% skim()
+#tabela_estados %>% str()
+```
+
+Uma observação sobre cobertura dos dados...
+
+```{r, fig.height=3, fig.width=6}
+# total populacao e qde municipios
+
+pop_total <- perfil_mun %>%
+  summarise(qde = n(),
+            pop = sum(`POP EST`)) %>%
+  mutate(escopo = "Total")
+
+pop_RGF <- tabela_municipios %>%
+  group_by(Cod.IBGE, pop) %>%
+  summarise_all(first) %>%
+  group_by() %>%
+  summarise(qde = n(),
+            pop = sum(pop)) %>%
+  mutate(escopo = "RGF")
+  
+abrangencia <- rbind(pop_total, pop_RGF) %>%
+  gather(qde, pop, key = Variavel, value = Valor) %>%
+  spread(escopo, value = Valor) %>%
+  mutate(faltantes = Total - RGF) %>%
+  gather("RGF":"faltantes", key = categorias, value = Valor) %>%
+  filter(categorias != "Total")
+
+ggplot(abrangencia, aes(y = Valor, x = Variavel, fill = categorias)) +
+  geom_col(position = "fill", width=0.6, color = "white", size = 1) +
+  scale_fill_manual(values = c("RGF" = azul, "faltantes" = azul_claro), 
+                    labels = c("RGF" = "Entregues", "faltantes" = "Não entregues")) +
+  scale_y_continuous(labels = percent) +
+  scale_x_discrete(labels = c("qde" = "Quantidade de municípios",
+                              "pop" = "População contemplada")) +
+  coord_flip() + 
+  labs(x = NULL, y = NULL, 
+       title = "Abrangência das informações municipais",
+       fill = NULL) +
+  tema() + theme(legend.position = "bottom")
+
+```
+
+dívida consolidada líquida - estados e municípios
+
+```{r, fig.height=7.5, fig.width=5, fig.align="center"}
+total_DCL <- tabela_completa %>%
+  filter(Conta %in% c("DÍVIDA CONSOLIDADA LÍQUIDA (DCL) (III) = (I - II)",
+                      "RECEITA CORRENTE LÍQUIDA - RCL")) %>%
+  filter(Coluna == "Até o 3º Quadrimestre") %>%
+  group_by(UF, REGIAO, Escopo, Conta) %>%
+  summarise(Valor = sum(Valor)) %>%
+  spread(Conta, value = Valor) %>%
+  rename(
+    DCL = "DÍVIDA CONSOLIDADA LÍQUIDA (DCL) (III) = (I - II)",
+    RCL = "RECEITA CORRENTE LÍQUIDA - RCL") %>%
+  ungroup() %>%
+  mutate(DCL_percent = round(DCL/RCL, 4),
+         UF = fct_reorder(UF, DCL_percent, first, .desc = FALSE)) # atenção ao first
+
+total_DCL <- total_DCL %>%
+  select(UF, Escopo, DCL_percent) %>%
+  spread(Escopo, value = DCL_percent) %>%
+  mutate(Estado_Maior = Estados > `Municípios`,
+         Estado_Maior = replace_na(Estado_Maior, TRUE)) %>%
+  select(UF, Estado_Maior) %>%
+  right_join(total_DCL)
+
+ggplot(total_DCL, aes(y = UF, color = Escopo, x = DCL_percent)) +
+  geom_vline(xintercept = 2, linetype = 'dotted') +
+  geom_path(color = "lightgrey", size = 1.5) +
+  geom_point(size = 3) + 
+  geom_text(aes(x = ifelse(Estado_Maior,
+                           ifelse(Escopo == "Estados",
+                                  DCL_percent + 0.18,
+                                  DCL_percent - 0.15),
+                           ifelse(Escopo == "Estados",
+                                  DCL_percent - 0.15,
+                                  DCL_percent + 0.18)),
+                label = percent(DCL_percent)), family = "Open Sans", size = 3) +
+  scale_x_continuous(labels = percent) +
+  scale_color_manual(values = c("Estados" = tres_cores[1], "Municípios" = tres_cores[2])) +
+  labs(x = "Percentual DCL/RCL",
+       y = NULL,
+       title = "Dívida Consolidada Líquida",
+       subtitle = "Estados e Municípios do Estado",
+       color = NULL) +
+  tema() + theme(legend.position = "top")
+```
+
+Rankings das DCLs dos estados.
+
+```{r, fig.height=7.5, fig.width=4, fig.align="center"}
+
+#   filter(Conta %in% c("DÍVIDA CONSOLIDADA - DC (I)",
+#                       "DÍVIDA CONSOLIDADA LÍQUIDA (DCL) (III) = (I - II)",
+#                       "% da DC sobre a RCL (I/RCL)",
+#                       "% da DCL sobre a RCL (III/RCL)"))
+
+sumario_estados <- tabela_estados %>%
+  filter(Conta %in% c("DÍVIDA CONSOLIDADA - DC (I)",
+                      "DEDUÇÕES (II)",
+                      "DÍVIDA CONSOLIDADA LÍQUIDA (DCL) (III) = (I - II)",
+                      "% da DCL sobre a RCL (III/RCL)")) %>%
+  filter(Coluna == "Até o 3º Quadrimestre") %>%
+  select(UF, REGIAO, Conta, pop, Valor) %>%
+  spread(Conta, value = Valor) %>%
+  mutate(`DCL / Pop` = `DÍVIDA CONSOLIDADA LÍQUIDA (DCL) (III) = (I - II)` / pop)
+
+ranking_estados <- sumario_estados %>%
+  mutate_at(vars(c(-UF, -pop, -REGIAO)), .funs = ~dense_rank(-.)) %>%
+  gather(-UF, -pop, - REGIAO, key = Variavel, value = Valor) %>%
+  filter(Variavel %in% c("DÍVIDA CONSOLIDADA LÍQUIDA (DCL) (III) = (I - II)",
+                      "% da DCL sobre a RCL (III/RCL)",
+                      "DCL / Pop"))
+
+cores_temas_TT <- c("#643275", "#03859a", "#1f476a", "#709a2d", "#ba3917")
+
+ggplot(ranking_estados, aes(x = Variavel, y = Valor, color = REGIAO, fill = REGIAO, group = UF)) +
+  geom_line(size = 1) + 
+  geom_label(aes(label = UF), color = "white", family = "Fira Code",
+             size = 3) + 
+  scale_y_reverse(labels = 1:25, breaks = 1:25) +
+  scale_fill_manual(values = cores_temas_TT) +
+  scale_color_manual(values = cores_temas_TT) +
+  scale_x_discrete(limits = c("DÍVIDA CONSOLIDADA LÍQUIDA (DCL) (III) = (I - II)",
+                              "% da DCL sobre a RCL (III/RCL)",
+                              "DCL / Pop"),
+                   labels = c("DCL", "DCL/RCL", "DCL per Capita"),
+                   position = "top") +
+  labs(x = NULL, y = NULL, title = "Ranking das Dívidas Consolidadas Líquidas",
+       subtitle = "Estados e Distrito Federal") +
+  tema()
+```
+
+Uma visão geral da DC e das deduções
+
+```{r, fig.height=8, fig.width=4.5, fig.align="center"}
+formata_BR <- scales::format_format(big.mark = ".", decimal.mark = ",", scientific = FALSE)
+
+plota_DC_estados <- function(dados) {
+  ggplot(dados, 
+         aes(x = reorder(UF, `DÍVIDA CONSOLIDADA - DC (I)`), y = `DÍVIDA CONSOLIDADA - DC (I)`/1e9,
+             fill = REGIAO)) +
+    geom_col(width = 0.7) +
+    geom_text(
+      aes(
+        label = paste0(
+          format(round(`DÍVIDA CONSOLIDADA - DC (I)`/1e9,0), big.mark = ".", decimal.mark = ","),
+          " bi"),
+        y = `DÍVIDA CONSOLIDADA - DC (I)`/1e9 + 1), 
+      family = "Open Sans", size = 3, color = azul, vjust = 0.3, hjust = 'left') +
+    scale_y_continuous(label = formata_BR) +
+    scale_fill_manual(values = cores_temas_TT) +
+    coord_flip() +
+    expand_limits(y = max(dados$`DÍVIDA CONSOLIDADA - DC (I)`)/1e9 * 1.1) +
+    labs(y = "R$ bilhões", x = NULL, title = "Dívida Consolidada dos Estados em 2018",
+         caption = "Mato Grosso do Sul e Rio Grande do Norte não haviam informado seus dados até fevereiro de 2019.",
+         fill = "Região") +
+    tema() + theme(legend.position = "bottom") + theme(legend.key.size = unit(0.5,"line"))
+}
+
+plota_DC_estados(sumario_estados)
+
+plota_DC_estados(sumario_estados %>% filter(!(UF %in% c("SP", "RJ", "MG", "RS")))) +
+  labs(subtitle = "Exceto São Paulo, Rio de Janeiro, Minas Gerais e Rio Grande do Sul")
+
+```
+
+melhorando o sumário
+
+```{r}
+# problemas de encoding...
+estados <- data.frame(UF = c("AC", "AL", "AM", "AP", "BA", "CE", "DF", 
+"ES", "GO", "MA", "MG", "MS", "MT", "PA", "PB", "PE", "PI", "PR", 
+"RJ", "RN", "RO", "RR", "RS", "SC", "SE", "SP", "TO"), nomes = c("Acre", 
+"Alagoas", "Amazonas", "Amapá", "Bahia", "Ceará", "Distrito Federal", 
+"Espírito Santo", "Goias", "Maranhão", "Minas Gerais", "Mato Grosso do Sul", "Mato Grosso", 
+"Pará", "Paraíba","Pernambuco", "Piauí", "Paraná",  
+"Rio de Janeiro", "Rio Grande do Norte", "Rondônia", "Roraima", "Rio Grande do Sul", 
+"Santa Catarina",  "Sergipe", "São Paulo", "Tocantins"))
+```
+
+```{r}
+sumario_estados_regionalizado <-  sumario_estados %>%
+  mutate(`DEDUÇÕES (II)` = replace_na(`DEDUÇÕES (II)`, 0)) %>%
+  group_by(REGIAO) %>% 
+  mutate(media_regiao   = sum(`DÍVIDA CONSOLIDADA - DC (I)` / n())) %>%
+  ungroup() %>%
+  group_by() %>%
+  mutate(media_nacional = sum(`DÍVIDA CONSOLIDADA - DC (I)` / n())) %>%
+  ungroup() %>%
+  left_join(estados) %>%
+  mutate(nomes = as.character(nomes)) %>%
+  rename(DCL_pop = `DCL / Pop`)
+```
+
+Testando um gráfico das composições
+
+```{r, fig.height=8, fig.width=4.5, fig.align="center"}
+dados_composicoes <- sumario_estados_regionalizado %>%
+  select(UF, 
+         DCL = `DÍVIDA CONSOLIDADA LÍQUIDA (DCL) (III) = (I - II)`, 
+         Ded = `DEDUÇÕES (II)`,
+         DC = `DÍVIDA CONSOLIDADA - DC (I)`) %>%
+  mutate(Ded_pct = 100 * Ded / DC,
+         DCL_pct = 100 * DCL / DC,
+         UF = fct_reorder(UF, Ded_pct, .desc = TRUE)) %>%
+  select(UF, Ded_pct, DCL_pct) %>%
+  gather(DCL_pct, Ded_pct, key = variavel, value = valor) 
+
+ggplot(dados_composicoes, aes(y = valor/100, x = UF, fill = variavel)) +
+  geom_col(width = 0.7, position = "stack") +
+  geom_text(aes(label = percent(valor/100), color = variavel),
+            family = "Open Sans", size = 3, hjust = "left", 
+            position = "stack", vjust = 0.3) +
+  scale_fill_manual(values = c("Ded_pct" = azul_claro, "DCL_pct" = vermelho), 
+                    labels = c("Ded_pct" = "Deduções", "DCL_pct" = "DCL")) +
+  scale_color_manual(values = c("Ded_pct" = "#C3D9F0", "DCL_pct" = vermelho)) +
+  scale_y_continuous(labels = percent) +
+  guides(color = FALSE) +
+  labs(x = NULL, y = NULL, fill = NULL, title = "Dívida Consolidada dos Estados: DCL e Deduções") +
+  coord_flip() + 
+  tema() + theme(legend.position = "bottom") + theme(legend.key.size = unit(0.5,"line"))
+```
+
+Gráficos da ficha dos estados
+
+```{r}
+# sumario_grafico <- function(estado) {
+#   sumario_estados_regionalizado %>%
+#     filter(UF == estado) %>%
+#     select(ded = `DEDUÇÕES (II)`,
+#            dc = `DÍVIDA CONSOLIDADA - DC (I)`,
+#            dcl = `DÍVIDA CONSOLIDADA LÍQUIDA (DCL) (III) = (I - II)`,
+#            media_regiao,
+#            media_nacional) %>%
+#     mutate(em_branco = dcl) %>%
+#     gather(-em_branco, key = variavel, value = valor_de_verdade)  %>%
+#     mutate(em_branco = ifelse(variavel == "ded", em_branco, 0)) %>%
+#     gather(valor_de_verdade, em_branco, key = tipo_valor, value = valor) %>%
+#     mutate(cores = case_when(tipo_valor == "em_branco" ~ NA,
+#                              variavel == "dc" ~ azul,
+#                              variavel == "ded" ~ vermelho,
+#                              TRUE ~ azul_claro),
+#            tipo_valor = factor(tipo_valor, levels = c("valor_de_verdade", "em_branco")),
+#            variavel = factor(variavel, levels = rev(c("dc", "ded", "dcl", "media_regiao", "media_nacional"))))
+# }
+#
+# teste_df <- sumario_grafico("DF")
+#
+# ggplot(teste_df, aes(x = variavel, y = valor, fill = cores)) + 
+#   geom_col(aes(y = ifelse(variavel %in% c("dc", "ded", "dcl"),
+#                           valor,
+#                           NA)), position = "stack", width = 0.5) +
+#   scale_fill_identity() + 
+#   coord_flip() +
+#   tema()
+
+sumario_grafico <- function(estado) {
+  sumario_estados_regionalizado %>%
+    filter(UF == estado) %>%
+    select(ded = `DEDUÇÕES (II)`,
+           dc = `DÍVIDA CONSOLIDADA - DC (I)`,
+           dcl = `DÍVIDA CONSOLIDADA LÍQUIDA (DCL) (III) = (I - II)`,
+           media_regiao,
+           media_nacional) %>%
+    mutate(em_branco = dcl) %>%
+    gather(-em_branco, -media_regiao, -media_nacional, key = variavel, value = valor_de_verdade)  %>%
+    gather(media_regiao, media_nacional, key = medias, value = valor_media) %>%
+    mutate(em_branco = ifelse(variavel == "ded", em_branco, NA)) %>%
+    gather(em_branco, valor_de_verdade, key = tipo_valor, value = valor) %>%
+    mutate(valor_media = ifelse(variavel == "dcl" & tipo_valor == "valor_de_verdade", valor_media, NA),
+           cores = case_when(tipo_valor == "em_branco" ~ "NA",
+                             variavel == "dc" ~ azul,
+                             variavel == "ded" ~ vermelho,
+                             TRUE ~ azul_claro),
+           tipo_valor = factor(tipo_valor, 
+                               levels = c("valor_de_verdade", "em_branco")),
+           variavel = factor(variavel, levels = rev(c("dc", "ded", "dcl"))),
+           medias = replace(medias, medias == "media_regiao", "Média da Região"),
+           medias = replace(medias, medias == "media_nacional", "Média Nacional"))
+}
+
+plota_card_estado <- function(dados) {
+  ggplot(dados, aes(x = variavel, y = valor, fill = cores)) + 
+    geom_col(position = "stack", width = 0.5) +
+    geom_tile(aes(y = valor_media), color = azul, width = 0.7, height = 1, linetype = "dotted") +
+    geom_text(aes(y = valor_media, 
+                  label = paste0(medias, "\nR$ ", 
+                                 format(round(valor_media/1e9, 2), big.mark = ".", decimal.mark = ","), " bi"), 
+                  vjust = ifelse(medias == "Média Nacional", 2.7, -1.9)), family = "Open Sans Condensed", 
+              size = 3.5, color = "dimgrey", hjust = "inward") +
+    geom_label(aes(label = ifelse(tipo_valor == "valor_de_verdade" & medias == "Média da Região",
+                                 paste0("R$ ", format(round(valor/1e9, 2), 
+                                                      big.mark = ".", 
+                                                      decimal.mark = ","),
+                                        " bi"), 
+                                 NA),
+                  y = valor,
+                  color = cores), 
+              family = "Open Sans", size = 3.5, hjust = "center", 
+              position = "stack", vjust = "center", fill = "white") +
+    scale_fill_identity() + 
+    scale_color_identity() +
+    scale_y_continuous(labels=function(x) {format(x/1e9, big.mark = ".", decimal.mark=",", scientific = FALSE)}) +
+    scale_x_discrete(labels = c("ded" = "Deduções", 
+                                "dc"  = "Dívida\nConsolidada", 
+                                "dcl" = "Dívida\nConsolidada\nLíquida")) +
+    labs(x = NULL, y = "R$ bilhões") +
+    coord_flip() +
+    tema() + theme(axis.text.y = element_text(size = 12)) + theme(axis.line.x = element_line())
+}
+
+# plota_card_estado(teste_df)
+```
+
+
+## A Dívida de cada estado
+
+Selecione o Estado no mapa para obter mais informações.
+
+<div class = "card-estados">
+
+```{r}
+mapa_brasil <- geojsonio::geojson_read("./dados/brazil_geo.geojson", what = "sp")
+# o ideal seria pegar daqui https://servicodados.ibge.gov.br/api/docs/malhas?versao=2#api-_
+# mas só consegui do brasil inteiro, sem as ufs. a api ou renderiza o mapa com ufs ou mostra o json sem ufs.
+# aí achei em algum lugar da internet, e só editei um pouco para ficar do jeito esperado, começando com 
+# {"type":"FeatureCollection","features":[... 
+
+# incorporando o dado de DCL no mapa
+
+mapa_brasil@data <- sumario_estados %>%
+  select(UF, REGIAO, DCL = `% da DCL sobre a RCL (III/RCL)`) %>%
+  right_join(mapa_brasil@data, by = c("UF" = "sigla"))
+
+mapa_brasil@data <- mapa_brasil@data %>%
+  left_join(estados)
+
+# ggplot(mapa_brasil@data, aes(x = DCL)) + geom_histogram(binwidth = 10) + scale_x_continuous(breaks = seq(-20, 250, 20))
+
+
+
+bins <- c(-20, 0, 20, 40, 60, 80, 100, 200, Inf)
+pal <- colorBin("YlOrRd", domain = mapa_brasil$DCL, bins = bins)
+
+labels <- sprintf(
+  "<strong>%s</strong><br/>DCL/RCL: %g &#37;",
+  mapa_brasil$nomes, mapa_brasil$DCL
+) %>% lapply(htmltools::HTML)
+
+
+faz_mapa <- function() {
+  leaflet(mapa_brasil, options = leafletOptions(minZoom = 3.7, maxZoom = 3.7)) %>%
+    setView(lat=-14.235, lng=-51.9253 , zoom=3.7) %>%
+    addPolygons(
+      fillColor = ~pal(DCL),
+      weight = 3,
+      opacity = 1,
+      color = "white",
+      fillOpacity = 0.8,
+      highlight = highlightOptions(
+        weight = 3,
+        color = "#353E57",
+        fillOpacity = 1,
+        bringToFront = TRUE),
+      label = labels,
+      layerId = ~UF,  # muito importante, vai alimentar o "id" do shape_click
+      labelOptions = labelOptions(
+        style = list("font-weight" = "normal", 
+                     "font-family" = "'Open Sans'",
+                     padding = "3px 8px"),
+        textsize = "15px",
+        direction = "auto"))
+}
+
+#  addProviderTiles("MapBox", options = providerTileOptions(
+#    id = "mapbox.light",
+#    accessToken = Sys.getenv('MAPBOX_ACCESS_TOKEN'))) %>% 
+  
+retorna_texto <- function(estado, variavel) {
+  resultado <- sumario_estados_regionalizado %>%
+    filter(UF == estado) %>%
+    select(!!sym(variavel))
+  return (as.character(resultado[1,1]))
+}
+
+# retorna_texto("AC", "nomes") 
+
+mainPanel(
+  leafletOutput("mapa"),
+  textOutput("Estado"),
+  textOutput("regiao"),
+  tagAppendAttributes(textOutput("pop"), style="font-family: 'Open Sans Condensed'"),
+  #textOutput("DCLperCap"),
+  tags$style(type="text/css", "#Estado {font-family: 'Open Sans Condensed'; font-size: 2em; color: #1f476a; padding-bottom: 5px; font-weight: 400;}"),
+  tags$style(type="text/css", "#regiao {font-family: 'Open Sans Condensed'; font-size: 1.5em; padding-bottom: 5px;}"),
+  tagAppendAttributes(textOutput("DCL_RCL"), style="font-family: 'Open Sans Condensed'"),
+  tagAppendAttributes(textOutput("DCLperCap"), style="font-family: 'Open Sans Condensed'"),
+  plotOutput("card")
+  )
+
+output$mapa <- renderLeaflet({
+  faz_mapa()
+  })
+
+obtem_estado_click <- function() {
+   uf <- req(input$mapa_shape_click$id)
+   if (is.na(uf)) {uf <- "AC"}
+   return(uf)
+}
+
+output$Estado    <- renderText(paste0("Estado: ", retorna_texto(obtem_estado_click(), "nomes")))
+output$regiao    <- renderText(retorna_texto(obtem_estado_click(), "REGIAO"))
+output$pop       <- renderText(paste0("População: ",
+                                      format(
+                                        round(
+                                          as.numeric(
+                                            retorna_texto(obtem_estado_click(), "pop")
+                                            ),
+                                          2),
+                                        big.mark = ".", decimal.mark = ","), 
+                                      " pessoas"))
+output$DCLperCap <- renderText(paste0("DCL por habitante: R$ ",
+   format(round(as.numeric(retorna_texto(obtem_estado_click(), "DCL_pop")),2),
+                                       big.mark = ".", decimal.mark = ",")))
+
+output$DCLperCap <- renderText(paste0("DCL / RCL: ",
+   format(round(as.numeric(retorna_texto(obtem_estado_click(), "% da DCL sobre a RCL (III/RCL)"))/100,2),
+                                       big.mark = ".", decimal.mark = ",")))
+
+output$card <- renderPlot(
+  plota_card_estado(sumario_grafico(obtem_estado_click()))
+)
+
+# observeEvent(input$mapa_shape_click, {
+#   p <- input$mapa_shape_click
+#   print(p)
+#   print(p$id)
+# })
+
+
+
+
+
+```
+
+</div>
+
+Municípios
+
+```{r}
+sumario_municipios <- tabela_municipios %>%
+  filter(
+    Coluna == "Até o 3º Quadrimestre" & Conta %in% c("% da DCL sobre a RCL (III/RCL)", 
+                                                     "DÍVIDA CONSOLIDADA LÍQUIDA (DCL) (III) = (I - II)")) %>%
+  select(REGIAO, `Instituição`, Valor, Conta, pop, UF, Escopo) %>%
+  spread(Conta, Valor) %>%
+  filter(`Instituição` != "Prefeitura Municipal de Itaíba - PE") %>%
+  rename("dcl_rcl" = "% da DCL sobre a RCL (III/RCL)",
+         "dcl" = "DÍVIDA CONSOLIDADA LÍQUIDA (DCL) (III) = (I - II)")
+
+a <- ggplot(sumario_municipios, aes(y = dcl_rcl, x = REGIAO, color = dcl_rcl > 0, label = `Instituição`)) +
+  #geom_jitter() +
+  geom_quasirandom(varwidth = TRUE) +
+  scale_color_manual(values = c("TRUE" = "dodgerblue", "FALSE" = "firebrick")) +
+  tema()
+
+ggplotly(a)
+```
+
