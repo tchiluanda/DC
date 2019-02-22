@@ -1,0 +1,143 @@
+Exercício: 2018
+Período: 3o. quadrimestre
+Escopo: Federal
+Anexo 02 - Demonstrativo da Dívida Consolidada Líquida
+Tabela: Dívida Consolidada Líquida
+Instituição;Cod.IBGE;UF;PODER;População;Coluna;Conta;Valor
+Governo Federal;1;BR;Executivo;8569324;"SALDO DO EXERCÍCIO ANTERIOR";"DÍVIDA CONSOLIDADA - DC (I)";5377513924883,49
+Governo Federal;1;BR;Executivo;8569324;"SALDO DO EXERCÍCIO ANTERIOR";"Dívida Mobiliária";5315682695703,2
+Governo Federal;1;BR;Executivo;8569324;"SALDO DO EXERCÍCIO ANTERIOR";"Dívida Mobiliária do TN Interna (em mercado)";3438687782849,5
+Governo Federal;1;BR;Executivo;8569324;"SALDO DO EXERCÍCIO ANTERIOR";"(-) Aplicações em Títulos Públicos";2170991218,05
+Governo Federal;1;BR;Executivo;8569324;"SALDO DO EXERCÍCIO ANTERIOR";"Dívida Mobiliária do TN Interna (em carteira BCB)";1671151537350,62
+Governo Federal;1;BR;Executivo;8569324;"SALDO DO EXERCÍCIO ANTERIOR";"Dívida Securitizada";8896977964,27
+Governo Federal;1;BR;Executivo;8569324;"SALDO DO EXERCÍCIO ANTERIOR";"Dívida Mobiliária Externa";111736062478,77
+Governo Federal;1;BR;Executivo;8569324;"SALDO DO EXERCÍCIO ANTERIOR";"Operações de Equalização Cambial - Relacionamento TN/BCB (Lei nº 11.803/08)";87381326278,09
+Governo Federal;1;BR;Executivo;8569324;"SALDO DO EXERCÍCIO ANTERIOR";"Dívida Contratual";53969444340,98
+Governo Federal;1;BR;Executivo;8569324;"SALDO DO EXERCÍCIO ANTERIOR";"Precatórios posteriores a 05/05/2000 (inclusive)";232274565,28
+Governo Federal;1;BR;Executivo;8569324;"SALDO DO EXERCÍCIO ANTERIOR";"Dívida Assumida pela União (Lei nº 8.727/1993)";4415709356,22
+Governo Federal;1;BR;Executivo;8569324;"SALDO DO EXERCÍCIO ANTERIOR";"Outras Dívidas";3213800917,81
+Governo Federal;1;BR;Executivo;8569324;"SALDO DO EXERCÍCIO ANTERIOR";"DEDUÇÕES (II)";2332078740387,1
+Governo Federal;1;BR;Executivo;8569324;"SALDO DO EXERCÍCIO ANTERIOR";"Ativo Disponível";1043663743220,26
+Governo Federal;1;BR;Executivo;8569324;"SALDO DO EXERCÍCIO ANTERIOR";"Depósitos do TN no BCB";1041295805951,37
+Governo Federal;1;BR;Executivo;8569324;"SALDO DO EXERCÍCIO ANTERIOR";"Depósitos à Vista";2367937268,89
+Governo Federal;1;BR;Executivo;8569324;"SALDO DO EXERCÍCIO ANTERIOR";"Haveres Financeiros";1315171892138,55
+Governo Federal;1;BR;Executivo;8569324;"SALDO DO EXERCÍCIO ANTERIOR";"Aplicações Financeiras";302512103851,17
+Governo Federal;1;BR;Executivo;8569324;"SALDO DO EXERCÍCIO ANTERIOR";"Disponibilidades do FAT";255598891183,84
+Governo Federal;1;BR;Executivo;8569324;"SALDO DO EXERCÍCIO ANTERIOR";"Aplicações de Fundos Diversos Junto ao Setor Privado";46913212667,33
+Governo Federal;1;BR;Executivo;8569324;"SALDO DO EXERCÍCIO ANTERIOR";"Renegociação de Dívidas de Entes da Federação";520278748448,34
+Governo Federal;1;BR;Executivo;8569324;"SALDO DO EXERCÍCIO ANTERIOR";"Dívida Renegociada de Estados e Municípios (Lei nº 9.496/1997 e MP nº 2.185/2001)";542498961664,47
+Governo Federal;1;BR;Executivo;8569324;"SALDO DO EXERCÍCIO ANTERIOR";"Créditos da Lei nº 8.727/93";9735316433,04
+Governo Federal;1;BR;Executivo;8569324;"SALDO DO EXERCÍCIO ANTERIOR";"Dívida Externa Renegociada (Aviso MF nº 30 e outros)";5118271198,63
+Governo Federal;1;BR;Executivo;8569324;"SALDO DO EXERCÍCIO ANTERIOR";"Demais Dívidas Renegociadas";21300944276,06
+Governo Federal;1;BR;Executivo;8569324;"SALDO DO EXERCÍCIO ANTERIOR";"Ajustes para Perdas";-58374745123,86
+Governo Federal;1;BR;Executivo;8569324;"SALDO DO EXERCÍCIO ANTERIOR";"Demais Ativos Financeiros";492381039839,04
+Governo Federal;1;BR;Executivo;8569324;"SALDO DO EXERCÍCIO ANTERIOR";"Haveres Externos (Garantias)";500513830201,66
+Governo Federal;1;BR;Executivo;8569324;"SALDO DO EXERCÍCIO ANTERIOR";"Outros Créditos Bancários";-8132790362,62
+Governo Federal;1;BR;Executivo;8569324;"SALDO DO EXERCÍCIO ANTERIOR";"(-) Restos a Pagar Processados";26756894971,71
+Governo Federal;1;BR;Executivo;8569324;"SALDO DO EXERCÍCIO ANTERIOR";"DÍVIDA CONSOLIDADA LÍQUIDA (DCL) (III) = (I - II)";3045435184496,39
+Governo Federal;1;BR;Executivo;8569324;"SALDO DO EXERCÍCIO ANTERIOR";"RECEITA CORRENTE LÍQUIDA - RCL";727254323971,32
+Governo Federal;1;BR;Executivo;8569324;"SALDO DO EXERCÍCIO ANTERIOR";"% da DC sobre a RCL (I/RCL)";739,43
+Governo Federal;1;BR;Executivo;8569324;"SALDO DO EXERCÍCIO ANTERIOR";"% da DCL sobre a RCL (III/RCL)";418,76
+Governo Federal;1;BR;Executivo;8569324;"Até o 1º Quadrimestre";"DÍVIDA CONSOLIDADA - DC (I)";5461391644246,83
+Governo Federal;1;BR;Executivo;8569324;"Até o 1º Quadrimestre";"Dívida Mobiliária";5405846474808,43
+Governo Federal;1;BR;Executivo;8569324;"Até o 1º Quadrimestre";"Dívida Mobiliária do TN Interna (em mercado)";3530558444470,76
+Governo Federal;1;BR;Executivo;8569324;"Até o 1º Quadrimestre";"(-) Aplicações em Títulos Públicos";2281274428,86
+Governo Federal;1;BR;Executivo;8569324;"Até o 1º Quadrimestre";"Dívida Mobiliária do TN Interna (em carteira BCB)";1753084967901,42
+Governo Federal;1;BR;Executivo;8569324;"Até o 1º Quadrimestre";"Dívida Securitizada";7560785868,83
+Governo Federal;1;BR;Executivo;8569324;"Até o 1º Quadrimestre";"Dívida Mobiliária Externa";121126416652,17
+Governo Federal;1;BR;Executivo;8569324;"Até o 1º Quadrimestre";"Operações de Equalização Cambial - Relacionamento TN/BCB (Lei nº 11.803/08)";-4202865655,89
+Governo Federal;1;BR;Executivo;8569324;"Até o 1º Quadrimestre";"Dívida Contratual";46777220683,86
+Governo Federal;1;BR;Executivo;8569324;"Até o 1º Quadrimestre";"Precatórios posteriores a 05/05/2000 (inclusive)";3367029386,17
+Governo Federal;1;BR;Executivo;8569324;"Até o 1º Quadrimestre";"Dívida Assumida pela União (Lei nº 8.727/1993)";2928346684,2
+Governo Federal;1;BR;Executivo;8569324;"Até o 1º Quadrimestre";"Outras Dívidas";2472572684,17
+Governo Federal;1;BR;Executivo;8569324;"Até o 1º Quadrimestre";"DEDUÇÕES (II)";2382126976313,92
+Governo Federal;1;BR;Executivo;8569324;"Até o 1º Quadrimestre";"Ativo Disponível";1049541625336,7
+Governo Federal;1;BR;Executivo;8569324;"Até o 1º Quadrimestre";"Depósitos do TN no BCB";1046740000819,53
+Governo Federal;1;BR;Executivo;8569324;"Até o 1º Quadrimestre";"Depósitos à Vista";2801624517,17
+Governo Federal;1;BR;Executivo;8569324;"Até o 1º Quadrimestre";"Haveres Financeiros";1367859858748,09
+Governo Federal;1;BR;Executivo;8569324;"Até o 1º Quadrimestre";"Aplicações Financeiras";337116504150,23
+Governo Federal;1;BR;Executivo;8569324;"Até o 1º Quadrimestre";"Disponibilidades do FAT";292515773729,3
+Governo Federal;1;BR;Executivo;8569324;"Até o 1º Quadrimestre";"Aplicações de Fundos Diversos Junto ao Setor Privado";44600730420,93
+Governo Federal;1;BR;Executivo;8569324;"Até o 1º Quadrimestre";"Renegociação de Dívidas de Entes da Federação";562262710368,39
+Governo Federal;1;BR;Executivo;8569324;"Até o 1º Quadrimestre";"Dívida Renegociada de Estados e Municípios (Lei nº 9.496/1997 e MP nº 2.185/2001)";547423931921,6
+Governo Federal;1;BR;Executivo;8569324;"Até o 1º Quadrimestre";"Créditos da Lei nº 8.727/93";9490882305,94
+Governo Federal;1;BR;Executivo;8569324;"Até o 1º Quadrimestre";"Dívida Externa Renegociada (Aviso MF nº 30 e outros)";5141224187,02
+Governo Federal;1;BR;Executivo;8569324;"Até o 1º Quadrimestre";"Demais Dívidas Renegociadas";23759572407,93
+Governo Federal;1;BR;Executivo;8569324;"Até o 1º Quadrimestre";"Ajustes para Perdas";-23552900454,1
+Governo Federal;1;BR;Executivo;8569324;"Até o 1º Quadrimestre";"Demais Ativos Financeiros";468480644229,47
+Governo Federal;1;BR;Executivo;8569324;"Até o 1º Quadrimestre";"Haveres Externos (Garantias)";476613434592,09
+Governo Federal;1;BR;Executivo;8569324;"Até o 1º Quadrimestre";"Outros Créditos Bancários";-8132790362,62
+Governo Federal;1;BR;Executivo;8569324;"Até o 1º Quadrimestre";"(-) Restos a Pagar Processados";35274507770,87
+Governo Federal;1;BR;Executivo;8569324;"Até o 1º Quadrimestre";"DÍVIDA CONSOLIDADA LÍQUIDA (DCL) (III) = (I - II)";3079264667932,91
+Governo Federal;1;BR;Executivo;8569324;"Até o 1º Quadrimestre";"RECEITA CORRENTE LÍQUIDA - RCL";743632071921,18
+Governo Federal;1;BR;Executivo;8569324;"Até o 1º Quadrimestre";"% da DC sobre a RCL (I/RCL)";734,42
+Governo Federal;1;BR;Executivo;8569324;"Até o 1º Quadrimestre";"% da DCL sobre a RCL (III/RCL)";414,08
+Governo Federal;1;BR;Executivo;8569324;"Até o 2º Quadrimestre";"DÍVIDA CONSOLIDADA - DC (I)";5380567499572,14
+Governo Federal;1;BR;Executivo;8569324;"Até o 2º Quadrimestre";"Dívida Mobiliária";5329166576900,44
+Governo Federal;1;BR;Executivo;8569324;"Até o 2º Quadrimestre";"Dívida Mobiliária do TN Interna (em mercado)";3640117642766,06
+Governo Federal;1;BR;Executivo;8569324;"Até o 2º Quadrimestre";"(-) Aplicações em Títulos Públicos";2337544797,34
+Governo Federal;1;BR;Executivo;8569324;"Até o 2º Quadrimestre";"Dívida Mobiliária do TN Interna (em carteira BCB)";1756747348108,84
+Governo Federal;1;BR;Executivo;8569324;"Até o 2º Quadrimestre";"Dívida Securitizada";6761440151,67
+Governo Federal;1;BR;Executivo;8569324;"Até o 2º Quadrimestre";"Dívida Mobiliária Externa";140822586033,54
+Governo Federal;1;BR;Executivo;8569324;"Até o 2º Quadrimestre";"Operações de Equalização Cambial - Relacionamento TN/BCB (Lei nº 11.803/08)";-212944895362,33
+Governo Federal;1;BR;Executivo;8569324;"Até o 2º Quadrimestre";"Dívida Contratual";43912079286,06
+Governo Federal;1;BR;Executivo;8569324;"Até o 2º Quadrimestre";"Precatórios posteriores a 05/05/2000 (inclusive)";1953035927,36
+Governo Federal;1;BR;Executivo;8569324;"Até o 2º Quadrimestre";"Dívida Assumida pela União (Lei nº 8.727/1993)";3080594161,39
+Governo Federal;1;BR;Executivo;8569324;"Até o 2º Quadrimestre";"Outras Dívidas";2455213296,89
+Governo Federal;1;BR;Executivo;8569324;"Até o 2º Quadrimestre";"DEDUÇÕES (II)";2354975356721,73
+Governo Federal;1;BR;Executivo;8569324;"Até o 2º Quadrimestre";"Ativo Disponível";1071182804596,95
+Governo Federal;1;BR;Executivo;8569324;"Até o 2º Quadrimestre";"Depósitos do TN no BCB";1068285893702,18
+Governo Federal;1;BR;Executivo;8569324;"Até o 2º Quadrimestre";"Depósitos à Vista";2896910894,77
+Governo Federal;1;BR;Executivo;8569324;"Até o 2º Quadrimestre";"Haveres Financeiros";1324876818261,37
+Governo Federal;1;BR;Executivo;8569324;"Até o 2º Quadrimestre";"Aplicações Financeiras";373767926675,3
+Governo Federal;1;BR;Executivo;8569324;"Até o 2º Quadrimestre";"Disponibilidades do FAT";298998312241,18
+Governo Federal;1;BR;Executivo;8569324;"Até o 2º Quadrimestre";"Aplicações de Fundos Diversos Junto ao Setor Privado";74769614434,12
+Governo Federal;1;BR;Executivo;8569324;"Até o 2º Quadrimestre";"Renegociação de Dívidas de Entes da Federação";573666915363,54
+Governo Federal;1;BR;Executivo;8569324;"Até o 2º Quadrimestre";"Dívida Renegociada de Estados e Municípios (Lei nº 9.496/1997 e MP nº 2.185/2001)";555252947053,00
+Governo Federal;1;BR;Executivo;8569324;"Até o 2º Quadrimestre";"Créditos da Lei nº 8.727/93";9198161107,37
+Governo Federal;1;BR;Executivo;8569324;"Até o 2º Quadrimestre";"Dívida Externa Renegociada (Aviso MF nº 30 e outros)";5779017840,56
+Governo Federal;1;BR;Executivo;8569324;"Até o 2º Quadrimestre";"Demais Dívidas Renegociadas";26450613563,83
+Governo Federal;1;BR;Executivo;8569324;"Até o 2º Quadrimestre";"Ajustes para Perdas";-23013824201,22
+Governo Federal;1;BR;Executivo;8569324;"Até o 2º Quadrimestre";"Demais Ativos Financeiros";377441976222,53
+Governo Federal;1;BR;Executivo;8569324;"Até o 2º Quadrimestre";"Haveres Externos (Garantias)";385574766585,15
+Governo Federal;1;BR;Executivo;8569324;"Até o 2º Quadrimestre";"Outros Créditos Bancários";-8132790362,62
+Governo Federal;1;BR;Executivo;8569324;"Até o 2º Quadrimestre";"(-) Restos a Pagar Processados";41084266136,59
+Governo Federal;1;BR;Executivo;8569324;"Até o 2º Quadrimestre";"DÍVIDA CONSOLIDADA LÍQUIDA (DCL) (III) = (I - II)";3025592142850,41
+Governo Federal;1;BR;Executivo;8569324;"Até o 2º Quadrimestre";"RECEITA CORRENTE LÍQUIDA - RCL";770352095045,15
+Governo Federal;1;BR;Executivo;8569324;"Até o 2º Quadrimestre";"% da DC sobre a RCL (I/RCL)";698,46
+Governo Federal;1;BR;Executivo;8569324;"Até o 2º Quadrimestre";"% da DCL sobre a RCL (III/RCL)";392,75
+Governo Federal;1;BR;Executivo;8569324;"Até o 3º Quadrimestre";"DÍVIDA CONSOLIDADA - DC (I)";5764560885784,74
+Governo Federal;1;BR;Executivo;8569324;"Até o 3º Quadrimestre";"Dívida Mobiliária";5711201009130,8
+Governo Federal;1;BR;Executivo;8569324;"Até o 3º Quadrimestre";"Dívida Mobiliária do TN Interna (em mercado)";3738771183306,74
+Governo Federal;1;BR;Executivo;8569324;"Até o 3º Quadrimestre";"(-) Aplicações em Títulos Públicos";2417143802,44
+Governo Federal;1;BR;Executivo;8569324;"Até o 3º Quadrimestre";"Dívida Mobiliária do TN Interna (em carteira BCB)";1806878012342,95
+Governo Federal;1;BR;Executivo;8569324;"Até o 3º Quadrimestre";"Dívida Securitizada";6498246584,38
+Governo Federal;1;BR;Executivo;8569324;"Até o 3º Quadrimestre";"Dívida Mobiliária Externa";134284322956,00
+Governo Federal;1;BR;Executivo;8569324;"Até o 3º Quadrimestre";"Operações de Equalização Cambial - Relacionamento TN/BCB (Lei nº 11.803/08)";27186387743,17
+Governo Federal;1;BR;Executivo;8569324;"Até o 3º Quadrimestre";"Dívida Contratual";44552709582,86
+Governo Federal;1;BR;Executivo;8569324;"Até o 3º Quadrimestre";"Precatórios posteriores a 05/05/2000 (inclusive)";411566570,95
+Governo Federal;1;BR;Executivo;8569324;"Até o 3º Quadrimestre";"Dívida Assumida pela União (Lei nº 8.727/1993)";4247359189,09
+Governo Federal;1;BR;Executivo;8569324;"Até o 3º Quadrimestre";"Outras Dívidas";4148241311,04
+Governo Federal;1;BR;Executivo;8569324;"Até o 3º Quadrimestre";"DEDUÇÕES (II)";2561056706785,26
+Governo Federal;1;BR;Executivo;8569324;"Até o 3º Quadrimestre";"Ativo Disponível";1277458512251,52
+Governo Federal;1;BR;Executivo;8569324;"Até o 3º Quadrimestre";"Depósitos do TN no BCB";1274111967734,42
+Governo Federal;1;BR;Executivo;8569324;"Até o 3º Quadrimestre";"Depósitos à Vista";2711227299,65
+Governo Federal;1;BR;Executivo;8569324;"Até o 3º Quadrimestre";"Arrecadação a Recolher";635317217,45
+Governo Federal;1;BR;Executivo;8569324;"Até o 3º Quadrimestre";"Haveres Financeiros";1344049082712,26
+Governo Federal;1;BR;Executivo;8569324;"Até o 3º Quadrimestre";"Aplicações Financeiras";362009742883,9
+Governo Federal;1;BR;Executivo;8569324;"Até o 3º Quadrimestre";"Disponibilidades do FAT";308258223425,96
+Governo Federal;1;BR;Executivo;8569324;"Até o 3º Quadrimestre";"Aplicações de Fundos Diversos Junto ao Setor Privado";53751519457,94
+Governo Federal;1;BR;Executivo;8569324;"Até o 3º Quadrimestre";"Renegociação de Dívidas de Entes da Federação";597439986628,82
+Governo Federal;1;BR;Executivo;8569324;"Até o 3º Quadrimestre";"Dívida Renegociada de Estados e Municípios (Lei nº 9.496/1997 e MP nº 2.185/2001)";578511393744,94
+Governo Federal;1;BR;Executivo;8569324;"Até o 3º Quadrimestre";"Créditos da Lei nº 8.727/93";7986195685,34
+Governo Federal;1;BR;Executivo;8569324;"Até o 3º Quadrimestre";"Dívida Externa Renegociada (Aviso MF nº 30 e outros)";5892755702,78
+Governo Federal;1;BR;Executivo;8569324;"Até o 3º Quadrimestre";"Demais Dívidas Renegociadas";29037511553,66
+Governo Federal;1;BR;Executivo;8569324;"Até o 3º Quadrimestre";"Ajustes para Perdas";-23987870057,9
+Governo Federal;1;BR;Executivo;8569324;"Até o 3º Quadrimestre";"Demais Ativos Financeiros";384599353199,54
+Governo Federal;1;BR;Executivo;8569324;"Até o 3º Quadrimestre";"Haveres Externos (Garantias)";389513296843,3
+Governo Federal;1;BR;Executivo;8569324;"Até o 3º Quadrimestre";"Outros Créditos Bancários";-4913943643,76
+Governo Federal;1;BR;Executivo;8569324;"Até o 3º Quadrimestre";"(-) Restos a Pagar Processados";60450888178,52
+Governo Federal;1;BR;Executivo;8569324;"Até o 3º Quadrimestre";"DÍVIDA CONSOLIDADA LÍQUIDA (DCL) (III) = (I - II)";3203504178999,48
+Governo Federal;1;BR;Executivo;8569324;"Até o 3º Quadrimestre";"RECEITA CORRENTE LÍQUIDA - RCL";805348403466,57
+Governo Federal;1;BR;Executivo;8569324;"Até o 3º Quadrimestre";"% da DC sobre a RCL (I/RCL)";715,78
+Governo Federal;1;BR;Executivo;8569324;"Até o 3º Quadrimestre";"% da DCL sobre a RCL (III/RCL)";397,78
