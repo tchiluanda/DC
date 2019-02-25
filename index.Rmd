@@ -480,9 +480,125 @@ Referem-se aos precatórios judiciais emitidos a partir de 5 de maio de 2000 e n
 <p class="fechar-card"><a class="link-fechar" id="fechar-precatorios" href="#conceito-precatorios">^ Fechar e voltar ao texto ^</a></p>
 </div>
 
-Após garantir que todos colocam os mesmos tipos de dívidas na dívida consolidada, voltamos à pergunta: a dívida está grande ou pequena? Essa avaliação depende da condição financeira de cada um para pagar a dívida. Assim, uma comparação com a arrecadação da prefeitura ou do governo pode ajudar nessa resposta. 
+Após garantir que todos colocam os mesmos tipos de dívidas na dívida consolidada, voltamos à pergunta: a dívida está grande ou pequena? 
 
-Uma opção seria ver quanto sobra da dívida consolidada depois de abater os recursos que já estão em caixa. Isso recebe o nome de dívida consolidada L-Í-Q-U-I-D-A. E se compararmos esse valor com algo que reflita uma capacidade de arrecadação? Podia ser o total de receitas regulares disponíveis, a <span class="conceito" id="conceito-RCL">RECEITA CORRENTE L-Í-Q-U-I-D-A</span>, dos últimos 12 meses. Essa opção agrada a você? Saiba que essa foi a medida adotada pelo Senado Federal para estabelecer um limite para estados e municípios. Limite?
+```{r graf-barras, fig.height=6, fig.width=4, fig.align="center"}
+formata_BR <- scales::format_format(big.mark = ".", decimal.mark = ",", scientific = FALSE)
+
+plota_DC_estados <- function(dados) {
+  ggplot(dados, 
+         aes(x = reorder(UF, DC), y = DC/1e9,
+             fill = REGIAO)) +
+    geom_col(width = 0.7) +
+    geom_text(
+      aes(
+        label = paste0(
+          format(round(DC/1e9,0), big.mark = ".", decimal.mark = ","),
+          " bi"),
+        y = DC/1e9 + 1), 
+      family = "Open Sans", size = 3, color = azul, vjust = 0.3, hjust = 'left') +
+    scale_y_continuous(label = formata_BR) +
+    scale_fill_manual(values = cores_temas_TT) +
+    coord_flip() +
+    expand_limits(y = max(dados$DC)/1e9 * 1.1) +
+    labs(y = "R$ bilhões", x = NULL, title = "Dívida Consolidada dos Estados em 2018",
+         caption = "Mato Grosso do Sul e Rio Grande do Norte não haviam informado\nseus dados até fevereiro de 2019.",
+         fill = "Região") +
+    tema() + theme(legend.position = "bottom") + theme(legend.key.size = unit(0.5,"line"))
+}
+
+plota_DC_estados(sumario_estados)
+
+plota_DC_estados(sumario_estados %>% filter(!(UF %in% c("SP", "RJ", "MG", "RS")))) +
+  labs(subtitle = "Exceto São Paulo, Rio de Janeiro, Minas Gerais e Rio Grande do Sul")
+
+```
+
+Essa avaliação depende da condição financeira de cada um para pagar a dívida. Assim, uma comparação com a arrecadação da prefeitura ou do governo pode ajudar nessa resposta. 
+
+```{r ranking, fig.height=7.5, fig.width=5, fig.align="center"}
+
+contas_interesse <- c("DÍVIDA CONSOLIDADA - DC (I)",
+                      "DEDUÇÕES (II)",
+                      "DÍVIDA CONSOLIDADA LÍQUIDA (DCL) (III) = (I - II)",
+                      "% da DCL sobre a RCL (III/RCL)")
+
+# uma tabela de tradução por causa do shiny
+tab_contas <- data.frame(Conta = contas_interesse, Conta_red = c("DC", "Ded", "DCL", "pct_DCL_RCL"))
+
+sumario_estados <- tabela_estados %>%
+  filter(Conta %in% contas_interesse) %>%
+  filter(Coluna == "Até o 3º Quadrimestre") %>%
+  left_join(tab_contas) %>%
+  select(UF, REGIAO, Conta_red, pop, Valor) %>%
+  spread(Conta_red, value = Valor) %>%
+  mutate(DCL_pop = DCL / pop)
+
+ranking_estados <- sumario_estados %>%
+  mutate_at(vars(c(-UF, -pop, -REGIAO)), .funs = ~dense_rank(-.)) %>%
+  gather(-UF, -pop, - REGIAO, key = Variavel, value = Valor) %>%
+  filter(Variavel %in% c("DCL", "pct_DCL_RCL", "DCL_pop"))
+
+cores_temas_TT <- c("#643275", "#03859a", "#1f476a", "#709a2d", "#ba3917")
+
+ggplot(ranking_estados, aes(x = Variavel, y = Valor, color = REGIAO, fill = REGIAO, group = UF)) +
+  geom_line(size = 1) + 
+  geom_label(aes(label = UF), color = "white", family = "Fira Code",
+             size = 3) + 
+  scale_y_reverse(labels = 1:25, breaks = 1:25) +
+  scale_fill_manual(values = cores_temas_TT) +
+  scale_color_manual(values = cores_temas_TT) +
+  scale_x_discrete(limits = c("DCL",
+                              "pct_DCL_RCL",
+                              "DCL_pop"),
+                   labels = c("DCL" = "DCL", "pct_DCL_RCL" = "DCL/RCL", 
+                              "DCL_pop" = "DCL per Capita"),
+                   position = "top") +
+  labs(x = NULL, y = NULL, title = "Ranking das Dívidas Consolidadas Líquidas",
+       subtitle = "Estados e Distrito Federal") +
+  tema()
+```
+
+Uma opção seria ver quanto sobra da dívida consolidada depois de abater os recursos que já estão em caixa. Isso recebe o nome de dívida consolidada L-Í-Q-U-I-D-A. 
+
+```{r, fig.height=7, fig.width=4.5, fig.align="center"}
+sumario_estados_regionalizado <-  sumario_estados %>%
+  mutate(Ded = replace_na(Ded, 0)) %>%
+  group_by(REGIAO) %>% 
+  mutate(media_regiao   = sum(DC / n())) %>%
+  ungroup() %>%
+  group_by() %>%
+  mutate(media_nacional = sum(DC / n())) %>%
+  ungroup() %>%
+  left_join(estados) %>%
+  mutate(nomes = as.character(nomes))
+
+dados_composicoes <- sumario_estados_regionalizado %>%
+  select(UF, DCL, Ded, DC) %>%
+  mutate(Ded_pct = 100 * Ded / DC,
+         DCL_pct = 100 * DCL / DC,
+         UF = fct_reorder(UF, Ded_pct, .desc = TRUE)) %>%
+  select(UF, Ded_pct, DCL_pct) %>%
+  gather(DCL_pct, Ded_pct, key = variavel, value = valor) 
+
+
+ggplot(dados_composicoes, aes(y = valor/100, x = UF, fill = variavel)) +
+  geom_col(width = 0.7, position = "stack") +
+  geom_text(aes(label = percent(valor/100)),
+            family = "Open Sans", size = 3, hjust = "inward", 
+            position = "stack", vjust = 0.3, color = "white") +
+  scale_fill_manual(labels = c("Ded_pct" = "Deduções", "DCL_pct" = "DCL"),
+                    values = c("Ded_pct" = vermelho, "DCL_pct" = azul_claro)) +
+  scale_y_continuous(labels = percent) +
+  guides(color = FALSE) +
+  labs(x = NULL, y = NULL, fill = NULL, title = "Dívida Consolidada dos Estados: DCL e Deduções",
+       caption = "Mato Grosso do Sul e Rio Grande do Norte não haviam informado\nseus dados até fevereiro de 2019.") +
+  coord_flip() + 
+  tema() + theme(legend.position = "bottom") + theme(legend.key.size = unit(0.5,"line"))
+```
+
+
+E se compararmos esse valor com algo que reflita uma capacidade de arrecadação? Podia ser o total de receitas regulares disponíveis, a <span class="conceito" id="conceito-RCL">RECEITA CORRENTE L-Í-Q-U-I-D-A</span>, dos últimos 12 meses. Essa opção agrada a você? Saiba que essa foi a medida adotada pelo Senado Federal para estabelecer um limite para estados e municípios. Limite?
 
 <div class="descricao" id="descricao-RCL"> 
 <p class="titulo-card">Receita Corrente Líquida</p> 
@@ -503,7 +619,9 @@ Os limites da dívida consolidada foram estabelecidos por Resoluções do Senado
 
 a) O limite de endividamento definido para os estados é de 200% da RCL.
 
+b) O limite de endividamento definido para os municípios é de 120% da RCL.
 
+c) Para a União, esse limite ainda não foi definido.
 
 <p class="fechar-card"><a class="link-fechar" id="fechar-limites" href="#conceito-limites">^ Fechar e voltar ao texto ^</a></p>
 </div>
@@ -557,138 +675,80 @@ ggplot(total_DCL, aes(y = UF, color = Escopo, x = DCL_percent)) +
   tema() + theme(legend.position = "top")
 ```
 
-Rankings das DCLs dos estados.
+Agora, uma pergunta ~~para saber se você está atento~~: toda dívida entra no cálculo da dívida consolidada? Para onde vão os precatórios que não estão vencidos, por acaso? 
 
-```{r graf-barras-dcls, fig.height=7.5, fig.width=5, fig.align="center"}
+O fato de não contar para a dívida consolidada não significa ~~longe disso~~ que não sejam relevantes, muito menos que não mereçam nossa atenção. É o caso, por exemplo, da obrigação com os pagamentos futuros de benefícios previdenciários, conhecido como <span class="conceito" id="conceito-passivoatuarial">passivo atuarial</span>. Apesar de não afetar a capacidade financeira hoje, irá impactar nos próximos anos. Outro tipo ocorre quando a prefeitura ou o governo utiliza recursos que ainda estão em <span class="conceito" id="conceito-disputajudicial">disputa judicial</span>. Se perder a disputa, tem que devolver e isso precisa ser monitorado. Entendeu a importância?
 
-contas_interesse <- c("DÍVIDA CONSOLIDADA - DC (I)",
-                      "DEDUÇÕES (II)",
-                      "DÍVIDA CONSOLIDADA LÍQUIDA (DCL) (III) = (I - II)",
-                      "% da DCL sobre a RCL (III/RCL)")
+<div class="descricao" id="descricao-passivoatuarial"> 
+<p class="titulo-card">Passivo Atuarial</p> 
 
-# uma tabela de tradução por causa do shiny
-tab_contas <- data.frame(Conta = contas_interesse, Conta_red = c("DC", "Ded", "DCL", "pct_DCL_RCL"))
+O Passivo Atuarial dos Regimes Próprios de Previdência Social - RPPS (Provisão Matemática Previdenciária) representa o total dos recursos necessários ao pagamento dos compromissos dos planos de benefícios, calculados atuarialmente, em determinada data, a valor presente, conforme parecer atuarial mais recente.
 
-sumario_estados <- tabela_estados %>%
-  filter(Conta %in% contas_interesse) %>%
-  filter(Coluna == "Até o 3º Quadrimestre") %>%
-  left_join(tab_contas) %>%
-  select(UF, REGIAO, Conta_red, pop, Valor) %>%
-  spread(Conta_red, value = Valor) %>%
-  mutate(DCL_pop = DCL / pop)
+<p class="fechar-card"><a class="link-fechar" id="fechar-passivoatuarial" href="#conceito-passivoatuarial">^ Fechar e voltar ao texto ^</a></p>
+</div>
 
-ranking_estados <- sumario_estados %>%
-  mutate_at(vars(c(-UF, -pop, -REGIAO)), .funs = ~dense_rank(-.)) %>%
-  gather(-UF, -pop, - REGIAO, key = Variavel, value = Valor) %>%
-  filter(Variavel %in% c("DCL", "pct_DCL_RCL", "DCL_pop"))
+<div class="descricao" id="descricao-disputajudicial"> 
+<p class="titulo-card">Disputa Judicial</p> 
 
-cores_temas_TT <- c("#643275", "#03859a", "#1f476a", "#709a2d", "#ba3917")
+Os depósitos judiciais são valores depositados em contas específicas sob a guarda do poder judiciário para pagamento de lides ainda pendentes de decisão judicial. A Constituição Federal autoriza a utilização de parte desses depósitos pelos entes da federação, os quais devem ser devolvidos caso o ente não seja favorecido pela decisão judicial.
 
-ggplot(ranking_estados, aes(x = Variavel, y = Valor, color = REGIAO, fill = REGIAO, group = UF)) +
-  geom_line(size = 1) + 
-  geom_label(aes(label = UF), color = "white", family = "Fira Code",
-             size = 3) + 
-  scale_y_reverse(labels = 1:25, breaks = 1:25) +
-  scale_fill_manual(values = cores_temas_TT) +
-  scale_color_manual(values = cores_temas_TT) +
-  scale_x_discrete(limits = c("DCL",
-                              "pct_DCL_RCL",
-                              "DCL_pop"),
-                   labels = c("DCL" = "DCL", "pct_DCL_RCL" = "DCL/RCL", 
-                              "DCL_pop" = "DCL per Capita"),
-                   position = "top") +
-  labs(x = NULL, y = NULL, title = "Ranking das Dívidas Consolidadas Líquidas",
-       subtitle = "Estados e Distrito Federal") +
+<p class="fechar-card"><a class="link-fechar" id="fechar-disputajudicial" href="#conceito-disputajudicial">^ Fechar e voltar ao texto ^</a></p>
+</div>
+
+Por outro lado, existem disputas judiciais que já foram perdidas e exigem pagamento, são os precatórios. Pela ~~grande~~ quantidade, eles entram em uma fila para serem quitados a cada ano. Isto é, **todo ano a prefeitura ou o governo tem que pagar um certo número de precatórios. Quando deveria pagar em um ano e não paga, temos os precatórios vencidos e não pagos**. Lembra deles? Eles entram na dívida consolidada. Perceba que, por uma questão de tempo, os outros ~~ainda~~ não entram nesse cálculo, mas estão na fila e ~~em breve~~ vão afetar as finanças dessa prefeitura ou desse governo. Por isso, que tal ver o tamanho da conta de precatórios?
+
+```{r precatorios, fig.height=3}
+precat <- tabela_completa %>%
+  filter(Coluna %in% c("Até o 3º Quadrimestre", "Até o 2º Semestre") & 
+           str_detect(Conta, "Precatórios")) %>%
+  group_by(Escopo, Conta) %>%
+  summarise(Valor = sum(Valor))
+
+ggplot(precat, aes(x = Conta, y = Valor, fill = Escopo, color = Escopo)) +
+  geom_col(width = 0.7, position = "stack") +
+  geom_text(aes(y = Valor, label = paste0(
+          format(round(Valor/1e9,0), big.mark = ".", decimal.mark = ","),
+          " bi"), vjust = ifelse(Escopo == "Estados", -5, 6)), family = "Open Sans", hjust = "center", size = 3.5, position = "stack") +
+  scale_fill_manual(values = tres_cores[1:2]) +
+  scale_color_manual(values = tres_cores[1:2]) +
+  scale_y_continuous(labels=function(x) {format(x/1e9, big.mark = ".", decimal.mark=",", scientific = FALSE)}) +
+  scale_x_discrete(labels = c("Precatórios Anteriores a 05/05/2000" = "Precatórios Anteriores \na 05/05/2000",
+                              "Precatórios Posteriores a 05/05/2000 (inclusive) Vencidos e Não Pagos" = "Precatórios Posteriores \na 05/05/2000 (inclusive) \nVencidos e Não Pagos",
+                              "Precatórios Posteriores a 05/05/2000 (Não incluídos na DC)" = "Precatórios Posteriores \na 05/05/2000 \n(Não incluídos na DC)")) +
+  #expand_limits(y = max(DCLs_entes$DC * 1.2)) +
+  labs(x = NULL, y = "R$ bi", title = "Precatórios",
+       subtitle = "Estados e Municípios") +
+  coord_flip() + 
   tema()
+  
 ```
 
-Uma visão geral da DC e das deduções
+Além dessas obrigações, um compromisso também pode causar preocupação a uma prefeitura ou a um governo. E que tipo de compromisso seria esse? Aquele que pode virar uma dívida. Explicando melhor: algumas vezes uma prefeitura ou um governo entra como ~~fiador~~ garantidor de um empréstimo. Essa <span class="conceito" id="conceito-garantia">garantia concedida</span> pode se transformar em dívida se quem pegou o dinheiro emprestado não conseguir pagar. Viu como esse ponto é sensível? Por via das dúvidas, melhor acompanhar essas garantias.
 
-```{r, fig.height=6, fig.width=4, fig.align="center"}
-formata_BR <- scales::format_format(big.mark = ".", decimal.mark = ",", scientific = FALSE)
+<div class="descricao" id="descricao-garantia"> 
+<p class="titulo-card">Garantias Concedidas</p> 
 
-plota_DC_estados <- function(dados) {
-  ggplot(dados, 
-         aes(x = reorder(UF, DC), y = DC/1e9,
-             fill = REGIAO)) +
-    geom_col(width = 0.7) +
-    geom_text(
-      aes(
-        label = paste0(
-          format(round(DC/1e9,0), big.mark = ".", decimal.mark = ","),
-          " bi"),
-        y = DC/1e9 + 1), 
-      family = "Open Sans", size = 3, color = azul, vjust = 0.3, hjust = 'left') +
-    scale_y_continuous(label = formata_BR) +
-    scale_fill_manual(values = cores_temas_TT) +
-    coord_flip() +
-    expand_limits(y = max(dados$DC)/1e9 * 1.1) +
-    labs(y = "R$ bilhões", x = NULL, title = "Dívida Consolidada dos Estados em 2018",
-         caption = "Mato Grosso do Sul e Rio Grande do Norte não haviam informado\nseus dados até fevereiro de 2019.",
-         fill = "Região") +
-    tema() + theme(legend.position = "bottom") + theme(legend.key.size = unit(0.5,"line"))
-}
+Garantia é o compromisso de adimplência de obrigação financeira ou contratual assumida pelo ente da Federação por ocasião da realização de operações de crédito por suas estatais não dependentes ou por outros entes da federação.
 
-plota_DC_estados(sumario_estados)
+Para a concessão de garantias, a LRF determina que sejam exigidas contragarantias, que são contrapartidas oferecidas pelo ente federativo que irá receber uma garantia. Essa contragarantia deve ser em valor igual ou superior ao da garantia a ser concedida para abranger o ressarcimento integral dos custos financeiros decorrentes da cobertura de eventual inadimplemento. Nesse caso, o ente entra como garantidor de uma dívida e, caso não seja honrada pelo tomador do empréstimo, o garantidor deverá honrar essa dívida.
 
-plota_DC_estados(sumario_estados %>% filter(!(UF %in% c("SP", "RJ", "MG", "RS")))) +
-  labs(subtitle = "Exceto São Paulo, Rio de Janeiro, Minas Gerais e Rio Grande do Sul")
+<p class="fechar-card"><a class="link-fechar" id="fechar-garantia" href="#conceito-garantia">^ Fechar e voltar ao texto ^</a></p>
+</div>
 
-```
+Relembrando, dívida é uma quantia que se tem de pagar a alguém. 
 
-melhorando o sumário
+Acrescentando: público é aquilo que pertence ao governo de um país, de um estado, de uma cidade. Também é aquilo que pertence a um povo, a uma coletividade. 
 
-```{r}
+E o que seria dívida pública?
+
+
+```{r gera-grafico-dos-estados"}
 # problemas de encoding...
 estados <- data.frame(
   UF = c("AC", "AL", "AM", "AP", "BA", "CE", "DF", "ES", "GO", "MA", "MG", "MS", "MT", "PA", "PB", "PE", "PI", "PR", "RJ", "RN", "RO", "RR", "RS", "SC", "SE", "SP", "TO"), 
   nomes = c("Acre", "Alagoas", "Amazonas", "Amapá", "Bahia", "Ceará", "Distrito Federal", "Espírito Santo", "Goias", "Maranhão", "Minas Gerais", "Mato Grosso do Sul", "Mato Grosso", "Pará", "Paraíba","Pernambuco", "Piauí", "Paraná", "Rio de Janeiro", "Rio Grande do Norte", "Rondônia", "Roraima", "Rio Grande do Sul", 
 "Santa Catarina",  "Sergipe", "São Paulo", "Tocantins"))
-```
 
-```{r}
-sumario_estados_regionalizado <-  sumario_estados %>%
-  mutate(Ded = replace_na(Ded, 0)) %>%
-  group_by(REGIAO) %>% 
-  mutate(media_regiao   = sum(DC / n())) %>%
-  ungroup() %>%
-  group_by() %>%
-  mutate(media_nacional = sum(DC / n())) %>%
-  ungroup() %>%
-  left_join(estados) %>%
-  mutate(nomes = as.character(nomes))
-```
-
-Testando um gráfico das composições
-
-```{r, fig.height=7, fig.width=4.5, fig.align="center"}
-dados_composicoes <- sumario_estados_regionalizado %>%
-  select(UF, DCL, Ded, DC) %>%
-  mutate(Ded_pct = 100 * Ded / DC,
-         DCL_pct = 100 * DCL / DC,
-         UF = fct_reorder(UF, Ded_pct, .desc = TRUE)) %>%
-  select(UF, Ded_pct, DCL_pct) %>%
-  gather(DCL_pct, Ded_pct, key = variavel, value = valor) 
-
-
-ggplot(dados_composicoes, aes(y = valor/100, x = UF, fill = variavel)) +
-  geom_col(width = 0.7, position = "stack") +
-  geom_text(aes(label = percent(valor/100)),
-            family = "Open Sans", size = 3, hjust = "inward", 
-            position = "stack", vjust = 0.3, color = "white") +
-  scale_fill_manual(labels = c("Ded_pct" = "Deduções", "DCL_pct" = "DCL"),
-                    values = c("Ded_pct" = vermelho, "DCL_pct" = azul_claro)) +
-  scale_y_continuous(labels = percent) +
-  guides(color = FALSE) +
-  labs(x = NULL, y = NULL, fill = NULL, title = "Dívida Consolidada dos Estados: DCL e Deduções",
-       caption = "Mato Grosso do Sul e Rio Grande do Norte não haviam informado\nseus dados até fevereiro de 2019.") +
-  coord_flip() + 
-  tema() + theme(legend.position = "bottom") + theme(legend.key.size = unit(0.5,"line"))
-```
-
-Gráficos da ficha dos estados
-
-```{r gera-grafico-dos-estados"}
 # sumario_grafico <- function(estado) {
 #   sumario_estados_regionalizado %>%
 #     filter(UF == estado) %>%
