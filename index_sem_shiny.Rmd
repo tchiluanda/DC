@@ -449,11 +449,11 @@ graf_abrang_e <- ggplot(abrangencia_e, aes(y = Valor, x = Variavel, fill = categ
 
 ```
 
-~~Se você é ansioso, ~~ veja o valor da dívida consolidada do estado e/ou do município em que você mora. Pode-se dizer que está grande ou pequena? 
+~~Se você é ansioso,~~ veja o valor da dívida consolidada do estado e/ou do município em que você mora. Pode-se dizer que está grande ou pequena? 
 
 Difícil responder olhando só para os números, não é? O ideal seria buscar referências de comparação.
 
-Antes disso, porém, é preciso garantir que estamos falando de coisas iguais ~~ e não de melancias e de bananas~~. No caso da <span class="conceito" id="conceito-dc">dívida consolidada</span>, entram, essencialmente, a dívida mobiliária, quando o país emite títulos públicos para captar dinheiro; a dívida contratual, quando os governos estaduais e municipais recorrem a empréstimos e (re)financiamentos, inclusive com o próprio governo federal; e a dívida de <span class="conceito" id="conceito-precatorios">precatórios</span> que venceram e não foram pagos, aquelas impostas por ações judiciais. 
+Antes disso, porém, é preciso garantir que estamos falando de coisas iguais ~~e não de melancias e de bananas~~. No caso da <span class="conceito" id="conceito-dc">dívida consolidada</span>, entram, essencialmente, a dívida mobiliária, quando o país emite títulos públicos para captar dinheiro; a dívida contratual, quando os governos estaduais e municipais recorrem a empréstimos e (re)financiamentos, inclusive com o próprio governo federal; e a dívida de <span class="conceito" id="conceito-precatorios">precatórios</span> que venceram e não foram pagos, aquelas impostas por ações judiciais. 
 
 <div class="descricao" id="descricao-dc"> 
 <p class="titulo-card">Dívida Consolidada e as várias formas de se medir a dívida pública</p> 
