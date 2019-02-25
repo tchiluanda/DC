@@ -9,62 +9,182 @@
     <style>
         body {
             font-family: 'Open Sans', sans-serif;
+            line-height: 1.6em;
         }
 
         .conceito {
-            border: 1px dotted dodgerblue;
+            padding: 2px;
             background-color: lightblue;
             cursor: pointer;
         }
 
-        .conceito-descricao {
-            border: 1px dotted dodgerblue;
+        .descricao {
             background-color: lightblue;
-            margin: 2px;
-            padding: 2px;
+            margin: 8px;
             font-size: 0.9em;
+
+        }
+
+        .descricao>p {
+            padding: 0 8px;
+            margin: 0px;
+        }
+
+        p.titulo-card {
+            background-color: steelblue;
+            color: white;
+            margin: 0;
+            font-weight: bold;
+            letter-spacing: 0.2em;
+        }
+
+        p.fechar-card{
+            background-color: lightsteelblue;
+            color: lightgray;
+            letter-spacing: 0.2em;
+            margin: 0;
+            text-align: right;
+            font-size: 0.7em;
+        }
+        p.fechar-card>a{
+            text-decoration: none;
+            color: white;
+        }
+
+        h1 {
+            padding-top: 20px;
+            margin: auto;
+            text-align: center;
+            position: relative;
+            font-style: italic;
+            letter-spacing: 0.1em;
+            line-height: 2.2em;
+            font-size: 2em;
+        }
+
+        h1>em {
+            font-size: 2.5em;
+            color: firebrick;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            display: block;
+            font-style:normal;
+            padding-top: 0.1em;
+            text-shadow: 0.07em 0.07em 0 rgba(0, 0, 0, 0.1);
+        }
+            
+        h1>em::before, h1>em::after {
+            content: "§";
+            display: inline-block;
+            -webkit-transform: rotate(90deg);
+            -moz-transform: rotate(90deg);
+            -o-transform: rotate(90deg);
+            -ms-transform: rotate(90deg);
+            transform: rotate(90deg);
+                opacity: 0.2;
+            margin: 0 0.6em;
+            font-size: 0.5em;
+        
+        }
+
+
+
+        img {
+            margin-left: auto;
+            margin-right: auto;
+            display: block;
+            width: 90%;
+            height: auto;
+        }
+
+        figcaption {
+            text-align: center;
+            font-size: 0.7em;
         }
     </style>
 </head>
 <body>
+    <h1><em>Dívidas</em>pra que te quero</h1>
+
+    <figure>
+        <img src="prefeito_divida.png" alt="brincadeira">
+        <figcaption>Créditos da imagem: William Alguma Coisa</figcaption>
+    </figure>
     <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Deleniti aperiam laborum ullam reiciendis, dolorem enim recusandae perspiciatis, qui in commodi veritatis itaque aliquid ipsa neque praesentium nostrum maxime porro totam?
     Odio expedita nam eveniet maiores vero iste architecto recusandae? Eaque ab voluptas dolorum consectetur iste harum beatae. Cum facilis doloremque, in alias earum, aspernatur exercitationem corporis nulla architecto ratione ullam.
-    Dolor architecto hic iste <span class="conceito declaram">conceito muito bonito</span> voluptates vero quo temporibus inventore ut, voluptate aliquam sit, magni consequatur? Dolor quisquam aliquam accusamus iure, non nobis tempora iste aliquid officiis, dolorum laudantium odio? Aspernatur!
-    Minus voluptate quis, totam numquam quod nisi unde eaque? Nemo voluptatum enim deserunt soluta fuga, provident aut eius, aspernatur quos a obcaecati! Explicabo sit corporis praesentium quasi ratione necessitatibus et!</p>
-    <p class="conceito-descricao declaramDescricao">  non nobis tempora iste aliquid officiis, dolorum laudantium odio? Aspernatur! Minus voluptate quis, totam numquam quod nisi unde eaque? Nemo voluptatum enim deserunt soluta fuga non nobis tempora iste aliquid officiis, dolorum laudantium odio? Aspernatur! Minus voluptate quis, totam numquam quod nisi unde eaque? Nemo voluptatum enim deserunt soluta fuga non nobis tempora iste aliquid officiis, dolorum laudantium odio? Aspernatur! non nobis tempora iste aliquid officiis, dolorum laudantium odio? Aspernatur! Minus voluptate quis, totam numquam quod nisi unde eaque? Nemo voluptatum enim deserunt soluta fuga non nobis tempora iste aliquid officiis, dolorum laudantium odio? Aspernatur! Minus voluptate quis, totam numquam quod nisi unde eaque? Nemo voluptatum enim deserunt soluta fuga non nobis tempora iste aliquid officiis, dolorum laudantium odio? Aspernatur!</p>
-    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Laboriosam rerum commodi iste temporibus necessitatibus esse amet quia nemo, quam incidunt, perspiciatis magnam sunt et facilis dignissimos ipsam natus quaerat veniam? Lorem ipsum dolor sit amet consectetur adipisicing elit. Quia minima quae, ad accusantium, laborum corporis sit dolores delectus aliquam, a perferendis et. Iusto aut repudiandae similique iure quibusdam libero aperiam?
-    Dolores neque recusandae, ipsum voluptates perferendis nobis in perspiciatis aut aspernatur? Sit fugiat provident explicabo nobis temporibus labore laudantium veritatis accusamus atque, eaque mollitia natus error impedit, qui voluptatum id.
-    Velit earum harum dignissimos fuga non omnis eaque nostrum eos quasi hic, ipsa cumque rem voluptatum, ut nisi corrupti tempora doloribus illo pariatur minus maxime in accusamus dolorum! Assumenda, fugiat!
-    Nulla porro quos delectus, voluptatem impedit totam aliquid quas et veniam quasi nesciunt voluptate praesentium corrupti ea ratione, aspernatur temporibus reprehenderit illo. Magnam cupiditate dicta fugit asperiores, inventore accusantium ipsa.</p>
+    Dolor architecto hic iste <span class="conceito" id="conceito-declaram">conceito muito bonito</span> voluptates vero quo temporibus inventore ut, voluptate aliquam sit, magni consequatur? Dolor quisquam aliquam accusamus iure, non nobis tempora iste aliquid officiis, dolorum laudantium odio? Aspernatur! Minus voluptate quis, totam numquam quod nisi unde eaque? Nemo <span class="conceito" id="conceito-tsatsa">voluptatum</span> enim deserunt soluta fuga, provident aut eius, aspernatur quos a obcaecati! Explicabo sit corporis praesentium quasi ratione necessitatibus et!</p>
+
+    <div class="descricao" id="descricao-declaram"> 
+        <p class="titulo-card">DECLARAM</p> 
+        <p>non nobis tempora iste aliquid officiis, dolorum laudantium odio? Aspernatur! Minus voluptate quis, totam numquam quod nisi unde eaque? Nemo voluptatum enim deserunt soluta fuga non nobis tempora iste aliquid officiis, dolorum laudantium odio? Aspernatur! Minus voluptate quis, totam numquam quod nisi unde eaque? Nemo voluptatum enim deserunt soluta fuga non nobis tempora iste aliquid officiis, dolorum laudantium odio? Aspernatur! non nobis tempora iste aliquid officiis, dolorum laudantium odio? Aspernatur! Minus voluptate quis, totam numquam quod nisi unde eaque? Nemo voluptatum enim deserunt soluta fuga non nobis tempora iste aliquid officiis, dolorum laudantium odio? Aspernatur! Minus voluptate quis, totam numquam quod nisi unde eaque? Nemo voluptatum enim deserunt soluta fuga non nobis tempora iste aliquid officiis, dolorum laudantium odio? Aspernatur!</p>
+        <p class="fechar-card"><a class="link-fechar" id="fechar-declaram" href="#conceito-declaram">^ Fechar e voltar ao texto ^</a></p>
+    </div>
+
+    <p class="descricao" id="descricao-tsatsa">Lorem ipsum dolor sit amet consectetur adipisicing elit. Qui accusamus numquam atque veritatis voluptas maxime labore illum veniam architecto ex enim tempore aperiam, accusantium ratione deserunt adipisci magni tempora quae!
+    Unde culpa praesentium eum sequi illo dolore sint itaque labore. Omnis non quibusdam rem quos ea optio incidunt animi, numquam ratione illum nemo amet. Voluptas nulla inventore error ipsam aspernatur. In eaque soluta labore hic. Laboriosam, quasi voluptate enim alias vel fuga cupiditate iure consectetur, repudiandae quam consequuntur accusamus totam provident cum debitis excepturi eos est cumque magnam! Recusandae, facere?</p>
+
+    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Laboriosam rerum commodi iste temporibus necessitatibus esse amet quia nemo, quam incidunt, perspiciatis magnam sunt et facilis dignissimos ipsam natus quaerat veniam? Lorem ipsum dolor sit amet consectetur adipisicing elit. Quia minima quae, ad accusantium, laborum corporis sit dolores delectus aliquam, a perferendis et. Iusto aut repudiandae similique iure quibusdam libero aperiam? Dolores neque recusandae, ipsum voluptates perferendis nobis in perspiciatis aut aspernatur? Sit fugiat provident explicabo nobis temporibus labore laudantium veritatis accusamus atque, eaque mollitia natus error impedit, qui voluptatum id.
+    Velit earum harum dignissimos fuga non omnis eaque nostrum eos quasi hic, ipsa cumque rem voluptatum, ut nisi corrupti tempora doloribus illo pariatur minus maxime in accusamus dolorum! Assumenda, fugiat! Nulla porro quos delectus, voluptatem impedit totam aliquid quas et veniam quasi nesciunt voluptate praesentium corrupti ea ratione, aspernatur temporibus reprehenderit illo. Magnam cupiditate dicta fugit asperiores, inventore accusantium ipsa.</p>
+
     <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Commodi mollitia nulla necessitatibus odit at accusamus quaerat numquam perferendis aut autem vitae, illum amet inventore facere obcaecati rerum qui recusandae sit.Quibusdam ipsam incidunt repudiandae quas laboriosam totam, ullam magnam fugit illum, quis exercitationem harum consectetur, asperiores excepturi eveniet! Sapiente ad eum ipsum animi maiores assumenda distinctio excepturi dolorem nesciunt facilis.</p>
+
     <script>
-        const conceito = document.querySelector('.conceito');
-        const conceitoDescricao = document.querySelector('.conceito-descricao');
+        const conceitos = document.getElementsByClassName('conceito');
+        const descricoes = document.getElementsByClassName('descricao');
 
-        const declaram = document.querySelector('.conceito.declaram')
-        const declaramDescricao = document.querySelector('.descricao.declaram')
+        let clicados = {};
 
-        conceitoDescricao.style.display = "none";
-        //conceitoDescricao.style.visibility = "hidden";
-        //conceitoDescricao.style.opacity = "0";   
-        //conceitoDescricao.style.transition = "visibility 0s, opacity 1s linear";
+        for (let i = 0; i < descricoes.length; i++) {
+            descricoes[i].style.display = "none";
+        }
+        
+        document.addEventListener('click', function (event) {
+            
+            if (event.target.matches('.conceito')) {
+                let idConceito = event.target.id;
+                console.log("clicou em", idConceito);
 
-        jaClicou = false;
+                identificador = idConceito.substring(idConceito.indexOf("-")+1);
 
-        conceito.addEventListener('click', function () {
-            console.log("clicou em", event.target.tagName, event.target.className)
-            if (jaClicou) {
-                conceitoDescricao.style.display = 'none';
-                //conceitoDescricao.style.visibility = "hidden";
-                //conceitoDescricao.style.opacity = "0";  
-            } else {
-                conceitoDescricao.style.display = '';
-                //conceitoDescricao.style.visibility = "visible";
-                //conceitoDescricao.style.opacity = "1";  
-            }
-            jaClicou = !jaClicou;
+                let idDescricao = "descricao-" + identificador;
+                console.log("vou pegar o ", idDescricao);
+                let descricao = document.getElementById(idDescricao);
+                console.log("selecionou o ", descricao);
+
+                if (!(identificador in clicados)) {
+                    clicados[identificador] = false;
+                } 
+
+                if (clicados[identificador]) {
+                    descricao.style.display = 'none';
+                } else {
+                    descricao.style.display = '';
+                }
+
+                clicados[identificador] = !(clicados[identificador]);
+
+                console.log(identificador, idConceito, idDescricao, clicados[identificador])
+
+            } else if (event.target.matches('.link-fechar')) {
+
+                let idFechar = event.target.id;
+                console.log("clicou em", idFechar);
+
+                identificador = idFechar.substring(idFechar.indexOf("-")+1);
+
+                let idDescricao = "descricao-" + identificador;
+                console.log("vou pegar o ", idDescricao);
+                let descricao = document.getElementById(idDescricao);
+                console.log("selecionou o ", descricao);
+
+                descricao.style.display = 'none';
+                clicados[identificador] = false;
+
+            }     
         }
         );
+
+        // Quem me ajudou: https://gomakethings.com/why-event-delegation-is-a-better-way-to-listen-for-events-in-vanilla-js/#web-performance
 
     </script>
 </body>
