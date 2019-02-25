@@ -29,6 +29,10 @@ h1, h2, h3, h4 {
   color: #353E57 // #1E4C7A;
 }
 
+.hoverlayer:hover {
+  font-family: "Open Sans Condensed";
+}
+
 .conceito {
     padding: 2px;
     background-color: lightblue;
@@ -40,6 +44,11 @@ h1, h2, h3, h4 {
     margin: 8px;
     font-size: 0.9em;
 
+}
+
+del {
+  color: lightgrey;
+  text-decoration: none;
 }
 
 .descricao>p {
@@ -63,6 +72,7 @@ p.fechar-card{
     text-align: right;
     font-size: 0.7em;
 }
+
 p.fechar-card>a{
     text-decoration: none;
     color: white;
@@ -473,7 +483,7 @@ ggplot(total_DCL, aes(y = UF, color = Escopo, x = DCL_percent)) +
 
 Rankings das DCLs dos estados.
 
-```{r, fig.height=7.5, fig.width=4.5, fig.align="center"}
+```{r graf-barras-dcls, fig.height=7.5, fig.width=5, fig.align="center"}
 
 contas_interesse <- c("DÍVIDA CONSOLIDADA - DC (I)",
                       "DEDUÇÕES (II)",
@@ -602,7 +612,7 @@ ggplot(dados_composicoes, aes(y = valor/100, x = UF, fill = variavel)) +
 
 Gráficos da ficha dos estados
 
-```{r}
+```{r gera-grafico-dos-estados"}
 # sumario_grafico <- function(estado) {
 #   sumario_estados_regionalizado %>%
 #     filter(UF == estado) %>%
@@ -698,7 +708,7 @@ Selecione o Estado no mapa para obter mais informações.
 
 <div class = "card-estados">
 
-```{r}
+```{r painel-estados}
 mapa_brasil <- geojsonio::geojson_read("./dados/brazil_geo.geojson", what = "sp")
 # o ideal seria pegar daqui https://servicodados.ibge.gov.br/api/docs/malhas?versao=2#api-_
 # mas só consegui do brasil inteiro, sem as ufs. a api ou renderiza o mapa com ufs ou mostra o json sem ufs.
@@ -771,7 +781,7 @@ mainPanel(
   tagAppendAttributes(textOutput("pop"), style="font-family: 'Open Sans Condensed'"),
   #textOutput("DCLperCap"),
   tags$style(type="text/css", "#Estado {font-family: 'Open Sans Condensed'; font-size: 2em; color: #1f476a; padding-bottom: 5px; font-weight: 400;}"),
-  tags$style(type="text/css", "#regiao {font-family: 'Open Sans Condensed'; font-size: 1.5em; padding-bottom: 5px;}"),
+  tags$style(type="text/css", "#regiao {font-family: 'Open Sans Condensed'; font-size: 1.5em; padding-bottom: 5px; padding-top: 5px;}"),
   tagAppendAttributes(textOutput("DCL_RCL"), style="font-family: 'Open Sans Condensed'"),
   tagAppendAttributes(textOutput("DCLperCap"), style="font-family: 'Open Sans Condensed'"),
   plotOutput("card")
@@ -782,10 +792,11 @@ output$mapa <- renderLeaflet({
   })
 
 obtem_estado_click <- function() {
-   uf <- req(input$mapa_shape_click$id)
-   if (is.na(uf)) {
+   click <- input$mapa_shape_click
+   if (is.null(click))
      uf <- "AC"
-   }
+   else
+     uf <- click$id
    return(uf)
 }
 
@@ -798,15 +809,14 @@ output$pop       <- renderText(paste0("População: ",
                                             retorna_texto(obtem_estado_click(), "pop")
                                             ),
                                           2),
-                                        big.mark = ".", decimal.mark = ","), 
+                                        big.mark = ".", decimal.mark = ","),
                                       " pessoas"))
 output$DCLperCap <- renderText(paste0("DCL por habitante: R$ ",
    format(round(as.numeric(retorna_texto(obtem_estado_click(), "DCL_pop")),2),
                                        big.mark = ".", decimal.mark = ",")))
 
-output$DCLperCap <- renderText(paste0("DCL / RCL: ",
-   format(round(as.numeric(retorna_texto(obtem_estado_click(), "pct_DCL_RCL"))/100,2),
-                                       big.mark = ".", decimal.mark = ",")))
+output$DCLperCap <- renderText(paste0("A DCL do Estado corresponde a ",
+   percent(round(as.numeric(retorna_texto(obtem_estado_click(), "pct_DCL_RCL"))/100,2)), " de sua RCL."))
 
 output$card <- renderPlot(
   plota_card_estado(sumario_grafico(obtem_estado_click()))
@@ -851,7 +861,7 @@ a <- ggplot(sumario_municipios, aes(y = pct_DCL_RCL, x = 0, color = pct_DCL_RCL 
   tema() + theme(axis.line.x = element_blank(), axis.ticks.x = element_blank(),
                  axis.text.x = element_blank(), axis.title.x = element_blank())
 
-ggplotly(a, tooltip = "text")
+ggplotly(a, tooltip = "text", width = 480)
 
 #rsconnect::deployApp(appTitle = "Divida")
 ```
