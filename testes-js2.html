@@ -117,7 +117,7 @@
     <div class="descricao" id="descricao-declaram"> 
         <p class="titulo-card">DECLARAM</p> 
         <p>non nobis tempora iste aliquid officiis, dolorum laudantium odio? Aspernatur! Minus voluptate quis, totam numquam quod nisi unde eaque? Nemo voluptatum enim deserunt soluta fuga non nobis tempora iste aliquid officiis, dolorum laudantium odio? Aspernatur! Minus voluptate quis, totam numquam quod nisi unde eaque? Nemo voluptatum enim deserunt soluta fuga non nobis tempora iste aliquid officiis, dolorum laudantium odio? Aspernatur! non nobis tempora iste aliquid officiis, dolorum laudantium odio? Aspernatur! Minus voluptate quis, totam numquam quod nisi unde eaque? Nemo voluptatum enim deserunt soluta fuga non nobis tempora iste aliquid officiis, dolorum laudantium odio? Aspernatur! Minus voluptate quis, totam numquam quod nisi unde eaque? Nemo voluptatum enim deserunt soluta fuga non nobis tempora iste aliquid officiis, dolorum laudantium odio? Aspernatur!</p>
-        <p class="fechar-card"><a href="#conceito-declaram">Fechar e voltar ao texto</a></p>
+        <p class="fechar-card"><a class="link-fechar" id="fechar-declaram" href="#conceito-declaram">^ Fechar e voltar ao texto ^</a></p>
     </div>
 
     <p class="descricao" id="descricao-tsatsa">Lorem ipsum dolor sit amet consectetur adipisicing elit. Qui accusamus numquam atque veritatis voluptas maxime labore illum veniam architecto ex enim tempore aperiam, accusantium ratione deserunt adipisci magni tempora quae!
@@ -164,7 +164,23 @@
                 clicados[identificador] = !(clicados[identificador]);
 
                 console.log(identificador, idConceito, idDescricao, clicados[identificador])
-            }      
+
+            } else if (event.target.matches('.link-fechar')) {
+
+                let idFechar = event.target.id;
+                console.log("clicou em", idFechar);
+
+                identificador = idFechar.substring(idFechar.indexOf("-")+1);
+
+                let idDescricao = "descricao-" + identificador;
+                console.log("vou pegar o ", idDescricao);
+                let descricao = document.getElementById(idDescricao);
+                console.log("selecionou o ", descricao);
+
+                descricao.style.display = 'none';
+                clicados[identificador] = false;
+
+            }     
         }
         );
 
