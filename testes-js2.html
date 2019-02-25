@@ -10,38 +10,91 @@
         body {
             font-family: 'Open Sans', sans-serif;
             line-height: 1.6em;
-            margin-left: 10%; 
-            margin-right: 10%;
         }
 
         .conceito {
-            border: 1px dotted dodgerblue;
+            padding: 2px;
             background-color: lightblue;
             cursor: pointer;
         }
 
         .descricao {
-            border: 1px dotted dodgerblue;
             background-color: lightblue;
-            margin: 2px;
-            padding: 2px;
+            margin: 8px;
             font-size: 0.9em;
+
+        }
+
+        .descricao>p {
+            padding: 0 8px;
+            margin: 0px;
+        }
+
+        p.titulo-card {
+            background-color: steelblue;
+            color: white;
+            margin: 0;
+            font-weight: bold;
+            letter-spacing: 0.2em;
+        }
+
+        p.fechar-card{
+            background-color: lightsteelblue;
+            color: lightgray;
+            letter-spacing: 0.2em;
+            margin: 0;
+            text-align: right;
+            font-size: 0.7em;
+        }
+        p.fechar-card>a{
+            text-decoration: none;
+            color: white;
         }
 
         h1 {
+            padding-top: 20px;
+            margin: auto;
             text-align: center;
+            position: relative;
+            font-style: italic;
+            letter-spacing: 0.1em;
+            line-height: 2.2em;
+            font-size: 2em;
         }
 
-        h1+p {
-            text-align: center;
-            font-size: 1em;
-            font-style: italic;          
+        h1>em {
+            font-size: 2.5em;
+            color: firebrick;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            display: block;
+            font-style:normal;
+            padding-top: 0.1em;
+            text-shadow: 0.07em 0.07em 0 rgba(0, 0, 0, 0.1);
         }
+            
+        h1>em::before, h1>em::after {
+            content: "§";
+            display: inline-block;
+            -webkit-transform: rotate(90deg);
+            -moz-transform: rotate(90deg);
+            -o-transform: rotate(90deg);
+            -ms-transform: rotate(90deg);
+            transform: rotate(90deg);
+                opacity: 0.2;
+            margin: 0 0.6em;
+            font-size: 0.5em;
+        
+        }
+
+
 
         img {
             margin-left: auto;
             margin-right: auto;
             display: block;
+            width: 90%;
+            height: auto;
         }
 
         figcaption {
@@ -51,8 +104,8 @@
     </style>
 </head>
 <body>
-    <h1>Dívidas pra que te quero</h1>
-    <p>Existem várias formas de se medir as dívidas dos entes públicos. A LRF usa o conceito de "Dívida Consolidada".</p>
+    <h1><em>Dívidas</em>pra que te quero</h1>
+
     <figure>
         <img src="prefeito_divida.png" alt="brincadeira">
         <figcaption>Créditos da imagem: William Alguma Coisa</figcaption>
@@ -63,7 +116,8 @@
 
     <div class="descricao" id="descricao-declaram"> 
         <p class="titulo-card">DECLARAM</p> 
-        <p>non nobis tempora iste aliquid officiis, dolorum laudantium odio? Aspernatur! Minus voluptate quis, totam numquam quod nisi unde eaque? Nemo voluptatum enim deserunt soluta fuga non nobis tempora iste aliquid officiis, dolorum laudantium odio? Aspernatur! Minus voluptate quis, totam numquam quod nisi unde eaque? Nemo voluptatum enim deserunt soluta fuga non nobis tempora iste aliquid officiis, dolorum laudantium odio? Aspernatur! non nobis tempora iste aliquid officiis, dolorum laudantium odio? Aspernatur! Minus voluptate quis, totam numquam quod nisi unde eaque? Nemo voluptatum enim deserunt soluta fuga non nobis tempora iste aliquid officiis, dolorum laudantium odio? Aspernatur! Minus voluptate quis, totam numquam quod nisi unde eaque? Nemo voluptatum enim deserunt soluta fuga non nobis tempora iste aliquid officiis, dolorum laudantium odio? Aspernatur!</p> 
+        <p>non nobis tempora iste aliquid officiis, dolorum laudantium odio? Aspernatur! Minus voluptate quis, totam numquam quod nisi unde eaque? Nemo voluptatum enim deserunt soluta fuga non nobis tempora iste aliquid officiis, dolorum laudantium odio? Aspernatur! Minus voluptate quis, totam numquam quod nisi unde eaque? Nemo voluptatum enim deserunt soluta fuga non nobis tempora iste aliquid officiis, dolorum laudantium odio? Aspernatur! non nobis tempora iste aliquid officiis, dolorum laudantium odio? Aspernatur! Minus voluptate quis, totam numquam quod nisi unde eaque? Nemo voluptatum enim deserunt soluta fuga non nobis tempora iste aliquid officiis, dolorum laudantium odio? Aspernatur! Minus voluptate quis, totam numquam quod nisi unde eaque? Nemo voluptatum enim deserunt soluta fuga non nobis tempora iste aliquid officiis, dolorum laudantium odio? Aspernatur!</p>
+        <p class="fechar-card"><a href="#conceito-declaram">Fechar e voltar ao texto</a></p>
     </div>
 
     <p class="descricao" id="descricao-tsatsa">Lorem ipsum dolor sit amet consectetur adipisicing elit. Qui accusamus numquam atque veritatis voluptas maxime labore illum veniam architecto ex enim tempore aperiam, accusantium ratione deserunt adipisci magni tempora quae!
