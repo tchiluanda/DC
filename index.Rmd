@@ -209,6 +209,14 @@ azul_claro     <- "#2c90bf" # "#87b1d4"
 tres_cores <-c("#F8AC08","#028063","#6E287C")
 tres_cores_pasteis <- c("#FECE60","#63BEAF", "#BE8EBF")
 
+cores_temas_TT <- c("#643275", "#03859a", "#1f476a", "#709a2d", "#ba3917")
+
+# problemas de encoding...
+estados <- data.frame(
+  UF = c("AC", "AL", "AM", "AP", "BA", "CE", "DF", "ES", "GO", "MA", "MG", "MS", "MT", "PA", "PB", "PE", "PI", "PR", "RJ", "RN", "RO", "RR", "RS", "SC", "SE", "SP", "TO"), 
+  nomes = c("Acre", "Alagoas", "Amazonas", "Amapá", "Bahia", "Ceará", "Distrito Federal", "Espírito Santo", "Goias", "Maranhão", "Minas Gerais", "Mato Grosso do Sul", "Mato Grosso", "Pará", "Paraíba","Pernambuco", "Piauí", "Paraná", "Rio de Janeiro", "Rio Grande do Norte", "Rondônia", "Roraima", "Rio Grande do Sul", 
+"Santa Catarina",  "Sergipe", "São Paulo", "Tocantins"))
+
 # estou comentando toda a leitura de dados externos para bypassar erro do Shiny. Salvei os dados em .RData e vou lê-los diretamente. 
 
 # dados estados
@@ -485,6 +493,22 @@ Após garantir que todos colocam os mesmos tipos de dívidas na dívida consolid
 ```{r graf-barras, fig.height=6, fig.width=4, fig.align="center"}
 formata_BR <- scales::format_format(big.mark = ".", decimal.mark = ",", scientific = FALSE)
 
+contas_interesse <- c("DÍVIDA CONSOLIDADA - DC (I)",
+                      "DEDUÇÕES (II)",
+                      "DÍVIDA CONSOLIDADA LÍQUIDA (DCL) (III) = (I - II)",
+                      "% da DCL sobre a RCL (III/RCL)")
+
+# uma tabela de tradução por causa do shiny
+tab_contas <- data.frame(Conta = contas_interesse, Conta_red = c("DC", "Ded", "DCL", "pct_DCL_RCL"))
+
+sumario_estados <- tabela_estados %>%
+  filter(Conta %in% contas_interesse) %>%
+  filter(Coluna == "Até o 3º Quadrimestre") %>%
+  left_join(tab_contas) %>%
+  select(UF, REGIAO, Conta_red, pop, Valor) %>%
+  spread(Conta_red, value = Valor) %>%
+  mutate(DCL_pop = DCL / pop)
+
 plota_DC_estados <- function(dados) {
   ggplot(dados, 
          aes(x = reorder(UF, DC), y = DC/1e9,
@@ -518,28 +542,10 @@ Essa avaliação depende da condição financeira de cada um para pagar a dívid
 
 ```{r ranking, fig.height=7.5, fig.width=5, fig.align="center"}
 
-contas_interesse <- c("DÍVIDA CONSOLIDADA - DC (I)",
-                      "DEDUÇÕES (II)",
-                      "DÍVIDA CONSOLIDADA LÍQUIDA (DCL) (III) = (I - II)",
-                      "% da DCL sobre a RCL (III/RCL)")
-
-# uma tabela de tradução por causa do shiny
-tab_contas <- data.frame(Conta = contas_interesse, Conta_red = c("DC", "Ded", "DCL", "pct_DCL_RCL"))
-
-sumario_estados <- tabela_estados %>%
-  filter(Conta %in% contas_interesse) %>%
-  filter(Coluna == "Até o 3º Quadrimestre") %>%
-  left_join(tab_contas) %>%
-  select(UF, REGIAO, Conta_red, pop, Valor) %>%
-  spread(Conta_red, value = Valor) %>%
-  mutate(DCL_pop = DCL / pop)
-
 ranking_estados <- sumario_estados %>%
   mutate_at(vars(c(-UF, -pop, -REGIAO)), .funs = ~dense_rank(-.)) %>%
   gather(-UF, -pop, - REGIAO, key = Variavel, value = Valor) %>%
   filter(Variavel %in% c("DCL", "pct_DCL_RCL", "DCL_pop"))
-
-cores_temas_TT <- c("#643275", "#03859a", "#1f476a", "#709a2d", "#ba3917")
 
 ggplot(ranking_estados, aes(x = Variavel, y = Valor, color = REGIAO, fill = REGIAO, group = UF)) +
   geom_line(size = 1) + 
@@ -743,12 +749,6 @@ E o que seria dívida pública?
 
 
 ```{r gera-grafico-dos-estados"}
-# problemas de encoding...
-estados <- data.frame(
-  UF = c("AC", "AL", "AM", "AP", "BA", "CE", "DF", "ES", "GO", "MA", "MG", "MS", "MT", "PA", "PB", "PE", "PI", "PR", "RJ", "RN", "RO", "RR", "RS", "SC", "SE", "SP", "TO"), 
-  nomes = c("Acre", "Alagoas", "Amazonas", "Amapá", "Bahia", "Ceará", "Distrito Federal", "Espírito Santo", "Goias", "Maranhão", "Minas Gerais", "Mato Grosso do Sul", "Mato Grosso", "Pará", "Paraíba","Pernambuco", "Piauí", "Paraná", "Rio de Janeiro", "Rio Grande do Norte", "Rondônia", "Roraima", "Rio Grande do Sul", 
-"Santa Catarina",  "Sergipe", "São Paulo", "Tocantins"))
-
 # sumario_grafico <- function(estado) {
 #   sumario_estados_regionalizado %>%
 #     filter(UF == estado) %>%
@@ -1010,29 +1010,60 @@ ggplotly(a, tooltip = "text")
 ```
 
 ```{js}
-        const conceito = document.querySelector('.conceito');
-        const conceitoDescricao = document.querySelector('.descricao');
+const conceitos = document.getElementsByClassName('conceito');
+const descricoes = document.getElementsByClassName('descricao');
 
-        conceitoDescricao.style.display = "none";
-        
-        //conceitoDescricao.style.visibility = "hidden";
-        //conceitoDescricao.style.opacity = "0";   
-        //conceitoDescricao.style.transition = "visibility 0s, opacity 1s linear";
+let clicados = {};
 
-        jaClicou = false;
+for (let i = 0; i < descricoes.length; i++) {
+    descricoes[i].style.display = "none";
+}
 
-        conceito.addEventListener('click', function () {
-            console.log("clicou em", event.target.className)
-            if (jaClicou) {
-                conceitoDescricao.style.display = 'none';
-                //conceitoDescricao.style.visibility = "hidden";
-                //conceitoDescricao.style.opacity = "0";  
-            } else {
-                conceitoDescricao.style.display = '';
-                //conceitoDescricao.style.visibility = "visible";
-                //conceitoDescricao.style.opacity = "1";  
-            }
-            jaClicou = !jaClicou;
+document.addEventListener('click', function (event) {
+    
+    if (event.target.matches('.conceito')) {
+        let idConceito = event.target.id;
+        console.log("clicou em", idConceito);
+
+        identificador = idConceito.substring(idConceito.indexOf("-")+1);
+
+        let idDescricao = "descricao-" + identificador;
+        console.log("vou pegar o ", idDescricao);
+        let descricao = document.getElementById(idDescricao);
+        console.log("selecionou o ", descricao);
+
+        if (!(identificador in clicados)) {
+            clicados[identificador] = false;
+        } 
+
+        if (clicados[identificador]) {
+            descricao.style.display = 'none';
+        } else {
+            descricao.style.display = '';
         }
-        );
+
+        clicados[identificador] = !(clicados[identificador]);
+
+        console.log(identificador, idConceito, idDescricao, clicados[identificador])
+
+    } else if (event.target.matches('.link-fechar')) {
+
+        let idFechar = event.target.id;
+        console.log("clicou em", idFechar);
+
+        identificador = idFechar.substring(idFechar.indexOf("-")+1);
+
+        let idDescricao = "descricao-" + identificador;
+        console.log("vou pegar o ", idDescricao);
+        let descricao = document.getElementById(idDescricao);
+        console.log("selecionou o ", descricao);
+
+        descricao.style.display = 'none';
+        clicados[identificador] = false;
+
+    }     
+}
+);
+
+// Quem me ajudou: https://gomakethings.com/why-event-delegation-is-a-better-way-to-listen-for-events-in-vanilla-js/#web-performance
 ```
