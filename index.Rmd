@@ -15,49 +15,120 @@ knitr::opts_chunk$set(
 ```
 
 ```{css, echo=FALSE}
-* {
-  font-family: "Open Sans";
+body {
+  font-family: 'Open Sans', sans-serif;
   line-height: 1.6em;
+  max-width: 700px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 20px;
+  padding-right: 20px;
 }
 
 h1, h2, h3, h4 {
   color: #353E57 // #1E4C7A;
 }
 
-.destaque {
-  margin: 10px 50px;
-  font-size: 12px;
-  color: "white";
-  background-color: #f0f5f7;
-  padding: 5px 10px;
-  border: 2px solid #BA3917;
-}
-
-.destaque > p {
-  margin: 0px;
-}
-
-.card-estados {
-  border: 1px dotted #353E57;
-}
-
-span.conceito {
-  padding: 2px;
-  background-color: lightblue;
-  cursor: pointer;
+.conceito {
+    padding: 2px;
+    background-color: lightblue;
+    cursor: pointer;
 }
 
 .descricao {
-  padding: 4px;
-  background-color: lightblue;
-  margin: 4px;
-  font-size: 0.9em;
+    background-color: lightblue;
+    margin: 8px;
+    font-size: 0.9em;
+
 }
 
-p.caption {
-  text-align: center;
-  font-size: 0.7em;
+.descricao>p {
+    padding: 0 8px;
+    margin: 0px;
 }
+
+p.titulo-card {
+    background-color: steelblue;
+    color: white;
+    margin: 0;
+    font-weight: bold;
+    letter-spacing: 0.2em;
+}
+
+p.fechar-card{
+    background-color: lightsteelblue;
+    color: lightgray;
+    letter-spacing: 0.2em;
+    margin: 0;
+    text-align: right;
+    font-size: 0.7em;
+}
+p.fechar-card>a{
+    text-decoration: none;
+    color: white;
+}
+
+h1 {
+    padding-top: 20px;
+    padding-bottom: 20px;
+    margin: auto;
+    text-align: center;
+    position: relative;
+    //font-style: italic;
+    letter-spacing: 0.1em;
+    line-height: 1.8em;
+    font-size: 1.9em;
+    font-family: "Vollkorn";
+}
+
+h1>em {
+    font-size: 2em;
+    color: firebrick;
+    //text-transform: uppercase;
+    letter-spacing: 0.1em;
+    display: block;
+    font-style:normal;
+    padding-top: 0.1em;
+    text-shadow: 0.07em 0.07em 0 rgba(0, 0, 0, 0.1);
+}
+    
+h1>em::before, h1>em::after {
+    content: "§";
+    display: inline-block;
+    -webkit-transform: rotate(90deg);
+    -moz-transform: rotate(90deg);
+    -o-transform: rotate(90deg);
+    -ms-transform: rotate(90deg);
+    transform: rotate(90deg);
+        opacity: 0.2;
+    margin: 0 0.6em;
+    font-size: 0.5em;
+
+}
+
+img.abertura {
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+    width: 100%;
+    height: auto;
+}
+
+.abertura p {
+    text-align: center;
+    font-size: 0.7em;
+}
+
+.descricao img {
+  width: 80%;
+  margin-left: auto;
+  margin-right: auto;
+  display: block;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+
 
 ```
 
@@ -75,6 +146,7 @@ library(leaflet)
 library(ggbeeswarm)
 library(plotly)
 library(viridis)
+library(ggrepel)
 
 tema <- function(){
     theme_minimal() +
@@ -176,28 +248,37 @@ tabela_completa <- rbind(tabela_estados, tabela_municipios)
 #tabela_estados %>% skim()
 #tabela_estados %>% str()
 ```
+<h1><em>Dívidas</em>pra que te quero</h1>
 
-<img src="prefeito_divida.png"
+<img class ="abertura" src="prefeito_divida.png"
          alt="tirinha brincando com a mania dos prefeitos de jogar a culpa nos antecessores"
          style="margin-right: auto; margin-left: auto; display: block;"/>
-<p style = "text-align: center; font-size: 0.7em;">Créditos da imagem: William Leite, http://www.willtirando.com.br/</p>
+<p style = "text-align: center; font-size: 0.7em;">Créditos da imagem: <a href="http://www.willtirando.com.br/" target="blank">William Leite</a></p>
+
 
 Dívida é uma quantia que se tem de pagar a alguém. O que interessa bastante para esse ~~tal de~~ alguém. E ~~tomara~~ muito importante para quem deve. Caso você não seja nenhum dos dois, por que continuar lendo sobre esse assunto ~~espinhoso~~?
 
-Vivemos em uma cidade, que tem uma prefeitura, certo? Essa cidade está dentro de um estado, que tem um governo. E isso tudo ~~incluindo você~~ fica em um país. Você teria curiosidade em saber o quanto nós devemos eles <span class="conceito">declaram</span> que devem?
+Vivemos em uma cidade, que tem uma prefeitura, certo? Essa cidade está dentro de um estado, que tem um governo. E isso tudo ~~incluindo você~~ fica em um país. Você teria curiosidade em saber o quanto nós devemos eles <span class="conceito" id="conceito-declaram">declaram</span> que devem?
 
-<div class="descricao">
-
-<h3>Que história é essa de declarar?</h3>
-
-A principal fonte de dados deste painel é o Sistema de Informações Contábeis e Fiscais do Setor Público Brasileiro - SICONFI, em especial, os dados declarados pelos entes federativos através dos Relatórios de Gestão Fiscal - RGF.
+<div class="descricao" id="descricao-declaram"> 
+<p class="titulo-card">ABRANGÊNCIA DAS INFORMAÇÕES</p> 
+<p>A principal fonte de dados deste painel é o Sistema de Informações Contábeis e Fiscais do Setor Público Brasileiro - SICONFI, em especial, os dados declarados pelos entes federativos através dos Relatórios de Gestão Fiscal - RGF.
 
 As informações sobre os encargos e condições de contratação dos estados e municípios. por sua vez, estão disponíveis no módulo de Cadastro da Dívida Pública (CDP) do Sistema de Análise da Dívida Pública, Operações de Crédito e Garantias da União, Estados e Municípios (SADIPEM). O CDP recebe a declaração detalhada das dívidas dos estados e municípios. Atualmente, nem todos os estados e municípios enviam essa declaração, o que pode causar divergência nos dados.
 
 O Tesouro Nacional vem trabalhando para melhorar a qualidade e para aumentar a disponibilidade dessas informações para que a sociedade brasileira possa ter uma visão ampla sobre estoque e composição das dívidas dos entes, dois indicadores importantes de sua saúde financeira. Esse esforço passa, principalmente, pela ampliação do uso dos dados do SICONFI e pela melhoria de sua coleta, por meio da Matriz de Saldos Contábeis.
 
+<img src="abrangencia_m.png">
+
+<img src="abrangencia_e.png">
+
 Os dados são referentes ao dia 31 de dezembro do exercício anterior. E a atualização dos dados será mensal.
+
+</p>
+
+<p class="fechar-card"><a class="link-fechar" id="fechar-declaram" href="#conceito-declaram">^ Fechar e voltar ao texto ^</a></p>
 </div>
+
 
 ```{r, fig.height=3, fig.align="center"}
 totalDCL <- function(tabelinhas) {
@@ -281,24 +362,15 @@ ggplot(DCLs_entes, aes(y = DC, x = reorder(Escopo, DC), fill = Escopo, color = E
   scale_y_continuous(labels=function(x) {format(x/1e9, big.mark = ".", decimal.mark=",", scientific = FALSE)}) +
   expand_limits(y = max(DCLs_entes$DC * 1.2)) +
   labs(x = NULL, y = "R$ bi", title = "Dívida Consolidada dos níveis de Governo",
-       subtitle = "Alguns estados e muitos municípios não estão incluídos (ver \"Abrangência\" logo mais)") +
+       subtitle = "Alguns estados e muitos municípios não estão incluídos (ver \"Abrangência\")") +
   coord_flip() + 
   tema()
 
-
-```
-
-Se você é ansioso, veja o valor da dívida consolidada do estado e/ou do município em que você mora. Pode-se dizer que está grande ou pequena? 
-
-Difícil responder olhando só para os números, não é? O ideal seria buscar referências de comparação. 
-
-```{r, fig.height=3, fig.width=6}
-
-ggplot(abrangencia_m, aes(y = Valor, x = Variavel, fill = categorias)) +
+graf_abrang_m <- ggplot(abrangencia_m, aes(y = Valor, x = Variavel, fill = categorias)) +
   geom_col(position = "fill", width=0.6, color = "white", size = 1) +
   geom_text(aes(label = percent(percent), y = percent), family = "Open Sans", color = "white", position = position_stack(vjust = 0.5), size = 3) +
   scale_fill_manual(values = c("RGF" = tres_cores[2], "faltantes" = "#02dba9"), 
-                    labels = c("faltantes" = "Não entregues", "RGF" = "Entregues")) +
+                    labels = c("faltantes" = "Não declararam", "RGF" = "Declararam")) +
   scale_y_continuous(labels = percent) +
   scale_x_discrete(labels = c("qde" = "Quantidade \nde municípios",
                               "pop" = "População \ncontemplada")) +
@@ -308,11 +380,11 @@ ggplot(abrangencia_m, aes(y = Valor, x = Variavel, fill = categorias)) +
        fill = NULL) +
   tema() + theme(legend.position = "bottom")
 
-ggplot(abrangencia_e, aes(y = Valor, x = Variavel, fill = categorias)) +
+graf_abrang_e <- ggplot(abrangencia_e, aes(y = Valor, x = Variavel, fill = categorias)) +
   geom_col(position = "fill", width=0.6, color = "white", size = 1) +
-  geom_label(aes(label = percent(percent), y = percent), family = "Open Sans", color = "white", position = position_stack(vjust = 0.5), size = 3) +
+  geom_text(aes(label = percent(percent), y = percent), family = "Open Sans", color = "#1E4C7A", position = position_stack(vjust = 0.5), size = 3) +
   scale_fill_manual(values = c("RGF" = tres_cores[1], "faltantes" = "#f4d99f"), 
-                    labels = c("faltantes" = "Não entregues", "RGF" = "Entregues")) +
+                    labels = c("faltantes" = "Não declararam", "RGF" = "Declararam")) +
   scale_y_continuous(labels = percent) +
   scale_x_discrete(labels = c("qde" = "Quantidade \nde estados",
                               "pop" = "População \ncontemplada")) +
@@ -322,9 +394,34 @@ ggplot(abrangencia_e, aes(y = Valor, x = Variavel, fill = categorias)) +
        fill = NULL) +
   tema() + theme(legend.position = "bottom")
 
+# vou incluir as imagens como figuras.
+
+# png(filename="abrangencia_m.png", 
+#     type="cairo",
+#     units="in", 
+#     width=6, 
+#     height=3, 
+#     pointsize=12, 
+#     res=400)
+# graf_abrang_m
+# dev.off()
+# 
+# png(filename="abrangencia_e.png", 
+#     type="cairo",
+#     units="in", 
+#     width=6, 
+#     height=3, 
+#     pointsize=12, 
+#     res=400)
+# graf_abrang_e
+# dev.off()
 
 
 ```
+
+~~Se você é ansioso, ~~veja o valor da dívida consolidada do estado e/ou do município em que você mora. Pode-se dizer que está grande ou pequena? 
+
+Difícil responder olhando só para os números, não é? O ideal seria buscar referências de comparação. 
 
 dívida consolidada líquida - estados e municípios
 
@@ -376,7 +473,7 @@ ggplot(total_DCL, aes(y = UF, color = Escopo, x = DCL_percent)) +
 
 Rankings das DCLs dos estados.
 
-```{r, fig.height=7.5, fig.width=4, fig.align="center"}
+```{r, fig.height=7.5, fig.width=4.5, fig.align="center"}
 
 contas_interesse <- c("DÍVIDA CONSOLIDADA - DC (I)",
                       "DEDUÇÕES (II)",
@@ -421,7 +518,7 @@ ggplot(ranking_estados, aes(x = Variavel, y = Valor, color = REGIAO, fill = REGI
 
 Uma visão geral da DC e das deduções
 
-```{r, fig.height=8, fig.width=4.5, fig.align="center"}
+```{r, fig.height=6, fig.width=4, fig.align="center"}
 formata_BR <- scales::format_format(big.mark = ".", decimal.mark = ",", scientific = FALSE)
 
 plota_DC_estados <- function(dados) {
@@ -686,7 +783,9 @@ output$mapa <- renderLeaflet({
 
 obtem_estado_click <- function() {
    uf <- req(input$mapa_shape_click$id)
-   if (is.na(uf)) {uf <- "AC"}
+   if (is.na(uf)) {
+     uf <- "AC"
+   }
    return(uf)
 }
 
@@ -736,17 +835,23 @@ sumario_municipios <- tabela_municipios %>%
                                                      "DÍVIDA CONSOLIDADA LÍQUIDA (DCL) (III) = (I - II)")) %>%
   mutate(Conta = case_when(Conta == "% da DCL sobre a RCL (III/RCL)" ~ "pct_DCL_RCL",
                            Conta == "DÍVIDA CONSOLIDADA LÍQUIDA (DCL) (III) = (I - II)" ~"DCL")) %>%
-  select(REGIAO, Instituicao, Valor, Conta, pop, UF, Escopo) %>%
+  select(REGIAO, Instituicao, Valor, Conta, pop, UF, Escopo, CodMun = Cod.IBGE) %>%
   spread(Conta, Valor) %>%
+  mutate(REGIAO = str_sub(REGIAO, 5)) %>%
+  left_join(select(perfil_mun, CodMun, nome_mun = `NOME MUNIC`)) %>%
   filter(`Instituicao` != "Prefeitura Municipal de Itaíba - PE")
 
+#ggplot(sumario_municipios, aes(x = pop, y = DCL, color = REGIAO)) + geom_point() + scale_x_log10() + scale_y_log10()
 
-a <- ggplot(sumario_municipios, aes(y = pct_DCL_RCL, x = REGIAO, color = pct_DCL_RCL > 0, label = Instituicao)) +
-  geom_quasirandom(varwidth = TRUE) +
-  scale_color_manual(values = c("TRUE" = "dodgerblue", "FALSE" = "firebrick")) +
-  tema()
+a <- ggplot(sumario_municipios, aes(y = pct_DCL_RCL, x = 0, color = pct_DCL_RCL > 0, text = paste0(nome_mun, " - ",UF, " (Região ", REGIAO, "). Sua DCL representa ", percent(pct_DCL_RCL/100), " da sua RCL."))) +
+  geom_beeswarm(varwidth = TRUE, alpha = 0.5, size = 1) +
+  #scale_color_viridis_c() +
+  scale_color_manual(values = c("yellow" = "yellow", "TRUE" = "dodgerblue", "FALSE" = "firebrick")) +
+  labs(y = "% DCL / RCL") +
+  tema() + theme(axis.line.x = element_blank(), axis.ticks.x = element_blank(),
+                 axis.text.x = element_blank(), axis.title.x = element_blank())
 
-ggplotly(a)
+ggplotly(a, tooltip = "text")
 
 #rsconnect::deployApp(appTitle = "Divida")
 ```
