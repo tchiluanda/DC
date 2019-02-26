@@ -1,0 +1,269 @@
+---
+title: ''
+output: 
+  flexdashboard::flex_dashboard:
+    social: menu
+    source_code: embed
+runtime: shiny
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+```{r libraries}
+library(tidyverse)
+library(scales)
+library(readxl)
+#library(ipeaData)
+library(extrafont)
+library(RColorBrewer)
+#library(ckanr)
+#library(skimr)
+library(shiny)
+library(leaflet)
+library(ggbeeswarm)
+library(plotly)
+library(viridis)
+library(ggrepel)
+
+tema <- function(){
+    theme_minimal() +
+    theme(
+      text = element_text(family = "Open Sans", colour = "grey20"),
+      title = element_text(face = "bold", size = 10, color = "#1E4C7A"), 
+      plot.subtitle = element_text(family = "Open Sans Condensed", 
+                                   color = "grey20", face = "plain", size = 10),
+      axis.text = element_text(family = "Open Sans", colour = "grey20", size = 8),
+      plot.caption = element_text(face = "italic"),
+      panel.grid.major = element_blank(), 
+      panel.grid.minor = element_blank(),
+      legend.text = element_text(size = 8),
+      legend.title = element_text(size = 8),
+      axis.ticks = element_line(size = 0.5),
+      axis.ticks.length = unit(.25, "cm"),
+      axis.title = element_text(size = 8, colour = "grey20"),
+      legend.position = 'none')
+}
+
+tema_gif <- function() {
+  theme(legend.position = 'none',
+        panel.grid.major.y = element_blank(),
+        panel.grid.major.x = element_blank(),
+        axis.title.y = element_blank(),
+        axis.text.y = element_blank(),
+        axis.ticks.y = element_blank(),
+        plot.background = element_rect(color = "#f0f5f7", linetype = "solid", size = 2))
+}
+
+vermelho <- brewer.pal(3, name = "Set1")[1]
+azul <- "#1f476a" 
+
+vermelho_claro <- "#ee7576"
+azul_claro     <- "#2c90bf" # "#87b1d4"
+
+tres_cores <-c("#F8AC08","#028063","#6E287C")
+tres_cores_pasteis <- c("#FECE60","#63BEAF", "#BE8EBF")
+
+cores_temas_TT <- c("#643275", "#03859a", "#1f476a", "#709a2d", "#ba3917")
+
+load("dados_shiny.RData")
+```
+
+```{r}
+sumario_grafico <- function(estado) {
+  sumario_estados_regionalizado %>%
+    filter(UF == estado) %>%
+    select(ded = Ded,
+           dc  = DC,
+           dcl = DCL,
+           media_regiao,
+           media_nacional) %>%
+    mutate(em_branco = dcl) %>%
+    gather(-em_branco, -media_regiao, -media_nacional, key = variavel, value = valor_de_verdade)  %>%
+    gather(media_regiao, media_nacional, key = medias, value = valor_media) %>%
+    mutate(em_branco = ifelse(variavel == "ded", em_branco, NA)) %>%
+    gather(em_branco, valor_de_verdade, key = tipo_valor, value = valor) %>%
+    mutate(valor_media = ifelse(variavel == "dcl" & tipo_valor == "valor_de_verdade", valor_media, NA),
+           cores = case_when(tipo_valor == "em_branco" ~ "NA",
+                             variavel == "dc" ~ azul,
+                             variavel == "ded" ~ vermelho,
+                             TRUE ~ azul_claro),
+           tipo_valor = factor(tipo_valor, 
+                               levels = c("valor_de_verdade", "em_branco")),
+           variavel = factor(variavel, levels = rev(c("dc", "ded", "dcl"))),
+           medias = replace(medias, medias == "media_regiao", "Média da Região"),
+           medias = replace(medias, medias == "media_nacional", "Média Nacional"))
+}
+
+plota_card_estado <- function(dados) {
+  ggplot(dados, aes(x = variavel, y = valor, fill = cores)) + 
+    geom_col(position = "stack", width = 0.5) +
+    geom_tile(aes(y = valor_media), color = azul, width = 0.7, height = 1, linetype = "dotted") +
+    geom_text(aes(y = valor_media, 
+                  label = paste0(medias, "\nR$ ", 
+                                 format(round(valor_media/1e9, 2), big.mark = ".", decimal.mark = ","), " bi"), 
+                  vjust = ifelse(medias == "Média Nacional", 2.7, -1.9)), family = "Open Sans Condensed", 
+              size = 3.5, color = "dimgrey", hjust = "inward") +
+    geom_label(aes(label = ifelse(tipo_valor == "valor_de_verdade" & medias == "Média da Região",
+                                 paste0("R$ ", format(round(valor/1e9, 2), 
+                                                      big.mark = ".", 
+                                                      decimal.mark = ","),
+                                        " bi"), 
+                                 NA),
+                  y = valor,
+                  color = cores), 
+              family = "Open Sans", size = 3.5, hjust = "center", 
+              position = "stack", vjust = "center", fill = "white") +
+    scale_fill_identity() + 
+    scale_color_identity() +
+    scale_y_continuous(labels=function(x) {format(x/1e9, big.mark = ".", decimal.mark=",", scientific = FALSE)}, expand = expand_scale(mult = c(0, .05))) +
+    scale_x_discrete(labels = c("ded" = "Deduções", 
+                                "dc"  = "Dívida\nConsolidada", 
+                                "dcl" = "Dívida\nConsolidada\nLíquida")) +
+    labs(x = NULL, y = "R$ bilhões") +
+    coord_flip() +
+    tema() + theme(axis.text.y = element_text(size = 12)) + theme(axis.line.x = element_line())
+}
+
+#teste_rs <- sumario_grafico("RS")
+
+#plota_card_estado(teste_rs)
+
+mapa_brasil <- geojsonio::geojson_read("./dados/brazil_geo.geojson", what = "sp")
+# o ideal seria pegar daqui https://servicodados.ibge.gov.br/api/docs/malhas?versao=2#api-_
+# mas só consegui do brasil inteiro, sem as ufs. a api ou renderiza o mapa com ufs ou mostra o json sem ufs.
+# aí achei em algum lugar da internet, e só editei um pouco para ficar do jeito esperado, começando com
+# {"type":"FeatureCollection","features":[...
+
+# incorporando o dado de DCL no mapa
+
+mapa_brasil@data <- sumario_estados %>%
+  select(UF, REGIAO, pct_DCL_RCL) %>%
+  right_join(mapa_brasil@data, by = c("UF" = "sigla"))
+
+mapa_brasil@data <- mapa_brasil@data %>%
+  left_join(estados)
+
+# ggplot(mapa_brasil@data, aes(x = DCL)) + geom_histogram(binwidth = 10) + scale_x_continuous(breaks = seq(-20, 250, 20))
+
+bins <- c(-20, 0, 20, 40, 60, 80, 100, 200, Inf)
+pal <- colorBin("YlOrRd", domain = mapa_brasil$DCL, bins = bins)
+
+labels <- sprintf(
+  "<strong>%s</strong><br/>DCL/RCL: %g &#37;",
+  mapa_brasil$nomes, mapa_brasil$pct_DCL_RCL
+) %>% lapply(htmltools::HTML)
+
+
+faz_mapa <- function() {
+  leaflet(mapa_brasil, options = leafletOptions(minZoom = 3.7, maxZoom = 3.7)) %>%
+    setView(lat=-14.235, lng=-51.9253 , zoom=3.7) %>%
+    addPolygons(
+      fillColor = ~pal(pct_DCL_RCL),
+      weight = 3,
+      opacity = 1,
+      color = "white",
+      fillOpacity = 0.8,
+      highlight = highlightOptions(
+        weight = 3,
+        color = "#353E57",
+        fillOpacity = 1,
+        bringToFront = TRUE),
+      label = labels,
+      layerId = ~UF,  # muito importante, vai alimentar o "id" do shape_click
+      labelOptions = labelOptions(
+        style = list("font-weight" = "normal",
+                     "font-family" = "'Open Sans'",
+                     padding = "3px 8px"),
+        textsize = "15px",
+        direction = "auto"))
+}
+
+#  addProviderTiles("MapBox", options = providerTileOptions(
+#    id = "mapbox.light",
+#    accessToken = Sys.getenv('MAPBOX_ACCESS_TOKEN'))) %>%
+
+retorna_texto <- function(estado, variavel) {
+  resultado <- sumario_estados_regionalizado %>%
+    filter(UF == estado) %>%
+    select(!!sym(variavel))
+  return (as.character(resultado[1,1]))
+}
+
+# retorna_texto("AC", "nomes")
+
+
+```
+
+Análise
+===================================== 
+
+Column 
+-----------------------------------------------------------------------
+
+### Selecione o Estado
+
+```{r}
+leafletOutput("mapa")
+
+output$mapa <- renderLeaflet({
+  faz_mapa()
+  })
+    
+obtem_estado_click <- function() {
+   click <- input$mapa_shape_click
+   if (is.null(click))
+     uf <- "AC"
+   else
+     uf <- click$id
+   return(uf)
+   }
+
+
+```
+
+Column 
+-----------------------------------------------------------------------
+
+### Ficha do Estado
+
+```{r}
+mainPanel(
+  textOutput("Estado"),
+  textOutput("regiao"),
+  tagAppendAttributes(textOutput("pop"), style="font-family: 'Open Sans Condensed'"),
+  #textOutput("DCLperCap"),
+  tags$style(type="text/css", "#Estado {font-family: 'Open Sans Condensed'; font-size: 2em; color: #1f476a; padding-bottom: 5px; font-weight: 400;}"),
+  tags$style(type="text/css", "#regiao {font-family: 'Open Sans Condensed'; font-size: 1.5em; padding-bottom: 5px; padding-top: 5px;}"),
+  tagAppendAttributes(textOutput("DCL_RCL"), style="font-family: 'Open Sans Condensed'"),
+  tagAppendAttributes(textOutput("DCLperCap"), style="font-family: 'Open Sans Condensed'"),
+  plotOutput("card")
+)
+
+output$Estado    <- renderText(paste0("Estado: ", retorna_texto(obtem_estado_click(), "nomes")))
+output$regiao    <- renderText(retorna_texto(obtem_estado_click(), "REGIAO"))
+output$pop       <- renderText(paste0("População: ",
+                                      format(
+                                        round(
+                                          as.numeric(
+                                            retorna_texto(obtem_estado_click(), "pop")
+                                            ),
+                                          2),
+                                        big.mark = ".", decimal.mark = ","),
+                                      " pessoas"))
+output$DCLperCap <- renderText(paste0("DCL por habitante: R$ ",
+   format(round(as.numeric(retorna_texto(obtem_estado_click(), "DCL_pop")),2),
+                                       big.mark = ".", decimal.mark = ",")))
+
+output$DCLperCap <- renderText(paste0("A DCL do Estado corresponde a ",
+   percent(round(as.numeric(retorna_texto(obtem_estado_click(), "pct_DCL_RCL"))/100,2)), " de sua RCL."))
+
+output$card <- renderPlot(
+  plota_card_estado(sumario_grafico(obtem_estado_click())), width = "auto", height = 400)
+
+
+
+
+
+```
