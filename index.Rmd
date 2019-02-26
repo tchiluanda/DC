@@ -128,12 +128,12 @@ h1 {
     //font-style: italic;
     letter-spacing: 0.1em;
     line-height: 1.5em;
-    font-size: 1.9em;
+    font-size: 1.7em;
     font-family: "Vollkorn";
 }
 
 h1>em {
-    font-size: 2em;
+    font-size: 1.8em;
     color: firebrick;
     //text-transform: uppercase;
     letter-spacing: 0.1em;
