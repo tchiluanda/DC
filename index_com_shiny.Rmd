@@ -2,6 +2,7 @@
 title: ""
 output: 
   html_document:
+    runtime: shiny
     code_folding: hide
 ---
 
@@ -45,51 +46,26 @@ h1, h2, h3, h4 {
 
 }
 
-.fechamento {
-  text-align: center;
-  font-size: 0.7em;
-  color: dimgrey;
-  padding: 0 30px;
-}
-
-.coracoes {
-  color: firebrick;
-}
-
 .modebar .modebar--hover {
   display: none;
 }
 
 del {
-    color: darkgrey;
+    color: lightgrey;
     text-decoration: none;
 }
 
 del::before {
-    content: "(";
+    content: "[";
 }
 
 del::after {
-    content: ")";
-}
-
-del.del-de-verdade {
-  text-decoration: line-through;
-  color: #333;
+    content: "]";
 }
 
 .descricao>p {
     padding: 0 8px;
     margin: 0px;
-}
-
-p.disclaimer {
-    font-size: 0.8em;
-    padding: 8px;
-    margin: 8px;
-    background-color: ghostwhite;
-    color: dimgray;
-    font-style: italic;
 }
 
 p.titulo-card {
@@ -99,10 +75,6 @@ p.titulo-card {
     margin: 0;
     font-weight: bold;
     letter-spacing: 0.2em;
-}
-
-.descricao>p:not(.titulo-card):not(.fechar-card) {
-    padding-top: 4px;
 }
 
 p.fechar-card{
@@ -127,7 +99,7 @@ h1 {
     position: relative;
     //font-style: italic;
     letter-spacing: 0.1em;
-    line-height: 1.5em;
+    line-height: 1.8em;
     font-size: 1.9em;
     font-family: "Vollkorn";
 }
@@ -140,7 +112,7 @@ h1>em {
     display: block;
     font-style:normal;
     padding-top: 0.1em;
-    //text-shadow: 0.07em 0.07em 0 rgba(0, 0, 0, 0.1);
+    text-shadow: 0.07em 0.07em 0 rgba(0, 0, 0, 0.1);
 }
     
 h1>em::before, h1>em::after {
@@ -182,11 +154,6 @@ img.abertura {
 
 
 ```
-
-<style>
-@import url('https://fonts.googleapis.com/css?family=Open+Sans|Open+Sans+Condensed:300');
-@import url('https://fonts.googleapis.com/css?family=Vollkorn');
-</style>
 
 ```{r libraries}
 library(tidyverse)
@@ -322,12 +289,10 @@ tabela_completa <- rbind(tabela_estados, tabela_municipios)
 
 Dívida é uma quantia que se tem de pagar a alguém. O que interessa bastante para esse ~~tal de~~ alguém. E ~~tomara~~ muito importante para quem deve. Caso você não seja nenhum dos dois, por que continuar lendo sobre esse assunto ~~espinhoso~~?
 
-Bom, vivemos em uma cidade, que tem uma prefeitura, certo? Essa cidade está dentro de um estado, que tem um governo. E isso tudo ~~incluindo você~~ fica em um país. Você teria curiosidade em saber o quanto <del class="del-de-verdade">nós devemos</del> eles <span class="conceito" id="conceito-declaram">declaram</span> que devem?
-
-<p class="disclaimer">Ao longo do texto, existem vários termos destacados com o fundo azul. Para não interromper a narrativa com tecnicismos, os conceitos envolvidos estão descritos de forma mais precisa e rigorosa em quadros que podem ser exibidos (e ocultados) clicando-se sobre esses termos com fundo em azul.</p>
+Vivemos em uma cidade, que tem uma prefeitura, certo? Essa cidade está dentro de um estado, que tem um governo. E isso tudo ~~incluindo você~~ fica em um país. Você teria curiosidade em saber o quanto nós devemos eles <span class="conceito" id="conceito-declaram">declaram</span> que devem?
 
 <div class="descricao" id="descricao-declaram"> 
-<p class="titulo-card">Origem e Abrangência das informações</p> 
+<p class="titulo-card">Abrangência das informações</p> 
 <p>A principal fonte de dados deste painel é o Sistema de Informações Contábeis e Fiscais do Setor Público Brasileiro - SICONFI, em especial, os dados declarados pelos entes federativos através dos Relatórios de Gestão Fiscal - RGF.
 
 As informações sobre os encargos e condições de contratação dos estados e municípios. por sua vez, estão disponíveis no módulo de Cadastro da Dívida Pública (CDP) do Sistema de Análise da Dívida Pública, Operações de Crédito e Garantias da União, Estados e Municípios (SADIPEM). O CDP recebe a declaração detalhada das dívidas dos estados e municípios. Atualmente, nem todos os estados e municípios enviam essa declaração, o que pode causar divergência nos dados.
@@ -485,11 +450,11 @@ graf_abrang_e <- ggplot(abrangencia_e, aes(y = Valor, x = Variavel, fill = categ
 
 ```
 
-~~Se você é ansioso,~~ veja o valor da dívida consolidada do estado e/ou do município em que você mora. Pode-se dizer que está grande ou pequena? 
+~~Se você é ansioso, ~~ veja o valor da dívida consolidada do estado e/ou do município em que você mora. Pode-se dizer que está grande ou pequena? 
 
 Difícil responder olhando só para os números, não é? O ideal seria buscar referências de comparação.
 
-Antes disso, porém, é preciso garantir que estamos falando de coisas iguais ~~e não de melancias e de bananas~~. No caso da <span class="conceito" id="conceito-dc">dívida consolidada</span>, entram, essencialmente, a dívida mobiliária, quando o país emite títulos públicos para captar dinheiro; a dívida contratual, quando os governos estaduais e municipais recorrem a empréstimos e (re)financiamentos, inclusive com o próprio governo federal; e a dívida de <span class="conceito" id="conceito-precatorios">precatórios</span> que venceram e não foram pagos, aquelas impostas por ações judiciais. 
+Antes disso, porém, é preciso garantir que estamos falando de coisas iguais ~~ e não de melancias e de bananas~~. No caso da <span class="conceito" id="conceito-dc">dívida consolidada</span>, entram, essencialmente, a dívida mobiliária, quando o país emite títulos públicos para captar dinheiro; a dívida contratual, quando os governos estaduais e municipais recorrem a empréstimos e (re)financiamentos, inclusive com o próprio governo federal; e a dívida de <span class="conceito" id="conceito-precatorios">precatórios</span> que venceram e não foram pagos, aquelas impostas por ações judiciais. 
 
 <div class="descricao" id="descricao-dc"> 
 <p class="titulo-card">Dívida Consolidada e as várias formas de se medir a dívida pública</p> 
@@ -523,7 +488,9 @@ Referem-se aos precatórios judiciais emitidos a partir de 5 de maio de 2000 e n
 <p class="fechar-card"><a class="link-fechar" id="fechar-precatorios" href="#conceito-precatorios">^ Fechar e voltar ao texto ^</a></p>
 </div>
 
-```{r graf-barras, fig.height=6, fig.width=4.5, fig.align="center"}
+Após garantir que todos colocam os mesmos tipos de dívidas na dívida consolidada, voltamos à pergunta: a dívida está grande ou pequena? 
+
+```{r graf-barras, fig.height=6, fig.width=4, fig.align="center"}
 formata_BR <- scales::format_format(big.mark = ".", decimal.mark = ",", scientific = FALSE)
 
 contas_interesse <- c("DÍVIDA CONSOLIDADA - DC (I)",
@@ -571,7 +538,7 @@ plota_DC_estados(sumario_estados %>% filter(!(UF %in% c("SP", "RJ", "MG", "RS"))
 
 ```
 
-Após garantir que todos colocam os mesmos tipos de dívidas na dívida consolidada, voltamos à pergunta: a dívida está grande ou pequena? Como comparar?
+Essa avaliação depende da condição financeira de cada um para pagar a dívida. Assim, uma comparação com a arrecadação da prefeitura ou do governo pode ajudar nessa resposta. 
 
 ```{r ranking, fig.height=7.5, fig.width=5, fig.align="center"}
 
@@ -597,10 +564,6 @@ ggplot(ranking_estados, aes(x = Variavel, y = Valor, color = REGIAO, fill = REGI
        subtitle = "Estados e Distrito Federal") +
   tema()
 ```
-
-
-
-Essa avaliação depende da condição financeira de cada um para pagar a dívida. Assim, uma comparação com a arrecadação da prefeitura ou do governo pode ajudar nessa resposta. 
 
 Uma opção seria ver quanto sobra da dívida consolidada depois de abater os recursos que já estão em caixa. Isso recebe o nome de dívida consolidada L-Í-Q-U-I-D-A. 
 
@@ -634,7 +597,7 @@ ggplot(dados_composicoes, aes(y = valor/100, x = UF, fill = variavel)) +
                     values = c("Ded_pct" = vermelho, "DCL_pct" = azul_claro)) +
   scale_y_continuous(labels = percent) +
   guides(color = FALSE) +
-  labs(x = NULL, y = NULL, fill = NULL, title = "Dívida Consolidada dos Estados", subtitle = "DCL e Deduções em percentuais da DC",
+  labs(x = NULL, y = NULL, fill = NULL, title = "Dívida Consolidada dos Estados: DCL e Deduções",
        caption = "Mato Grosso do Sul e Rio Grande do Norte não haviam informado\nseus dados até fevereiro de 2019.") +
   coord_flip() + 
   tema() + theme(legend.position = "bottom") + theme(legend.key.size = unit(0.5,"line"))
@@ -718,63 +681,6 @@ ggplot(total_DCL, aes(y = UF, color = Escopo, x = DCL_percent)) +
   tema() + theme(legend.position = "top")
 ```
 
-```{r municipios, fig.align="center", fig.height=7.5, fig.width=5.5}
-sumario_municipios <- tabela_municipios %>%
-  filter(
-    Coluna %in% c("Até o 3º Quadrimestre", "Até o 2º Semestre") & 
-      Conta %in% c("% da DCL sobre a RCL (III/RCL)",
-                   "DÍVIDA CONSOLIDADA LÍQUIDA (DCL) (III) = (I - II)")) %>%
-  mutate(Conta = case_when(Conta == "% da DCL sobre a RCL (III/RCL)" ~ "pct_DCL_RCL",
-                           Conta == "DÍVIDA CONSOLIDADA LÍQUIDA (DCL) (III) = (I - II)" ~"DCL")) %>%
-  select(REGIAO, Instituicao, Valor, Conta, pop, UF, Escopo, CodMun = Cod.IBGE) %>%
-  spread(Conta, Valor) %>%
-  mutate(REGIAO = str_sub(REGIAO, 5)) %>%
-  left_join(select(perfil_mun, CodMun, nome_mun = `NOME MUNIC`)) %>%
-  filter(`Instituicao` != "Prefeitura Municipal de Itaíba - PE") %>%
-  mutate(categorias = cut(pct_DCL_RCL, breaks = c(-Inf, 0, 25, 120, Inf),
-                          labels = c("DCL negativa", "Até 25% da RCL", "Até 120% da RCL", "Acima do Limite")))
-
-#ggplot(sumario_municipios, aes(x = pop, y = DCL, color = REGIAO)) + geom_point() + scale_x_log10() + scale_y_log10()
-
-sumario_municipios <- sumario_municipios %>%
-  group_by(categorias) %>%
-  summarise(qde = n()) %>%
-  mutate(posicoes = c(-50, 25, 120, 160, NA)) %>%
-  right_join(sumario_municipios)
-
-paleta_swarm <- brewer.pal(4, "Spectral") 
-
-ggplot(sumario_municipios, aes(y = pct_DCL_RCL, x = 0, color = categorias, text = paste0(nome_mun, " - ",UF, " (Região ", REGIAO, "). Sua DCL representa ", percent(pct_DCL_RCL/100), " da sua RCL."))) +
-  geom_quasirandom(varwidth = TRUE, alpha = 0.5, size = 1) +
-  scale_color_brewer(palette = "Spectral", type = "div", direction = 1) +
-  #scale_color_manual(values = c("yellow" = "yellow", "TRUE" = "dodgerblue", "FALSE" = "firebrick")) +
-  scale_y_continuous(labels = function(x) {percent(x/100)}) +
-  labs(y = "% DCL / RCL", title = "Distribuição dos municípios em 2018", 
-       subtitle = "Segundo o percentual de sua DCL em relação à RCL") +
-  tema() + theme(axis.line.x = element_blank(), axis.ticks.x = element_blank(),
-                 axis.text.x = element_blank(), axis.title.x = element_blank()) +
-  geom_hline(yintercept = 0, linetype = "dotted", color = paleta_swarm[3]) +
-  geom_hline(yintercept = 25, linetype = "dotted", color = paleta_swarm[2]) +
-  geom_hline(yintercept = 120, linetype = "dotted", color = paleta_swarm[1]) + 
-  geom_text(aes(y = posicoes, 
-                label = paste0(categorias, "\n(", qde, " municípios)")), vjust = "top", family = "Open Sans SemiBold",
-            size = 2.5, x = -0.42, check_overlap = TRUE, hjust = "inward")
-
-#ggplot(sumario_municipios, aes(pct_DCL_RCL)) + geom_histogram() + scale_x_continuous(breaks = seq(-200,200,25))
-
-#summary(sumario_municipios$pct_DCL_RCL)
-
-#ggplotly(a, tooltip = "text")
-
-#rsconnect::deployApp(appTitle = "Divida")
-
-# problematicos
-# teste <- tabela_municipios %>% 
-#   filter(Coluna %in% c("Até o 3º Quadrimestre", "Até o 2º Semestre") &
-#            Conta %in% c("RECEITA CORRENTE LÍQUIDA - RCL", "DÍVIDA CONSOLIDADA - DC (I)", "DÍVIDA CONSOLIDADA LÍQUIDA (DCL) (III) = (I - II)")) %>% select(Instituicao, Conta) %>% mutate(Contagem = 1) %>% spread(Conta, Contagem) %>% filter(is.na(`DÍVIDA CONSOLIDADA LÍQUIDA (DCL) (III) = (I - II)`))
-
-```
-
 Agora, uma pergunta ~~para saber se você está atento~~: toda dívida entra no cálculo da dívida consolidada? Para onde vão os precatórios que não estão vencidos, por acaso? 
 
 O fato de não contar para a dívida consolidada não significa ~~longe disso~~ que não sejam relevantes, muito menos que não mereçam nossa atenção. É o caso, por exemplo, da obrigação com os pagamentos futuros de benefícios previdenciários, conhecido como <span class="conceito" id="conceito-passivoatuarial">passivo atuarial</span>. Apesar de não afetar a capacidade financeira hoje, irá impactar nos próximos anos. Outro tipo ocorre quando a prefeitura ou o governo utiliza recursos que ainda estão em <span class="conceito" id="conceito-disputajudicial">disputa judicial</span>. Se perder a disputa, tem que devolver e isso precisa ser monitorado. Entendeu a importância?
@@ -797,39 +703,29 @@ Os depósitos judiciais são valores depositados em contas específicas sob a gu
 
 Por outro lado, existem disputas judiciais que já foram perdidas e exigem pagamento, são os precatórios. Pela ~~grande~~ quantidade, eles entram em uma fila para serem quitados a cada ano. Isto é, **todo ano a prefeitura ou o governo tem que pagar um certo número de precatórios. Quando deveria pagar em um ano e não paga, temos os precatórios vencidos e não pagos**. Lembra deles? Eles entram na dívida consolidada. Perceba que, por uma questão de tempo, os outros ~~ainda~~ não entram nesse cálculo, mas estão na fila e ~~em breve~~ vão afetar as finanças dessa prefeitura ou desse governo. Por isso, que tal ver o tamanho da conta de precatórios?
 
-```{r precatorios, fig.height=4}
+```{r precatorios, fig.height=3}
 precat <- tabela_completa %>%
   filter(Coluna %in% c("Até o 3º Quadrimestre", "Até o 2º Semestre") & 
            str_detect(Conta, "Precatórios")) %>%
   group_by(Escopo, Conta) %>%
   summarise(Valor = sum(Valor))
 
-precat_uniao <- tabela_uniao %>%
-  filter(Coluna == "Até o 3º Quadrimestre" & 
-           str_detect(Conta, "Precatórios")) %>%
-  group_by(Escopo, Conta) %>%
-  summarise(Valor = sum(Valor)) %>%
-  mutate(Conta = "Precatórios Posteriores a 05/05/2000 (inclusive) Vencidos e Não Pagos")
-
-precat <- rbind(precat, precat_uniao)
-
 ggplot(precat, aes(x = Conta, y = Valor, fill = Escopo, color = Escopo)) +
-  geom_col(width = 0.7, position = position_dodge2(preserve = "single", width = 0.7, padding = 0.2)) +
-  geom_text(aes(y = Valor + 1e9, label = paste0(
-          format(round(Valor/1e9,1), big.mark = ".", decimal.mark = ","),
-          " bi")), family = "Open Sans", size = 3, 
-          position = position_dodge2(width = 0.7, preserve = "single", padding = 0.2), vjust = "center", hjust = "left") +
-  scale_fill_manual(values = tres_cores) +
-  scale_color_manual(values = tres_cores) +
-  scale_y_continuous(labels=function(x) {format(x/1e9, big.mark = ".", decimal.mark=",", scientific = FALSE)}, expand = expand_scale(mult = c(0, .1))) +
+  geom_col(width = 0.7, position = "stack") +
+  geom_text(aes(y = Valor, label = paste0(
+          format(round(Valor/1e9,0), big.mark = ".", decimal.mark = ","),
+          " bi"), vjust = ifelse(Escopo == "Estados", -5, 6)), family = "Open Sans", hjust = "center", size = 3.5, position = "stack") +
+  scale_fill_manual(values = tres_cores[1:2]) +
+  scale_color_manual(values = tres_cores[1:2]) +
+  scale_y_continuous(labels=function(x) {format(x/1e9, big.mark = ".", decimal.mark=",", scientific = FALSE)}) +
   scale_x_discrete(labels = c("Precatórios Anteriores a 05/05/2000" = "Precatórios Anteriores \na 05/05/2000",
                               "Precatórios Posteriores a 05/05/2000 (inclusive) Vencidos e Não Pagos" = "Precatórios Posteriores \na 05/05/2000 (inclusive) \nVencidos e Não Pagos",
                               "Precatórios Posteriores a 05/05/2000 (Não incluídos na DC)" = "Precatórios Posteriores \na 05/05/2000 \n(Não incluídos na DC)")) +
   #expand_limits(y = max(DCLs_entes$DC * 1.2)) +
-  labs(x = NULL, y = "R$ bi", title = "Saldo de Precatórios ao final de 2018",
-       subtitle = "Estados, Municípios e União") +
+  labs(x = NULL, y = "R$ bi", title = "Precatórios",
+       subtitle = "Estados e Municípios") +
   coord_flip() + 
-  tema() + theme(legend.position = "bottom")
+  tema()
   
 ```
 
@@ -849,7 +745,7 @@ Relembrando, dívida é uma quantia que se tem de pagar a alguém.
 
 Acrescentando: público é aquilo que pertence ao governo de um país, de um estado, de uma cidade. Também é aquilo que pertence a um povo, a uma coletividade. 
 
-~~E o que seria dívida pública?~~
+E o que seria dívida pública?
 
 
 ```{r gera-grafico-dos-estados"}
@@ -939,125 +835,134 @@ plota_card_estado <- function(dados) {
 }
 
 # plota_card_estado(teste_df)
+```
 
-# mapa_brasil <- geojsonio::geojson_read("./dados/brazil_geo.geojson", what = "sp")
-# # o ideal seria pegar daqui https://servicodados.ibge.gov.br/api/docs/malhas?versao=2#api-_
-# # mas só consegui do brasil inteiro, sem as ufs. a api ou renderiza o mapa com ufs ou mostra o json sem ufs.
-# # aí achei em algum lugar da internet, e só editei um pouco para ficar do jeito esperado, começando com 
-# # {"type":"FeatureCollection","features":[... 
-# 
-# # incorporando o dado de DCL no mapa
-# 
-# mapa_brasil@data <- sumario_estados %>%
-#   select(UF, REGIAO, pct_DCL_RCL) %>%
-#   right_join(mapa_brasil@data, by = c("UF" = "sigla"))
-# 
-# mapa_brasil@data <- mapa_brasil@data %>%
-#   left_join(estados)
-# 
-# # ggplot(mapa_brasil@data, aes(x = DCL)) + geom_histogram(binwidth = 10) + scale_x_continuous(breaks = seq(-20, 250, 20))
-# 
-# 
-# 
-# bins <- c(-20, 0, 20, 40, 60, 80, 100, 200, Inf)
-# pal <- colorBin("YlOrRd", domain = mapa_brasil$DCL, bins = bins)
-# 
-# labels <- sprintf(
-#   "<strong>%s</strong><br/>DCL/RCL: %g &#37;",
-#   mapa_brasil$nomes, mapa_brasil$pct_DCL_RCL
-# ) %>% lapply(htmltools::HTML)
-# 
-# 
-# faz_mapa <- function() {
-#   leaflet(mapa_brasil, options = leafletOptions(minZoom = 3.7, maxZoom = 3.7)) %>%
-#     setView(lat=-14.235, lng=-51.9253 , zoom=3.7) %>%
-#     addPolygons(
-#       fillColor = ~pal(pct_DCL_RCL),
-#       weight = 3,
-#       opacity = 1,
-#       color = "white",
-#       fillOpacity = 0.8,
-#       highlight = highlightOptions(
-#         weight = 3,
-#         color = "#353E57",
-#         fillOpacity = 1,
-#         bringToFront = TRUE),
-#       label = labels,
-#       layerId = ~UF,  # muito importante, vai alimentar o "id" do shape_click
-#       labelOptions = labelOptions(
-#         style = list("font-weight" = "normal", 
-#                      "font-family" = "'Open Sans'",
-#                      padding = "3px 8px"),
-#         textsize = "15px",
-#         direction = "auto"))
-# }
-# 
-# #  addProviderTiles("MapBox", options = providerTileOptions(
-# #    id = "mapbox.light",
-# #    accessToken = Sys.getenv('MAPBOX_ACCESS_TOKEN'))) %>% 
-#   
-# retorna_texto <- function(estado, variavel) {
-#   resultado <- sumario_estados_regionalizado %>%
-#     filter(UF == estado) %>%
-#     select(!!sym(variavel))
-#   return (as.character(resultado[1,1]))
-# }
-# 
-# # retorna_texto("AC", "nomes") 
-# 
-# mainPanel(
-#   leafletOutput("mapa"),
-#   textOutput("Estado"),
-#   textOutput("regiao"),
-#   tagAppendAttributes(textOutput("pop"), style="font-family: 'Open Sans Condensed'"),
-#   #textOutput("DCLperCap"),
-#   tags$style(type="text/css", "#Estado {font-family: 'Open Sans Condensed'; font-size: 2em; color: #1f476a; padding-bottom: 5px; font-weight: 400;}"),
-#   tags$style(type="text/css", "#regiao {font-family: 'Open Sans Condensed'; font-size: 1.5em; padding-bottom: 5px; padding-top: 5px;}"),
-#   tagAppendAttributes(textOutput("DCL_RCL"), style="font-family: 'Open Sans Condensed'"),
-#   tagAppendAttributes(textOutput("DCLperCap"), style="font-family: 'Open Sans Condensed'"),
-#   plotOutput("card")
-#   )
-# 
-# output$mapa <- renderLeaflet({
-#   faz_mapa()
-#   })
-# 
-# obtem_estado_click <- function() {
-#    click <- input$mapa_shape_click
-#    if (is.null(click))
-#      uf <- "AC"
-#    else
-#      uf <- click$id
-#    return(uf)
-# }
-# 
-# output$Estado    <- renderText(paste0("Estado: ", retorna_texto(obtem_estado_click(), "nomes")))
-# output$regiao    <- renderText(retorna_texto(obtem_estado_click(), "REGIAO"))
-# output$pop       <- renderText(paste0("População: ",
-#                                       format(
-#                                         round(
-#                                           as.numeric(
-#                                             retorna_texto(obtem_estado_click(), "pop")
-#                                             ),
-#                                           2),
-#                                         big.mark = ".", decimal.mark = ","),
-#                                       " pessoas"))
-# output$DCLperCap <- renderText(paste0("DCL por habitante: R$ ",
-#    format(round(as.numeric(retorna_texto(obtem_estado_click(), "DCL_pop")),2),
-#                                        big.mark = ".", decimal.mark = ",")))
-# 
-# output$DCLperCap <- renderText(paste0("A DCL do Estado corresponde a ",
-#    percent(round(as.numeric(retorna_texto(obtem_estado_click(), "pct_DCL_RCL"))/100,2)), " de sua RCL."))
-# 
-# output$card <- renderPlot(
-#   plota_card_estado(sumario_grafico(obtem_estado_click()))
-# )
-# 
-# # observeEvent(input$mapa_shape_click, {
-# #   p <- input$mapa_shape_click
-# #   print(p)
-# #   print(p$id)
-# # })
+
+## A Dívida de cada estado
+
+Selecione o Estado no mapa para obter mais informações.
+
+<div class = "card-estados">
+
+```{r painel-estados}
+mapa_brasil <- geojsonio::geojson_read("./dados/brazil_geo.geojson", what = "sp")
+# o ideal seria pegar daqui https://servicodados.ibge.gov.br/api/docs/malhas?versao=2#api-_
+# mas só consegui do brasil inteiro, sem as ufs. a api ou renderiza o mapa com ufs ou mostra o json sem ufs.
+# aí achei em algum lugar da internet, e só editei um pouco para ficar do jeito esperado, começando com 
+# {"type":"FeatureCollection","features":[... 
+
+# incorporando o dado de DCL no mapa
+
+mapa_brasil@data <- sumario_estados %>%
+  select(UF, REGIAO, pct_DCL_RCL) %>%
+  right_join(mapa_brasil@data, by = c("UF" = "sigla"))
+
+mapa_brasil@data <- mapa_brasil@data %>%
+  left_join(estados)
+
+# ggplot(mapa_brasil@data, aes(x = DCL)) + geom_histogram(binwidth = 10) + scale_x_continuous(breaks = seq(-20, 250, 20))
+
+
+
+bins <- c(-20, 0, 20, 40, 60, 80, 100, 200, Inf)
+pal <- colorBin("YlOrRd", domain = mapa_brasil$DCL, bins = bins)
+
+labels <- sprintf(
+  "<strong>%s</strong><br/>DCL/RCL: %g &#37;",
+  mapa_brasil$nomes, mapa_brasil$pct_DCL_RCL
+) %>% lapply(htmltools::HTML)
+
+
+faz_mapa <- function() {
+  leaflet(mapa_brasil, options = leafletOptions(minZoom = 3.7, maxZoom = 3.7)) %>%
+    setView(lat=-14.235, lng=-51.9253 , zoom=3.7) %>%
+    addPolygons(
+      fillColor = ~pal(pct_DCL_RCL),
+      weight = 3,
+      opacity = 1,
+      color = "white",
+      fillOpacity = 0.8,
+      highlight = highlightOptions(
+        weight = 3,
+        color = "#353E57",
+        fillOpacity = 1,
+        bringToFront = TRUE),
+      label = labels,
+      layerId = ~UF,  # muito importante, vai alimentar o "id" do shape_click
+      labelOptions = labelOptions(
+        style = list("font-weight" = "normal", 
+                     "font-family" = "'Open Sans'",
+                     padding = "3px 8px"),
+        textsize = "15px",
+        direction = "auto"))
+}
+
+#  addProviderTiles("MapBox", options = providerTileOptions(
+#    id = "mapbox.light",
+#    accessToken = Sys.getenv('MAPBOX_ACCESS_TOKEN'))) %>% 
+  
+retorna_texto <- function(estado, variavel) {
+  resultado <- sumario_estados_regionalizado %>%
+    filter(UF == estado) %>%
+    select(!!sym(variavel))
+  return (as.character(resultado[1,1]))
+}
+
+# retorna_texto("AC", "nomes") 
+
+mainPanel(
+  leafletOutput("mapa"),
+  textOutput("Estado"),
+  textOutput("regiao"),
+  tagAppendAttributes(textOutput("pop"), style="font-family: 'Open Sans Condensed'"),
+  #textOutput("DCLperCap"),
+  tags$style(type="text/css", "#Estado {font-family: 'Open Sans Condensed'; font-size: 2em; color: #1f476a; padding-bottom: 5px; font-weight: 400;}"),
+  tags$style(type="text/css", "#regiao {font-family: 'Open Sans Condensed'; font-size: 1.5em; padding-bottom: 5px; padding-top: 5px;}"),
+  tagAppendAttributes(textOutput("DCL_RCL"), style="font-family: 'Open Sans Condensed'"),
+  tagAppendAttributes(textOutput("DCLperCap"), style="font-family: 'Open Sans Condensed'"),
+  plotOutput("card")
+  )
+
+output$mapa <- renderLeaflet({
+  faz_mapa()
+  })
+
+obtem_estado_click <- function() {
+   click <- input$mapa_shape_click
+   if (is.null(click))
+     uf <- "AC"
+   else
+     uf <- click$id
+   return(uf)
+}
+
+output$Estado    <- renderText(paste0("Estado: ", retorna_texto(obtem_estado_click(), "nomes")))
+output$regiao    <- renderText(retorna_texto(obtem_estado_click(), "REGIAO"))
+output$pop       <- renderText(paste0("População: ",
+                                      format(
+                                        round(
+                                          as.numeric(
+                                            retorna_texto(obtem_estado_click(), "pop")
+                                            ),
+                                          2),
+                                        big.mark = ".", decimal.mark = ","),
+                                      " pessoas"))
+output$DCLperCap <- renderText(paste0("DCL por habitante: R$ ",
+   format(round(as.numeric(retorna_texto(obtem_estado_click(), "DCL_pop")),2),
+                                       big.mark = ".", decimal.mark = ",")))
+
+output$DCLperCap <- renderText(paste0("A DCL do Estado corresponde a ",
+   percent(round(as.numeric(retorna_texto(obtem_estado_click(), "pct_DCL_RCL"))/100,2)), " de sua RCL."))
+
+output$card <- renderPlot(
+  plota_card_estado(sumario_grafico(obtem_estado_click()))
+)
+
+# observeEvent(input$mapa_shape_click, {
+#   p <- input$mapa_shape_click
+#   print(p)
+#   print(p$id)
+# })
 
 
 
@@ -1065,10 +970,46 @@ plota_card_estado <- function(dados) {
 
 ```
 
+</div>
 
-<p class="fechamento">Feito com dados, códigos e <span class="coracoes">&hearts; &hearts;</span> abertos.</p>
+Municípios
 
-```{js, echo=FALSE}
+```{r}
+sumario_municipios <- tabela_municipios %>%
+  filter(
+    Coluna %in% c("Até o 3º Quadrimestre", "Até o 2º Semestre") & 
+      Conta %in% c("% da DCL sobre a RCL (III/RCL)",
+                   "DÍVIDA CONSOLIDADA LÍQUIDA (DCL) (III) = (I - II)")) %>%
+  mutate(Conta = case_when(Conta == "% da DCL sobre a RCL (III/RCL)" ~ "pct_DCL_RCL",
+                           Conta == "DÍVIDA CONSOLIDADA LÍQUIDA (DCL) (III) = (I - II)" ~"DCL")) %>%
+  select(REGIAO, Instituicao, Valor, Conta, pop, UF, Escopo, CodMun = Cod.IBGE) %>%
+  spread(Conta, Valor) %>%
+  mutate(REGIAO = str_sub(REGIAO, 5)) %>%
+  left_join(select(perfil_mun, CodMun, nome_mun = `NOME MUNIC`)) %>%
+  filter(`Instituicao` != "Prefeitura Municipal de Itaíba - PE")
+
+#ggplot(sumario_municipios, aes(x = pop, y = DCL, color = REGIAO)) + geom_point() + scale_x_log10() + scale_y_log10()
+
+a <- ggplot(sumario_municipios, aes(y = pct_DCL_RCL, x = 0, color = pct_DCL_RCL > 0, text = paste0(nome_mun, " - ",UF, " (Região ", REGIAO, "). Sua DCL representa ", percent(pct_DCL_RCL/100), " da sua RCL."))) +
+  geom_beeswarm(varwidth = TRUE, alpha = 0.5, size = 1) +
+  #scale_color_viridis_c() +
+  scale_color_manual(values = c("yellow" = "yellow", "TRUE" = "dodgerblue", "FALSE" = "firebrick")) +
+  labs(y = "% DCL / RCL") +
+  tema() + theme(axis.line.x = element_blank(), axis.ticks.x = element_blank(),
+                 axis.text.x = element_blank(), axis.title.x = element_blank())
+
+ggplotly(a, tooltip = "text")
+
+#rsconnect::deployApp(appTitle = "Divida")
+
+# problematicos
+# teste <- tabela_municipios %>% 
+#   filter(Coluna %in% c("Até o 3º Quadrimestre", "Até o 2º Semestre") &
+#            Conta %in% c("RECEITA CORRENTE LÍQUIDA - RCL", "DÍVIDA CONSOLIDADA - DC (I)", "DÍVIDA CONSOLIDADA LÍQUIDA (DCL) (III) = (I - II)")) %>% select(Instituicao, Conta) %>% mutate(Contagem = 1) %>% spread(Conta, Contagem) %>% filter(is.na(`DÍVIDA CONSOLIDADA LÍQUIDA (DCL) (III) = (I - II)`))
+
+```
+
+```{js}
 const conceitos = document.getElementsByClassName('conceito');
 const descricoes = document.getElementsByClassName('descricao');
 
