@@ -153,6 +153,9 @@ mapa_brasil <- geojsonio::geojson_read("./dados/brazil_geo.geojson", what = "sp"
 
 # incorporando o dado de DCL no mapa
 
+# testando esse simplify
+mapa_brasil <- rmapshaper::ms_simplify(mapa_brasil)
+
 mapa_brasil@data <- sumario_estados %>%
   select(UF, REGIAO, pct_DCL_RCL) %>%
   right_join(mapa_brasil@data, by = c("UF" = "sigla"))
@@ -171,8 +174,9 @@ labels <- sprintf(
 ) %>% lapply(htmltools::HTML)
 
 
+
 faz_mapa <- function() {
-  leaflet(mapa_brasil, options = leafletOptions(minZoom = 3.7, maxZoom = 4.5)) %>%
+  leaflet(mapa_brasil, options = leafletOptions(minZoom = 3.7, maxZoom = 4.5, dragging = FALSE)) %>%
     setView(lat=-14.235, lng=-51.9253 , zoom=4.5) %>%
     addPolygons(
       fillColor = ~pal(pct_DCL_RCL),
@@ -314,3 +318,6 @@ output$card <- renderPlot(
 
 
 ```
+
+Municípios
+===================================== 
