@@ -68,6 +68,14 @@ tres_cores_pasteis <- c("#FECE60","#63BEAF", "#BE8EBF")
 cores_temas_TT <- c("#643275", "#03859a", "#1f476a", "#709a2d", "#ba3917")
 
 load("dados_shiny.RData")
+
+sumario_estados_regionalizado <- sumario_estados_regionalizado %>% 
+  mutate(REGIAO = str_sub(REGIAO, 4),
+         pop_ranking = rank(-pop),
+         dcl_ranking = rank(-pct_DCL_RCL),
+         per_cap_ranking = rank(-DCL_pop))
+
+
 ```
 
 ```{r}
@@ -117,7 +125,7 @@ plota_card_estado <- function(dados) {
               position = "stack", vjust = "center", fill = "white") +
     scale_fill_identity() + 
     scale_color_identity() +
-    scale_y_continuous(labels=function(x) {format(x/1e9, big.mark = ".", decimal.mark=",", scientific = FALSE)}, expand = expand_scale(mult = c(0, .05))) +
+    scale_y_continuous(labels=function(x) {format(x/1e9, big.mark = ".", decimal.mark=",", scientific = FALSE)}, expand = expand_scale(mult = c(.05, .1))) +
     scale_x_discrete(labels = c("ded" = "Deduções", 
                                 "dc"  = "Dívida\nConsolidada", 
                                 "dcl" = "Dívida\nConsolidada\nLíquida")) +
@@ -157,8 +165,8 @@ labels <- sprintf(
 
 
 faz_mapa <- function() {
-  leaflet(mapa_brasil, options = leafletOptions(minZoom = 3.7, maxZoom = 3.7)) %>%
-    setView(lat=-14.235, lng=-51.9253 , zoom=3.7) %>%
+  leaflet(mapa_brasil, options = leafletOptions(minZoom = 3.7, maxZoom = 4.5)) %>%
+    setView(lat=-14.235, lng=-51.9253 , zoom=4.5) %>%
     addPolygons(
       fillColor = ~pal(pct_DCL_RCL),
       weight = 3,
@@ -196,13 +204,13 @@ retorna_texto <- function(estado, variavel) {
 
 ```
 
-Análise
+Estados
 ===================================== 
 
 Column 
 -----------------------------------------------------------------------
 
-### Selecione o Estado
+### Os estados estão coloridos no mapa de acordo com sua relação DCL / RCL. Clique num Estado no mapa para obter mais informações.
 
 ```{r}
 leafletOutput("mapa")
@@ -236,10 +244,16 @@ mainPanel(
   #textOutput("DCLperCap"),
   tags$style(type="text/css", "#Estado {font-family: 'Open Sans Condensed'; font-size: 2em; color: #1f476a; padding-bottom: 5px; font-weight: 400;}"),
   tags$style(type="text/css", "#regiao {font-family: 'Open Sans Condensed'; font-size: 1.5em; padding-bottom: 5px; padding-top: 5px;}"),
-  tagAppendAttributes(textOutput("DCL_RCL"), style="font-family: 'Open Sans Condensed'"),
+  tagAppendAttributes(textOutput("DCL_RCL", container = span), style="font-family: 'Open Sans Condensed'"),
+  tagAppendAttributes(textOutput("DCL_RCL_valor_acima", container = span), style="font-family: 'Open Sans Condensed';
+                      color: firebrick;"),
+  tagAppendAttributes(textOutput("DCL_RCL_valor_abaixo", container = span), style="font-family: 'Open Sans Condensed';"),
+  tagAppendAttributes(textOutput("rankingDCL", container = span), style="font-family: 'Open Sans Condensed'"),
   tagAppendAttributes(textOutput("DCLperCap"), style="font-family: 'Open Sans Condensed'"),
   plotOutput("card")
 )
+
+# melhorar isso aqui. pegar o click uma vez só; talvez usar um input dummy.
 
 output$Estado    <- renderText(paste0("Estado: ", retorna_texto(obtem_estado_click(), "nomes")))
 output$regiao    <- renderText(retorna_texto(obtem_estado_click(), "REGIAO"))
@@ -251,13 +265,39 @@ output$pop       <- renderText(paste0("População: ",
                                             ),
                                           2),
                                         big.mark = ".", decimal.mark = ","),
-                                      " pessoas"))
+                                      " pessoas",
+                                      " (é o ",
+                                      retorna_texto(obtem_estado_click(), "pop_ranking"),
+                                      "º mais populoso)."))
+
+output$DCL_RCL <- renderText("A DCL do Estado corresponde a ")
+
+output$DCL_RCL_valor_acima <- function(){
+  vlr <- as.numeric(retorna_texto(obtem_estado_click(), "pct_DCL_RCL"))
+  if (vlr >= 120) {
+    return(paste0(percent(round(vlr/100,2)), " de sua RCL"))
+  } else {
+    return("")
+  }
+}
+
+output$DCL_RCL_valor_abaixo <- function(){
+  vlr <- as.numeric(retorna_texto(obtem_estado_click(), "pct_DCL_RCL"))
+  if (vlr >= 120) {
+    return("")
+  } else {
+    return(paste0(percent(round(vlr/100,2)), " de sua RCL"))
+  }
+}
+                                  
+output$rankingDCL <- renderText(paste0(" (é a ", retorna_texto(obtem_estado_click(), "dcl_ranking"),
+                                       "ª maior relação DCL/RCL)."))
+
 output$DCLperCap <- renderText(paste0("DCL por habitante: R$ ",
    format(round(as.numeric(retorna_texto(obtem_estado_click(), "DCL_pop")),2),
-                                       big.mark = ".", decimal.mark = ",")))
-
-output$DCLperCap <- renderText(paste0("A DCL do Estado corresponde a ",
-   percent(round(as.numeric(retorna_texto(obtem_estado_click(), "pct_DCL_RCL"))/100,2)), " de sua RCL."))
+                                       big.mark = ".", decimal.mark = ","),
+   " (é a ", retorna_texto(obtem_estado_click(), "per_cap_ranking"),
+                                       "ª maior DCL per capita)."))
 
 output$card <- renderPlot(
   plota_card_estado(sumario_grafico(obtem_estado_click())), width = "auto", height = 400)
