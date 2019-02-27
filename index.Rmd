@@ -730,11 +730,15 @@ sumario_municipios <- tabela_municipios %>%
   filter(
     Coluna %in% c("Até o 3º Quadrimestre", "Até o 2º Semestre") & 
       Conta %in% c("% da DCL sobre a RCL (III/RCL)",
+                   "DÍVIDA CONSOLIDADA - DC (I)",
+                   "DEDUÇÕES (II)",
                    "DÍVIDA CONSOLIDADA LÍQUIDA (DCL) (III) = (I - II)")) %>%
   mutate(Conta = case_when(Conta == "% da DCL sobre a RCL (III/RCL)" ~ "pct_DCL_RCL",
-                           Conta == "DÍVIDA CONSOLIDADA LÍQUIDA (DCL) (III) = (I - II)" ~"DCL")) %>%
+                           Conta == "DÍVIDA CONSOLIDADA LÍQUIDA (DCL) (III) = (I - II)" ~"DCL",
+                           Conta == "DÍVIDA CONSOLIDADA - DC (I)" ~ "DC",
+                           Conta == "DEDUÇÕES (II)" ~ "Ded")) %>%
   select(REGIAO, Instituicao, Valor, Conta, pop, UF, Escopo, CodMun = Cod.IBGE) %>%
-  spread(Conta, Valor) %>%
+  spread(Conta, Valor, fill = 0) %>%
   mutate(REGIAO = str_sub(REGIAO, 5)) %>%
   left_join(select(perfil_mun, CodMun, nome_mun = `NOME MUNIC`)) %>%
   filter(`Instituicao` != "Prefeitura Municipal de Itaíba - PE") %>%

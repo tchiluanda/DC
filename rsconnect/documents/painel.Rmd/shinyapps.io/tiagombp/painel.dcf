@@ -5,8 +5,8 @@ account: tiagombp
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 743177
-bundleId: 1903598
+bundleId: 1904473
 url: https://tiagombp.shinyapps.io/painel/
-when: 1551277131.15473
+when: 1551298358.76243
 asMultiple: FALSE
 asStatic: FALSE
