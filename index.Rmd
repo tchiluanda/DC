@@ -488,7 +488,7 @@ graf_abrang_e <- ggplot(abrangencia_e, aes(y = Valor, x = Variavel, fill = categ
 
 ```
 
-~~Se você é ansioso,~~ veja o valor da dívida consolidada do estado e/ou do município em que você mora. Pode-se dizer que está grande ou pequena? 
+~~Se você está ansioso,~~ Veja o valor da dívida consolidada do estado e/ou do município em que você mora. Pode-se dizer que está grande ou pequena? 
 
 Difícil responder olhando só para os números, não é? O ideal seria buscar referências de comparação.
 
@@ -574,6 +574,8 @@ plota_DC_estados(sumario_estados %>% filter(!(UF %in% c("SP", "RJ", "MG", "RS"))
 
 ```
 
+<p class="disclaimer">Este gráfico é idêntico ao anterior, com a exclusão dos valores de São Paulo, Rio de Janeiro, Minas Gerais e Rio Grande do Sul, que juntos representam 80% da dívida consolidada dos Estados.</p>
+
 Após garantir que todos colocam os mesmos tipos de dívidas na dívida consolidada, voltamos à pergunta: a dívida está grande ou pequena? Como comparar?
 
 ```{r ranking, fig.height=7.5, fig.width=5, fig.align="center"}
@@ -601,7 +603,7 @@ ggplot(ranking_estados, aes(x = Variavel, y = Valor, color = REGIAO, fill = REGI
   tema()
 ```
 
-
+<p class="disclaimer">Neste gráfico, na primeira coluna, os estados estão ordenados de acordo com o tamanho de sua Dívida Consolidada Líquida (já já falaremos sobre ela). Como os estados são muito diferentes entre si, às vezes fica difícil comparar valores absolutos. Assim, as duas outras colunas mostram como ficaria essa ordem se comparássemos os valores das dívidas de forma proporcional, seja considerando a relação entre a dívida do estado e sua capacidade de arrecadação (também já já falaremos sobre isso) ou a sua população. Observe o caso do Paraná: tem a nona maior dívida, mas quando comparamos com sua receita, sua dívida proporcional cai para a 16ª posição, ou para a 17ª quando comparamos com sua população.</p>
 
 Essa avaliação depende da condição financeira de cada um para pagar a dívida. Assim, uma comparação com a arrecadação da prefeitura ou do governo pode ajudar nessa resposta. 
 
@@ -721,6 +723,8 @@ ggplot(total_DCL, aes(y = UF, color = Escopo, x = DCL_percent)) +
   tema() + theme(legend.position = "top")
 ```
 
+<p class="disclaimer">Aqui, o percentual da relação DCL/RCL de cada estado é comparado com o percentual da relação RCL/RCL de todos os municípios (na verdade, todos os que apresentaram seus relatórios) do estado. Ou seja, o índice dos municípios é calculado pela soma de todas as DCLs dos municípios do estado, dividida pela soma de todas as RCLs desses municípios.</p>
+
 ```{r municipios, fig.align="center", fig.height=7.5, fig.width=5.5}
 sumario_municipios <- tabela_municipios %>%
   filter(
@@ -777,6 +781,8 @@ ggplot(sumario_municipios, aes(y = pct_DCL_RCL, x = 0, color = categorias, text 
 #            Conta %in% c("RECEITA CORRENTE LÍQUIDA - RCL", "DÍVIDA CONSOLIDADA - DC (I)", "DÍVIDA CONSOLIDADA LÍQUIDA (DCL) (III) = (I - II)")) %>% select(Instituicao, Conta) %>% mutate(Contagem = 1) %>% spread(Conta, Contagem) %>% filter(is.na(`DÍVIDA CONSOLIDADA LÍQUIDA (DCL) (III) = (I - II)`))
 
 ```
+
+<p class="disclaimer">Cada município é representado por um ponto no gráfico acima, e sua posição vertical e sua cor correspondem ao valor da relação entre sua Dívida Consolidada Líquida e sua Receita Corrente Líquida. Assim, quanto mais pra cima no gráfico, maior a relação Dívida/Receita do município -- lembrando que o limite máximo para essa relação é de 120%, segundo o Senado. Mas veja que não são muitos os municípios que estão ultrapassando esse limite.</p>
 
 Agora, uma pergunta ~~para saber se você está atento~~: toda dívida entra no cálculo da dívida consolidada? Para onde vão os precatórios que não estão vencidos, por acaso? 
 
