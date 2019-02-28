@@ -1,5 +1,5 @@
 ---
-title: ''
+title: 'Dívida Consolidada'
 output: 
   flexdashboard::flex_dashboard:
     social: menu
@@ -86,37 +86,43 @@ font-family: "Open Sans";
 </style>
 
 ```{r mun}
-sumario_mun <- tabela_municipios %>%
-  filter(
-    Coluna %in% c("Até o 3º Quadrimestre", "Até o 2º Semestre") & 
-      Conta %in% c("% da DCL sobre a RCL (III/RCL)",
-                   "DÍVIDA CONSOLIDADA - DC (I)",
-                   "DEDUÇÕES (II)",
-                   "DÍVIDA CONSOLIDADA LÍQUIDA (DCL) (III) = (I - II)")) %>%
-  mutate(Conta = case_when(Conta == "% da DCL sobre a RCL (III/RCL)" ~ "pct_DCL_RCL",
-                           Conta == "DÍVIDA CONSOLIDADA LÍQUIDA (DCL) (III) = (I - II)" ~"DCL",
-                           Conta == "DÍVIDA CONSOLIDADA - DC (I)" ~ "DC",
-                           Conta == "DEDUÇÕES (II)" ~ "Ded")) %>%
-  select(REGIAO, Instituicao, Valor, Conta, pop, UF, Escopo, CodMun = Cod.IBGE) %>%
-  spread(Conta, Valor, fill = 0) %>%
-  mutate(REGIAO = str_sub(REGIAO, 5)) %>%
-  left_join(select(perfil_mun, CodMun, nome_mun = `NOME MUNIC`)) %>%
-  left_join(estados) %>%
-  filter(`Instituicao` != "Prefeitura Municipal de Itaíba - PE") %>%
-  mutate(categorias = cut(pct_DCL_RCL, breaks = c(-Inf, 0, 25, 120, Inf),
-                          labels = c("DCL negativa", "Até 25% da RCL", "Até 120% da RCL", "Acima do Limite")),
-         dcl_pop = DCL / pop,
-         rank_dcl_pop = rank(-dcl_pop),
-         rank_pop = rank(-pop), 
-         rank_DC = rank(-DC),
-         rank_DCL_RCL = rank(-pct_DCL_RCL),
-         mun_UF = paste0(nome_mun, " - ", UF)) %>%
-  group_by(REGIAO) %>%
-  mutate(med_DCL_reg = sum(DCL)/n()) %>%
-  ungroup() %>%
-  group_by(UF) %>%
-  mutate(med_DCL_uf = sum(DCL)/n()) %>%
-  ungroup()
+
+# shinyapps saquito, vou salvar a tabela num rdata
+# sumario_mun <- tabela_municipios %>%
+#   filter(
+#     Coluna %in% c("Até o 3º Quadrimestre", "Até o 2º Semestre") & 
+#       Conta %in% c("% da DCL sobre a RCL (III/RCL)",
+#                    "DÍVIDA CONSOLIDADA - DC (I)",
+#                    "DEDUÇÕES (II)",
+#                    "DÍVIDA CONSOLIDADA LÍQUIDA (DCL) (III) = (I - II)")) %>%
+#   mutate(Conta = case_when(Conta == "% da DCL sobre a RCL (III/RCL)" ~ "pct_DCL_RCL",
+#                            Conta == "DÍVIDA CONSOLIDADA LÍQUIDA (DCL) (III) = (I - II)" ~ "DCL",
+#                            Conta == "DÍVIDA CONSOLIDADA - DC (I)" ~ "DC",
+#                            Conta == "DEDUÇÕES (II)" ~ "Ded")) %>%
+#   select(REGIAO, Instituicao, Valor, Conta, pop, UF, Escopo, CodMun = Cod.IBGE) %>%
+#   spread(Conta, Valor, fill = 0) %>%
+#   mutate(REGIAO = str_sub(REGIAO, 5)) %>%
+#   left_join(select(perfil_mun, CodMun, nome_mun = `NOME MUNIC`)) %>%
+#   left_join(estados) %>%
+#   filter(`Instituicao` != "Prefeitura Municipal de Itaíba - PE") %>%
+#   mutate(categorias = cut(pct_DCL_RCL, breaks = c(-Inf, 0, 25, 120, Inf),
+#                           labels = c("DCL negativa", "Até 25% da RCL", "Até 120% da RCL", "Acima do Limite")),
+#          dcl_pop = DCL / pop,
+#          rank_dcl_pop = rank(-dcl_pop),
+#          rank_pop = rank(-pop), 
+#          rank_DC = rank(-DC),
+#          rank_DCL_RCL = rank(-pct_DCL_RCL),
+#          mun_UF = paste0(nome_mun, " - ", UF)) %>%
+#   group_by(REGIAO) %>%
+#   mutate(med_DCL_reg = sum(DCL)/n()) %>%
+#   ungroup() %>%
+#   group_by(UF) %>%
+#   mutate(med_DCL_uf = sum(DCL)/n()) %>%
+#   ungroup()
+#
+#save(sumario_mun, file = "sumario_mun.RData")
+
+load("sumario_mun.RData")
 
 sumario_mun <- sumario_mun %>%
   group_by(categorias) %>%
@@ -187,11 +193,11 @@ plota_card_mun <- function(dados) {
 
 plota_swarm <- function(mun){
   ggplot(sumario_mun, aes(y = pct_DCL_RCL, x = 0)) +
-    geom_quasirandom(varwidth = TRUE, alpha = 1,  
+    geom_quasirandom(varwidth = TRUE, alpha = 1,
                      aes(color = ifelse(mun_UF == mun, "destaque", "resto"),
                          size = ifelse(mun_UF == mun, "destaque", "resto"))) +
-    geom_text(aes(label = ifelse(mun_UF == mun, paste0(mun_UF,"\nDCL/RCL: ", percent(pct_DCL_RCL/100)), NA)), 
-              position = position_quasirandom(varwidth = TRUE), vjust = -0.5, 
+    geom_text(aes(label = ifelse(mun_UF == mun, paste0(mun_UF,"\nDCL/RCL: ", percent(pct_DCL_RCL/100)), NA)),
+              position = position_quasirandom(varwidth = TRUE), vjust = -0.5,
               hjust = "center", family = "Open Sans", color = "firebrick") +
     scale_size_manual(values = c("destaque" = 2.5, "resto" = 0.5)) +
     scale_color_manual(values = c("destaque" = "firebrick", "resto" = "lightgray")) +
@@ -199,7 +205,7 @@ plota_swarm <- function(mun){
     labs(y = "% DCL / RCL") +
     tema() + theme(axis.line.x = element_blank(), axis.ticks.x = element_blank(),
                    axis.text.x = element_blank(), axis.title.x = element_blank()) +
-    geom_hline(yintercept = 120, linetype = "dotted", color = "dimgrey") + 
+    geom_hline(yintercept = 120, linetype = "dotted", color = "dimgrey") +
     annotate(geom = "text", y = 125, x = -0.42, family = "Open Sans", label = "Limite (120%)",
              size = 2.5, hjust = "inward", vjust = "bottom", color = "dimgrey")
 }
@@ -378,13 +384,13 @@ Column
 ### Dados obtidos do Relatório de Gestão Fiscal de 2018
 
 ```{r}
-mainPanel(width = "90%", height = "90%",
+fillCol(height = 660, flex = NA,
   textOutput("Estado"),
   textOutput("regiao"),
-  tagAppendAttributes(textOutput("pop"), style="font-family: 'Open Sans'"),
+  tagAppendAttributes(textOutput("pop"), style="font-family: 'Open Sans'; padding-top: 5px;"),
   #textOutput("DCLperCap"),
-  tags$style(type="text/css", "#Estado {font-family: 'Open Sans'; font-size: 2em; color: #1f476a; padding-bottom: 5px; font-weight: 400;}"),
-  tags$style(type="text/css", "#regiao {font-family: 'Open Sans'; font-size: 1.5em; padding-bottom: 5px; padding-top: 5px;}"),
+  tags$style(type="text/css", "#Estado {font-family: 'Open Sans'; font-size: 2em; color: #1f476a; padding-bottom: 5px; font-weight: bold;}"),
+  tags$style(type="text/css", "#regiao {font-family: 'Open Sans'; font-size: 1.2em; padding-bottom: 5px; padding-top: 5px;}"),
   tagAppendAttributes(textOutput("DCL_RCL", container = span), style="font-family: 'Open Sans'"),
   tagAppendAttributes(textOutput("DCL_RCL_valor_acima", container = span), style="font-family: 'Open Sans';
                       color: firebrick;"),
@@ -473,13 +479,13 @@ Column
 ### Informações do município
 
 ```{r}
-mainPanel(width = "95%",
+fillCol(height = 660, flex = NA,
   textOutput("Municipio"),
   tags$style(type="text/css", "#Municipio {font-family: 'Open Sans'; font-size: 2em; color: #1f476a; padding-bottom: 5px; font-weight: bold;}"),
   tagAppendAttributes(textOutput("mun_UF"), style="font-family: 'Open Sans'; font-size: 1.7em; padding-bottom: 3px; font-weight: 400;"),
   textOutput("reg"),
-  tags$style(type="text/css", "#reg {font-family: 'Open Sans'; font-size: 1.5em; padding-bottom: 5px; padding-top: 5px;}"),
-  tagAppendAttributes(textOutput("mun_pop"), style="font-family: 'Open Sans'"),
+  tags$style(type="text/css", "#reg {font-family: 'Open Sans'; font-size: 1.2em; padding-bottom: 5px; padding-top: 5px;}"),
+  tagAppendAttributes(textOutput("mun_pop"), style="font-family: 'Open Sans'; padding-top: 5px;"),
   tagAppendAttributes(textOutput("mun_DCL_RCL", container = span), style="font-family: 'Open Sans'"),
   tagAppendAttributes(textOutput("mun_DCL_RCL_valor_acima", container = span), style="font-family: 'Open Sans'; color: firebrick;"),
   tagAppendAttributes(textOutput("mun_DCL_RCL_valor_abaixo", container = span), style="font-family: 'Open Sans';"),

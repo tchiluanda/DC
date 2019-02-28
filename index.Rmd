@@ -32,6 +32,13 @@ h1, h2, h3, h4 {
   font-family: "Open Sans Condensed";
 }
 
+.link-painel {
+  box-shadow: inset 0em -0.5em lightblue;
+  color: #333;
+  text-decoration: none;
+  font-weight: 800;
+}
+
 .conceito {
     padding: 2px;
     background-color: lightblue;
@@ -488,7 +495,7 @@ graf_abrang_e <- ggplot(abrangencia_e, aes(y = Valor, x = Variavel, fill = categ
 
 ```
 
-~~Se você está ansioso,~~ Veja o valor da dívida consolidada do estado e/ou do município em que você mora. Pode-se dizer que está grande ou pequena? 
+~~Se você está ansioso,~~ <a href="https://tiagombp.shinyapps.io/painel/" class="link-painel" target="blank">Veja o valor da dívida consolidada do estado e/ou do município em que você mora</a>. Pode-se dizer que está grande ou pequena? 
 
 Difícil responder olhando só para os números, não é? O ideal seria buscar referências de comparação.
 
@@ -603,7 +610,7 @@ ggplot(ranking_estados, aes(x = Variavel, y = Valor, color = REGIAO, fill = REGI
   tema()
 ```
 
-<p class="disclaimer">Neste gráfico, na primeira coluna, os estados estão ordenados de acordo com o tamanho de sua Dívida Consolidada Líquida (já já falaremos sobre ela). Como os estados são muito diferentes entre si, às vezes fica difícil comparar valores absolutos. Assim, as duas outras colunas mostram como ficaria essa ordem se comparássemos os valores das dívidas de forma proporcional, seja considerando a relação entre a dívida do estado e sua capacidade de arrecadação (também já já falaremos sobre isso) ou a sua população. Observe o caso do Paraná: tem a nona maior dívida, mas quando comparamos com sua receita, sua dívida proporcional cai para a 16ª posição, ou para a 17ª quando comparamos com sua população.</p>
+<p class="disclaimer">Neste gráfico, na primeira coluna, os estados estão ordenados de acordo com o tamanho de sua Dívida Consolidada Líquida (já já falaremos sobre ela). Como os estados são muito diferentes entre si, às vezes fica difícil comparar valores absolutos. Assim, as duas outras colunas mostram como ficaria essa ordem se comparássemos os valores das dívidas de forma proporcional, seja considerando a relação entre a dívida do estado e sua capacidade de arrecadação (também já já falaremos sobre isso) ou a sua população. Observe o caso do Paraná: tem a nona maior dívida, mas quando comparamos com sua receita, sua dívida proporcional cai para a 16ª posição, ou para a 17ª quando ponderamos o valor de sua dívida pelo tamanho de sua população.</p>
 
 Essa avaliação depende da condição financeira de cada um para pagar a dívida. Assim, uma comparação com a arrecadação da prefeitura ou do governo pode ajudar nessa resposta. 
 
@@ -723,7 +730,7 @@ ggplot(total_DCL, aes(y = UF, color = Escopo, x = DCL_percent)) +
   tema() + theme(legend.position = "top")
 ```
 
-<p class="disclaimer">Aqui, o percentual da relação DCL/RCL de cada estado é comparado com o percentual da relação RCL/RCL de todos os municípios (na verdade, todos os que apresentaram seus relatórios) do estado. Ou seja, o índice dos municípios é calculado pela soma de todas as DCLs dos municípios do estado, dividida pela soma de todas as RCLs desses municípios.</p>
+<p class="disclaimer">Aqui, o percentual da relação DCL/RCL de cada estado é comparado com o percentual da relação DCL/RCL de todos os municípios (na verdade, todos os que apresentaram seus relatórios) do estado. Ou seja, o índice dos municípios é calculado pela soma de todas as DCLs dos municípios do estado, dividida pela soma de todas as RCLs desses municípios.</p>
 
 ```{r municipios, fig.align="center", fig.height=7.5, fig.width=5.5}
 sumario_municipios <- tabela_municipios %>%
@@ -750,7 +757,7 @@ sumario_municipios <- tabela_municipios %>%
 sumario_municipios <- sumario_municipios %>%
   group_by(categorias) %>%
   summarise(qde = n()) %>%
-  mutate(posicoes = c(-50, 25, 120, 160, NA)) %>%
+  mutate(posicoes = c(-50, 25, 120, 160)) %>%
   right_join(sumario_municipios)
 
 paleta_swarm <- brewer.pal(4, "Spectral") 
