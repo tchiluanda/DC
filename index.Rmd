@@ -17,7 +17,7 @@ knitr::opts_chunk$set(
 body {
   font-family: 'Open Sans', sans-serif;
   line-height: 1.6;
-  max-width: 700px;
+  max-width: 650px;
   margin-left: auto;
   margin-right: auto;
 }
