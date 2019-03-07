@@ -16,7 +16,8 @@ knitr::opts_chunk$set(
 ```{css, echo=FALSE}
 body {
   font-family: 'Open Sans', sans-serif;
-  line-height: 1.6;
+  font-size: 15px;
+  line-height: 1.4;
   max-width: 650px;
   margin-left: auto;
   margin-right: auto;
@@ -176,7 +177,7 @@ img.abertura {
 }
 
 .descricao img {
-  width: 80%;
+  width: 100%;
   margin-left: auto;
   margin-right: auto;
   display: block;
@@ -330,7 +331,7 @@ tabela_completa <- rbind(tabela_estados, tabela_municipios)
 
 Dívida é uma quantia que se tem de pagar a alguém. O que interessa bastante para esse ~~tal de~~ alguém. E ~~tomara~~ muito importante para quem deve. Caso você não seja nenhum dos dois, por que continuar lendo sobre esse assunto ~~espinhoso~~?
 
-Bom, vivemos em uma cidade, que tem uma prefeitura, certo? Essa cidade está dentro de um estado, que tem um governo. E isso tudo ~~incluindo você~~ fica em um país. Você teria curiosidade em saber o quanto <del class="del-de-verdade">nós devemos</del> eles <span class="conceito" id="conceito-declaram">declaram</span> que devem?
+Bom, vivemos em uma cidade, que tem uma prefeitura, certo? Essa cidade está dentro de um estado, que tem um governo. E isso tudo ~~incluindo você~~ fica em um país. Você teria curiosidade em saber o quanto eles <span class="conceito" id="conceito-declaram">declaram</span> que <del class="del-de-verdade">nós devemos</del> devem?
 
 <p class="disclaimer">Ao longo do texto, existem vários termos destacados com o fundo azul. Para não interromper a narrativa com tecnicismos, os conceitos envolvidos estão descritos de forma mais precisa e rigorosa em quadros que podem ser exibidos (e ocultados) clicando-se sobre esses termos com fundo em azul.</p>
 
@@ -504,11 +505,11 @@ Antes disso, porém, é preciso garantir que estamos falando de coisas iguais ~~
 
 Na verdade, existem diversas formas de se medir a dívida de um ente público. É possível que você já tenha esbarrado em alguns desses: DPF, DPMFi, DBGG, DLSP, DC... uma verdadeira sopa de letrinhas.
 
-A Dívida Consolidada ou Fundada* corresponde ao montante total das obrigações financeiras, apurado sem duplicidade (excluídas obrigações entre órgãos da administração direta e entre estes e as entidades da administração indireta), assumidas:
+A Dívida Consolidada ou Fundada<sup>*</sup> corresponde ao montante total das obrigações financeiras, apurado sem duplicidade (excluídas obrigações entre órgãos da administração direta e entre estes e as entidades da administração indireta), assumidas:
 
 a) pela emissão de títulos públicos, para amortização em prazo superior a 12 (doze) meses (dívida mobiliária);
 
-b) em virtude de leis, contratos (dívida contratual), convênios ou tratados e da realização de operações de crédito**, para amortização em prazo superior a 12 (doze) meses;
+b) em virtude de leis, contratos (dívida contratual), convênios ou tratados e da realização de operações de crédito<sup>**</sup>, para amortização em prazo superior a 12 (doze) meses;
 
 c) pela realização de operações de crédito que, embora de prazo inferior a 12 (doze) meses, tenham constado como receitas no orçamento;
 
@@ -516,9 +517,9 @@ d) com os precatórios judiciais emitidos a partir de 5 de maio de 2000 e não p
 
 e) pela realização de operações equiparadas a operações de crédito pela LRF, para amortização em prazo superior a 12 (doze) meses.
 
-* Esse conceito de dívida pública consolidada ou fundada, definido no art. 29, I, da Lei de Responsabilidade Fiscal, difere da classificação patrimonial da dívida adotada pelo art. 98 da Lei nº 4.320/64. Apesar de a Lei nº 4.320/64 também usar o termo dívida fundada e a LRF tratar como sinônimas as expressões dívida pública consolidada ou fundada, entende-se que o conceito apresentado na LRF é mais amplo que o inscrito Lei nº 4.320/64. A LRF conferiu maior abrangência à definição do que integra a dívida pública consolidada ou fundada para os seus fins, buscando dar transparência à natureza e ao volume do endividamento dos entes públicos.
+<sup>*</sup> Esse conceito de dívida pública consolidada ou fundada, definido no art. 29, I, da Lei de Responsabilidade Fiscal, difere da classificação patrimonial da dívida adotada pelo art. 98 da Lei nº 4.320/64. Apesar de a Lei nº 4.320/64 também usar o termo dívida fundada e a LRF tratar como sinônimas as expressões dívida pública consolidada ou fundada, entende-se que o conceito apresentado na LRF é mais amplo que o inscrito Lei nº 4.320/64. A LRF conferiu maior abrangência à definição do que integra a dívida pública consolidada ou fundada para os seus fins, buscando dar transparência à natureza e ao volume do endividamento dos entes públicos.
 
-** Operações de crédito são compromissos financeiros assumidos em razão de mútuo, abertura de crédito, emissão e aceite de título, aquisição financiada de bens, recebimento antecipado de valores provenientes da venda a termo de bens e serviços, arrendamento mercantil e outras operações assemelhadas, inclusive com o uso de derivativos financeiros. Equipara-se à operação de crédito a assunção, o reconhecimento ou a confissão de dívidas pelo ente da Federação. Dados detalhados das operações de crédito dos estados e municípios (incluindo encargos e condições contratuais) podem ser obtidos SADIPEM/CDP.
+<sup>**</sup> Operações de crédito são compromissos financeiros assumidos em razão de mútuo, abertura de crédito, emissão e aceite de título, aquisição financiada de bens, recebimento antecipado de valores provenientes da venda a termo de bens e serviços, arrendamento mercantil e outras operações assemelhadas, inclusive com o uso de derivativos financeiros. Equipara-se à operação de crédito a assunção, o reconhecimento ou a confissão de dívidas pelo ente da Federação. Dados detalhados das operações de crédito dos estados e municípios (incluindo encargos e condições contratuais) podem ser obtidos SADIPEM/CDP.
 
 <p class="fechar-card"><a class="link-fechar" id="fechar-dc" href="#conceito-dc">^ Fechar e voltar ao texto ^</a></p>
 </div>

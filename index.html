@@ -207,12 +207,11 @@ $(document).ready(function () {
 <style type="text/css">
 body {
   font-family: 'Open Sans', sans-serif;
-  line-height: 1.6em;
-  max-width: 700px;
+  font-size: 15px;
+  line-height: 1.4;
+  max-width: 650px;
   margin-left: auto;
   margin-right: auto;
-  padding-left: 20px;
-  padding-right: 20px;
 }
 
 h1, h2, h3, h4 {
@@ -369,7 +368,7 @@ img.abertura {
 }
 
 .descricao img {
-  width: 80%;
+  width: 100%;
   margin-left: auto;
   margin-right: auto;
   display: block;
@@ -517,7 +516,7 @@ tabela_completa &lt;- rbind(tabela_estados, tabela_municipios)
 Créditos da imagem: <a href="http://www.willtirando.com.br/" target="blank">William Leite</a>
 </p>
 <p>Dívida é uma quantia que se tem de pagar a alguém. O que interessa bastante para esse <del>tal de</del> alguém. E <del>tomara</del> muito importante para quem deve. Caso você não seja nenhum dos dois, por que continuar lendo sobre esse assunto <del>espinhoso</del>?</p>
-<p>Bom, vivemos em uma cidade, que tem uma prefeitura, certo? Essa cidade está dentro de um estado, que tem um governo. E isso tudo <del>incluindo você</del> fica em um país. Você teria curiosidade em saber o quanto <del class="del-de-verdade">nós devemos</del> eles <span id="conceito-declaram" class="conceito">declaram</span> que devem?</p>
+<p>Bom, vivemos em uma cidade, que tem uma prefeitura, certo? Essa cidade está dentro de um estado, que tem um governo. E isso tudo <del>incluindo você</del> fica em um país. Você teria curiosidade em saber o quanto eles <span id="conceito-declaram" class="conceito">declaram</span> que <del class="del-de-verdade">nós devemos</del> devem?</p>
 <p class="disclaimer">
 Ao longo do texto, existem vários termos destacados com o fundo azul. Para não interromper a narrativa com tecnicismos, os conceitos envolvidos estão descritos de forma mais precisa e rigorosa em quadros que podem ser exibidos (e ocultados) clicando-se sobre esses termos com fundo em azul.
 </p>
@@ -679,18 +678,16 @@ graf_abrang_e &lt;- ggplot(abrangencia_e, aes(y = Valor, x = Variavel, fill = ca
 Dívida Consolidada e as várias formas de se medir a dívida pública
 </p>
 <p>Na verdade, existem diversas formas de se medir a dívida de um ente público. É possível que você já tenha esbarrado em alguns desses: DPF, DPMFi, DBGG, DLSP, DC… uma verdadeira sopa de letrinhas.</p>
-<p>A Dívida Consolidada ou Fundada* corresponde ao montante total das obrigações financeiras, apurado sem duplicidade (excluídas obrigações entre órgãos da administração direta e entre estes e as entidades da administração indireta), assumidas:</p>
+<p>A Dívida Consolidada ou Fundada<sup>*</sup> corresponde ao montante total das obrigações financeiras, apurado sem duplicidade (excluídas obrigações entre órgãos da administração direta e entre estes e as entidades da administração indireta), assumidas:</p>
 <ol style="list-style-type: lower-alpha">
 <li><p>pela emissão de títulos públicos, para amortização em prazo superior a 12 (doze) meses (dívida mobiliária);</p></li>
-<li><p>em virtude de leis, contratos (dívida contratual), convênios ou tratados e da realização de operações de crédito**, para amortização em prazo superior a 12 (doze) meses;</p></li>
+<li><p>em virtude de leis, contratos (dívida contratual), convênios ou tratados e da realização de operações de crédito<sup>**</sup>, para amortização em prazo superior a 12 (doze) meses;</p></li>
 <li><p>pela realização de operações de crédito que, embora de prazo inferior a 12 (doze) meses, tenham constado como receitas no orçamento;</p></li>
 <li><p>com os precatórios judiciais emitidos a partir de 5 de maio de 2000 e não pagos durante a execução do orçamento em que houverem sido incluídos;</p></li>
 <li><p>pela realização de operações equiparadas a operações de crédito pela LRF, para amortização em prazo superior a 12 (doze) meses.</p></li>
 </ol>
-<ul>
-<li>Esse conceito de dívida pública consolidada ou fundada, definido no art. 29, I, da Lei de Responsabilidade Fiscal, difere da classificação patrimonial da dívida adotada pelo art. 98 da Lei nº 4.320/64. Apesar de a Lei nº 4.320/64 também usar o termo dívida fundada e a LRF tratar como sinônimas as expressões dívida pública consolidada ou fundada, entende-se que o conceito apresentado na LRF é mais amplo que o inscrito Lei nº 4.320/64. A LRF conferiu maior abrangência à definição do que integra a dívida pública consolidada ou fundada para os seus fins, buscando dar transparência à natureza e ao volume do endividamento dos entes públicos.</li>
-</ul>
-<p>** Operações de crédito são compromissos financeiros assumidos em razão de mútuo, abertura de crédito, emissão e aceite de título, aquisição financiada de bens, recebimento antecipado de valores provenientes da venda a termo de bens e serviços, arrendamento mercantil e outras operações assemelhadas, inclusive com o uso de derivativos financeiros. Equipara-se à operação de crédito a assunção, o reconhecimento ou a confissão de dívidas pelo ente da Federação. Dados detalhados das operações de crédito dos estados e municípios (incluindo encargos e condições contratuais) podem ser obtidos SADIPEM/CDP.</p>
+<p><sup>*</sup> Esse conceito de dívida pública consolidada ou fundada, definido no art. 29, I, da Lei de Responsabilidade Fiscal, difere da classificação patrimonial da dívida adotada pelo art. 98 da Lei nº 4.320/64. Apesar de a Lei nº 4.320/64 também usar o termo dívida fundada e a LRF tratar como sinônimas as expressões dívida pública consolidada ou fundada, entende-se que o conceito apresentado na LRF é mais amplo que o inscrito Lei nº 4.320/64. A LRF conferiu maior abrangência à definição do que integra a dívida pública consolidada ou fundada para os seus fins, buscando dar transparência à natureza e ao volume do endividamento dos entes públicos.</p>
+<p><sup>**</sup> Operações de crédito são compromissos financeiros assumidos em razão de mútuo, abertura de crédito, emissão e aceite de título, aquisição financiada de bens, recebimento antecipado de valores provenientes da venda a termo de bens e serviços, arrendamento mercantil e outras operações assemelhadas, inclusive com o uso de derivativos financeiros. Equipara-se à operação de crédito a assunção, o reconhecimento ou a confissão de dívidas pelo ente da Federação. Dados detalhados das operações de crédito dos estados e municípios (incluindo encargos e condições contratuais) podem ser obtidos SADIPEM/CDP.</p>
 <p class="fechar-card">
 <a class="link-fechar" id="fechar-dc" href="#conceito-dc">^ Fechar e voltar ao texto ^</a>
 </p>
