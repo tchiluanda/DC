@@ -1,0 +1,45 @@
+---
+title: "teste"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{css}
+.caixa-colorida {
+  background-color: dodgerblue;
+  color: ghostwhite;
+}
+
+.destaque {
+  background-color: yellow;
+}
+
+.body {
+  
+}
+```
+
+
+# Primeiro título
+
+Teste de parágrafo.
+
+
+::::: {.caixa-colorida}
+
+Teríamos uma caixa aqui?
+
+Que interessante...
+
+## Talvez até com títulos?!
+
+Muito.
+
+:::::
+
+Voltando ao texto normal.
+
+Poderia até usar um [spans!]{.destaque}, que legal.
