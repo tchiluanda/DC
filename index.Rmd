@@ -89,7 +89,7 @@ del.del-de-verdade {
     margin: 0px;
 }
 
-p.disclaimer {
+.disclaimer {
     font-size: 0.8em;
     padding: 8px;
     margin: 8px;
@@ -98,7 +98,7 @@ p.disclaimer {
     font-style: italic;
 }
 
-p.titulo-card {
+.descricao > h2 {
     text-transform: uppercase;
     background-color: steelblue;
     color: white;
@@ -196,7 +196,7 @@ img.abertura {
 @import url('https://fonts.googleapis.com/css?family=Lora|Varela+Round&display=swap');
 </style>
 
-```{r libraries}
+```{r init}
 library(tidyverse)
 library(scales)
 library(readxl)
@@ -206,21 +206,20 @@ library(RColorBrewer)
 #library(ckanr)
 #library(skimr)
 library(shiny)
-library(leaflet)
+#library(leaflet)
 library(ggbeeswarm)
-library(plotly)
+#library(plotly)
 library(viridis)
 library(ggrepel)
 
 tema <- function(){
     theme_minimal() +
     theme(
-      text = element_text(family = "Open Sans", colour = "grey20"),
-      title = element_text(face = "bold", size = 10, color = "#1E4C7A"), 
-      plot.subtitle = element_text(family = "Open Sans Condensed", 
-                                   color = "grey20", face = "plain", size = 10),
-      axis.text = element_text(family = "Open Sans", colour = "grey20", size = 8),
-      plot.caption = element_text(face = "italic"),
+      text = element_text(family = "Varela Round", colour = "grey20"),
+      title = element_text(family = "Lora", face = "bold", size = 10, color = "#1E4C7A"), 
+      plot.subtitle = element_text(color = "grey20", face = "plain", size = 10),
+      axis.text = element_text(colour = "grey20", size = 8),
+      plot.caption = element_text(family = "Lora", face = "italic"),
       panel.grid.major = element_blank(), 
       panel.grid.minor = element_blank(),
       legend.text = element_text(size = 8),
@@ -260,28 +259,32 @@ estados <- data.frame(
 
 # estou comentando toda a leitura de dados externos para bypassar erro do Shiny. Salvei os dados em .RData e vou lê-los diretamente. 
 
+# origens dos dados: 
+# Siconfi (Finbra, RGF); e 
+# IBGE (https://www.ibge.gov.br/estatisticas/downloads-estatisticas.html, "Perfil Municípios").
+
 # dados estados
-# tabela_estados <- read.csv2("./dados/finbraRGF_estados.csv", skip = 5) %>%
-#   mutate(Escopo    = "Estados",
-#          Exercicio = 2018)
+tabela_estados <- read.csv2("./dados/finbraRGF_estados.csv", skip = 5) %>%
+  mutate(Escopo    = "Estados",
+         Exercicio = 2019)
 
 # dados municípios
-#perfil_mun <- read_excel("./dados/Base MUNIC 2017.xls", sheet = "Variáveis externas")
-#tabela_mun1 <- read.csv2("./dados/finbraRGF_mun.csv", skip = 5) 
-#tabela_mun2 <- read.csv2("./dados/finbraRGF_mun_semestre.csv", skip = 5)
+perfil_mun <- read_excel("./dados/Base_MUNIC_2018.xlsx", sheet = "Variáveis externas")
+tabela_mun1 <- read.csv2("./dados/finbraRGF_mun.csv", skip = 5)
+tabela_mun2 <- read.csv2("./dados/finbraRGF_mun_semestre.csv", skip = 5)
 
 # dados uniao
-#  tabela_uniao <- read.csv2("./dados/finbraRGF_uniao.csv", skip = 5) %>% 
-#   mutate(Escopo    = "Uniao",
-#          Exercicio = 2018)
+tabela_uniao <- read.csv2("./dados/finbraRGF_uniao.csv", skip = 5) %>%
+  mutate(Escopo    = "Uniao",
+         Exercicio = 2019)
 # 
-# save(list = c("tabela_estados", "tabela_uniao", "tabela_mun1", "tabela_mun2", "perfil_mun"), file = "dados.RData")
+save(list = c("tabela_estados", "tabela_uniao", "tabela_mun1", "tabela_mun2", "perfil_mun"), file = "dados.RData")
 
 # para o shiny
 # save(list = c("tabela_estados", "tabela_uniao", "tabela_mun1", "tabela_mun2", "perfil_mun", "tabela_municipios", "estados", "sumario_estados", "sumario_estados_regionalizado"), file = "dados_shiny.RData")
 
 # bloco para resolver problemas do shiny
-load("dados.RData")
+# load("dados.RData")
 names(tabela_mun1) <- c("Instituicao", "Cod.IBGE", "UF", "PODER", "Populacao", "Coluna", 
 "Conta", "Valor")
 names(tabela_mun2) <- c("Instituicao", "Cod.IBGE", "UF", "PODER", "Populacao", "Coluna", 
@@ -294,7 +297,7 @@ names(tabela_estados) <- c("Instituicao", "Cod.IBGE", "UF", "PODER", "Populacao"
 
 tabela_mun <- rbind(tabela_mun1, tabela_mun2) %>%
   mutate(Escopo    = "Municípios",
-         Exercicio = 2018)
+         Exercicio = 2019)
 
 # população atualizada
 pop_UFs <- perfil_mun %>%
@@ -306,7 +309,7 @@ tabela_estados <- tabela_estados %>%
   mutate(`CLASSE POP` = NA)
 
 tabela_municipios <- perfil_mun %>%
-  select(Cod.IBGE = CodMun, REGIAO, pop = `POP EST`, `CLASSE POP`) %>%
+  select(Cod.IBGE = `Cod Municipio`, REGIAO, pop = `POP EST`, `CLASSE POP`) %>%
   right_join(tabela_mun)
 
 tabela_completa <- rbind(tabela_estados, tabela_municipios)
@@ -331,15 +334,19 @@ tabela_completa <- rbind(tabela_estados, tabela_municipios)
 <p style = "text-align: center; font-size: 0.7em;">Créditos da imagem: <a href="http://www.willtirando.com.br/" target="blank">William Leite</a></p>
 
 
-Dívida é uma quantia que se tem de pagar a alguém. O que interessa bastante para esse ~~tal de~~ alguém. E ~~tomara~~ muito importante para quem deve. Caso você não seja nenhum dos dois, por que continuar lendo sobre esse assunto ~~espinhoso~~?
+Dívida é uma quantia que se tem de pagar a alguém. O que interessa bastante para esse alguém. E muito importante para quem deve. Caso você não seja nenhum dos dois, por que continuar lendo sobre esse assunto?
 
-Bom, vivemos em uma cidade, que tem uma prefeitura, certo? Essa cidade está dentro de um estado, que tem um governo. E isso tudo ~~incluindo você~~ fica em um país. Você teria curiosidade em saber o quanto eles <span class="conceito" id="conceito-declaram">declaram</span> que <del class="del-de-verdade">nós devemos</del> devem?
+Bom, vivemos em uma cidade, que tem uma prefeitura, certo? Essa cidade está dentro de um estado, que tem um governo. E isso tudo (incluindo você) fica em um país. Você teria curiosidade em saber o quanto eles [declaram]{.conceito #conceito-declaram} que ~~nós devemos~~ devem?
 
-<p class="disclaimer">Ao longo do texto, existem vários termos destacados com o fundo azul. Para não interromper a narrativa com tecnicismos, os conceitos envolvidos estão descritos de forma mais precisa e rigorosa em quadros que podem ser exibidos (e ocultados) clicando-se sobre esses termos com fundo em azul.</p>
+::::: {.disclaimer}
+Ao longo do texto, existem vários termos destacados com o fundo azul. Para não interromper a narrativa com tecnicismos, os conceitos envolvidos estão descritos de forma mais precisa e rigorosa em quadros que podem ser exibidos (e ocultados) clicando-se sobre esses termos com fundo em azul.
+:::::
 
-<div class="descricao" id="descricao-declaram"> 
-<p class="titulo-card">Origem e Abrangência das informações</p> 
-<p>A principal fonte de dados deste painel é o Sistema de Informações Contábeis e Fiscais do Setor Público Brasileiro - SICONFI, em especial, os dados declarados pelos entes federativos através dos Relatórios de Gestão Fiscal - RGF.
+::::: {.descricao #descricao-declaram}
+
+## Origem e Abrangência das informações
+
+A principal fonte de dados deste painel é o Sistema de Informações Contábeis e Fiscais do Setor Público Brasileiro - SICONFI, em especial, os dados declarados pelos entes federativos através dos Relatórios de Gestão Fiscal - RGF.
 
 As informações sobre os encargos e condições de contratação dos estados e municípios. por sua vez, estão disponíveis no módulo de Cadastro da Dívida Pública (CDP) do Sistema de Análise da Dívida Pública, Operações de Crédito e Garantias da União, Estados e Municípios (SADIPEM). O CDP recebe a declaração detalhada das dívidas dos estados e municípios. Atualmente, nem todos os estados e municípios enviam essa declaração, o que pode causar divergência nos dados.
 
@@ -350,6 +357,8 @@ O Tesouro Nacional vem trabalhando para melhorar a qualidade e para aumentar a d
 <img src="abrangencia_e.png">
 
 Os dados são referentes ao dia 31 de dezembro do exercício anterior. E a atualização dos dados será mensal.
+
+:::::
 
 </p>
 
