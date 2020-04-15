@@ -264,7 +264,7 @@ estados <- data.frame(
 # IBGE (https://www.ibge.gov.br/estatisticas/downloads-estatisticas.html, "Perfil Municípios").
 
 # dados estados
-tabela_estados <- read.csv2("./dados/finbraRGF_estados.csv", skip = 5) %>%
+tabela_estados_raw <- read.csv2("./dados/finbraRGF_estados.csv", skip = 5) %>%
   mutate(Escopo    = "Estados",
          Exercicio = 2019)
 
@@ -278,7 +278,7 @@ tabela_uniao <- read.csv2("./dados/finbraRGF_uniao.csv", skip = 5) %>%
   mutate(Escopo    = "Uniao",
          Exercicio = 2019)
 # 
-save(list = c("tabela_estados", "tabela_uniao", "tabela_mun1", "tabela_mun2", "perfil_mun"), file = "dados.RData")
+save(list = c("tabela_estados_raw", "tabela_uniao", "tabela_mun1", "tabela_mun2", "perfil_mun"), file = "dados.RData")
 
 # para o shiny
 # save(list = c("tabela_estados", "tabela_uniao", "tabela_mun1", "tabela_mun2", "perfil_mun", "tabela_municipios", "estados", "sumario_estados", "sumario_estados_regionalizado"), file = "dados_shiny.RData")
@@ -291,7 +291,7 @@ names(tabela_mun2) <- c("Instituicao", "Cod.IBGE", "UF", "PODER", "Populacao", "
 "Conta", "Valor")
 names(tabela_uniao) <- c("Instituicao", "Cod.IBGE", "UF", "PODER", "Populacao", "Coluna", 
 "Conta", "Valor", "Escopo", "Exercicio")
-names(tabela_estados) <- c("Instituicao", "Cod.IBGE", "UF", "PODER", "Populacao", "Coluna", 
+names(tabela_estados_raw) <- c("Instituicao", "Cod.IBGE", "UF", "PODER", "Populacao", "Coluna", 
 "Conta", "Valor", "Escopo", "Exercicio")
 #
 
@@ -304,9 +304,13 @@ pop_UFs <- perfil_mun %>%
   group_by(UF, REGIAO) %>%
   summarise(pop = sum(`POP EST`))
 
-tabela_estados <- tabela_estados %>%
+tabela_estados <- tabela_estados_raw %>%
+  left_join(estados) %>%
+  rename(siglaUF = UF,
+         UF = nomes) %>%
   inner_join(pop_UFs) %>%
-  mutate(`CLASSE POP` = NA)
+  mutate(`CLASSE POP` = NA) %>%
+  select(-siglaUF)
 
 tabela_municipios <- perfil_mun %>%
   select(Cod.IBGE = `Cod Municipio`, REGIAO, pop = `POP EST`, `CLASSE POP`) %>%
@@ -358,11 +362,11 @@ O Tesouro Nacional vem trabalhando para melhorar a qualidade e para aumentar a d
 
 Os dados são referentes ao dia 31 de dezembro do exercício anterior. E a atualização dos dados será mensal.
 
+<p class="fechar-card"><a class="link-fechar" id="fechar-declaram" href="#conceito-declaram">^ Fechar e voltar ao texto ^</a></p>
+
 :::::
 
-</p>
 
-<p class="fechar-card"><a class="link-fechar" id="fechar-declaram" href="#conceito-declaram">^ Fechar e voltar ao texto ^</a></p>
 </div>
 
 
@@ -434,7 +438,10 @@ abrangencia_e <- rbind(pop_total_e, pop_RGF_e) %>%
   group_by(Variavel) %>%
   mutate(percent = Valor/sum(Valor)) %>%
   ungroup()
-  
+
+# linhazinha para listar quem não entregou
+# anti_join(pop_UFs, tabela_estados %>% group_by(UF) %>% summarise())
+
 DCLs_entes <- DCLs_entes %>% mutate(DC_pop = DC / pop_brasil)
   
 
@@ -448,7 +455,7 @@ ggplot(DCLs_entes, aes(y = DC, x = reorder(Escopo, DC), fill = Escopo, color = E
   scale_y_continuous(labels=function(x) {format(x/1e9, big.mark = ".", decimal.mark=",", scientific = FALSE)}) +
   expand_limits(y = max(DCLs_entes$DC * 1.2)) +
   labs(x = NULL, y = "R$ bi", title = "Dívida Consolidada dos níveis de Governo",
-       subtitle = "Alguns estados e muitos municípios não estão incluídos (ver \"Abrangência\")") +
+       subtitle = "O Estado de Goiás e alguns municípios não estão incluídos (ver \"Abrangência\")") +
   coord_flip() + 
   tema()
 
