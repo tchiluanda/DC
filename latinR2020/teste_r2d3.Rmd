@@ -43,9 +43,10 @@ div.container-d3 {
   color: #1e1e1e;  
 }
 
-.selecionado {
+.seletor ul li.selecionado {
   border-bottom: 3px solid firebrick;
   color: firebrick;
+  font-weight: bold;
 }
 
 
@@ -85,11 +86,21 @@ d3.select(".container-d3")
   .style("top", "40px")
   .style("left", "20px");
   
+svg.append("circle").attr("cx", 50+25).attr("cy", 70+25).attr("r", 25).attr("stroke", "steelblue").attr("fill", "dodgerblue").attr("opacity", 0);
+svg.append("rect").attr("x", 50).attr("y", 70).attr("width", 50).attr("height", 50).attr("stroke", "coral").attr("fill", "lightcoral").attr("opacity", 0);
+  
 d3.selectAll(".seletor li").on("click", function() {
   let selecionado = d3.select(this);
   d3.selectAll(".seletor li").classed("selecionado", false);
   selecionado.classed("selecionado", true);
-  
+  if (selecionado.text() == "círculo") {
+    svg.select("rect").transition().duration(200).attr("opacity", 0);
+    svg.select("circle").transition().duration(200).attr("opacity", 1);
+
+  } else {
+    svg.select("rect").transition().duration(200).attr("opacity", 1);
+    svg.select("circle").transition().duration(200).attr("opacity", 0);
+  };
 })
 
 ```

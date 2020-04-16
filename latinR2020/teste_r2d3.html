@@ -2171,17 +2171,18 @@ div.container-d3 {
 
 .seletor ul li {
   cursor: pointer;
-  margin-bottom: 3px solid transparent;
+  border-bottom: 3px solid transparent;
 }
 
 .seletor ul li:hover {
-  margin-bottom: 3px solid #1e1e1e;
+  border-bottom: 3px solid #1e1e1e;
   color: #1e1e1e;  
 }
 
-.selecionado {
-  margin-bottom: 3px solid firebrick;
+.seletor ul li.selecionado {
+  border-bottom: 3px solid firebrick;
   color: firebrick;
+  font-weight: bold;
 }
 
 
@@ -2200,9 +2201,14 @@ svg { /*não funciona*/
 </ul>
 </div>
 <div class="container-d3">
-<div id="htmlwidget-6735ecf8e3e655dc7766" style="width:672px;height:480px;" class="r2d3 html-widget"></div>
-<script type="application/json" data-for="htmlwidget-6735ecf8e3e655dc7766">{"x":{"data":null,"type":"NULL","container":"svg","options":null,"script":"var d3Script = function(d3, r2d3, data, svg, width, height, options, theme, console) {\nthis.d3 = d3;\n\nsvg = d3.select(svg.node());\nd3.select(\".fora-d3\").style(\"color\", \"blue\");\n\nsvg.append(\"text\")\n  .classed(\"dentro-d3\", true)\n  .text(\"Vou tentar mudar isso aqui para vermelho usando chunk de css.\")\n  .attr(\"x\", 20)\n  .attr(\"y\", 20);\n  \nd3.select(\".container-d3\")\n  .append(\"p\")\n  .text(\"Hi!\")\n  .classed(\"annotation\", true)\n  .style(\"top\", \"40px\")\n  .style(\"left\", \"20px\");\n  \nd3.selectAll(\".seletor li\").on(\"click\", function() {\n  let selecionado = d3.select(this);\n  d3.selectAll(\".seletor li\").classed(\"selecionado\", false);\n  selecionado.classed(\"selecionado\", true);\n  \n})\n\n};","style":null,"version":5,"theme":{"default":{"background":"#FFFFFF","foreground":"#000000"},"runtime":null},"useShadow":true},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-2b4654f5444f37003e19" style="width:672px;height:480px;" class="r2d3 html-widget"></div>
+<script type="application/json" data-for="htmlwidget-2b4654f5444f37003e19">{"x":{"data":null,"type":"NULL","container":"svg","options":null,"script":"var d3Script = function(d3, r2d3, data, svg, width, height, options, theme, console) {\nthis.d3 = d3;\n\nsvg = d3.select(svg.node());\nd3.select(\".fora-d3\").style(\"color\", \"blue\");\n\nsvg.append(\"text\")\n  .classed(\"dentro-d3\", true)\n  .text(\"Vou tentar mudar isso aqui para vermelho usando chunk de css.\")\n  .attr(\"x\", 20)\n  .attr(\"y\", 20);\n  \nd3.select(\".container-d3\")\n  .append(\"p\")\n  .text(\"Hi!\")\n  .classed(\"annotation\", true)\n  .style(\"top\", \"40px\")\n  .style(\"left\", \"20px\");\n  \nsvg.append(\"circle\").attr(\"cx\", 50+25).attr(\"cy\", 70+25).attr(\"r\", 25).attr(\"stroke\", \"steelblue\").attr(\"fill\", \"dodgerblue\").attr(\"opacity\", 0);\nsvg.append(\"rect\").attr(\"x\", 50).attr(\"y\", 70).attr(\"width\", 50).attr(\"height\", 50).attr(\"stroke\", \"coral\").attr(\"fill\", \"lightcoral\").attr(\"opacity\", 0);\n  \nd3.selectAll(\".seletor li\").on(\"click\", function() {\n  let selecionado = d3.select(this);\n  d3.selectAll(\".seletor li\").classed(\"selecionado\", false);\n  selecionado.classed(\"selecionado\", true);\n  if (selecionado.text() == \"círculo\") {\n    svg.select(\"rect\").transition().duration(200).attr(\"opacity\", 0);\n    svg.select(\"circle\").transition().duration(200).attr(\"opacity\", 1);\n\n  } else {\n    svg.select(\"rect\").transition().duration(200).attr(\"opacity\", 1);\n    svg.select(\"circle\").transition().duration(200).attr(\"opacity\", 0);\n  };\n})\n\n};","style":null,"version":5,"theme":{"default":{"background":"#FFFFFF","foreground":"#000000"},"runtime":null},"useShadow":true},"evals":[],"jsHooks":[]}</script>
 </div>
+<p>Algumas conclusões, até agora:</p>
+<ul>
+<li>não consigo estilizar elementos do svg usando o meu chunk css.</li>
+<li>consigo acessar no d3 qq coisa do documento (o container do htmlwidget não é um iframe, é um div), então consigo fazer o d3 escutar coisas q estão acontecendo fora.</li>
+</ul>
 
 
 
