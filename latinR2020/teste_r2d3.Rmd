@@ -1,0 +1,101 @@
+---
+title: "teste_r2d3"
+output:
+  html_document:
+    css: style.css
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(r2d3)
+```
+
+
+```{css, echo=FALSE}
+.dentro-d3 {
+  stroke: coral;
+}
+
+div.container-d3 {
+  background-color: whitesmoke;
+  position: relative;
+}
+
+.annotation {
+  position: absolute;
+  color: coral;
+}
+
+.seletor ul {
+  list-style: none;
+  display: flex;
+  justify-content: space-around;
+  max-width: 300px;
+}
+
+.seletor ul li {
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+}
+
+.seletor ul li:hover {
+  border-bottom: 3px solid #1e1e1e;
+  color: #1e1e1e;  
+}
+
+.selecionado {
+  border-bottom: 3px solid firebrick;
+  color: firebrick;
+}
+
+
+
+svg { /*não funciona*/
+  background-color: whitesmoke;
+} 
+```
+
+
+Aqui, fora do d3.
+
+Vou tentar mudar isso aqui para [azul]{.fora-d3} usando d3.
+
+Desenhe um...
+
+::::: {.seletor}
+* quadrado
+* círculo
+:::::
+
+<div class="container-d3">
+
+```{d3, echo = FALSE}
+d3.select(".fora-d3").style("color", "blue");
+
+svg.append("text")
+  .classed("dentro-d3", true)
+  .text("Vou tentar mudar isso aqui para vermelho usando chunk de css.")
+  .attr("x", 20)
+  .attr("y", 20);
+  
+d3.select(".container-d3")
+  .append("p")
+  .text("Hi!")
+  .classed("annotation", true)
+  .style("top", "40px")
+  .style("left", "20px");
+  
+d3.selectAll(".seletor li").on("click", function() {
+  let selecionado = d3.select(this);
+  d3.selectAll(".seletor li").classed("selecionado", false);
+  selecionado.classed("selecionado", true);
+  
+})
+
+```
+</div>
+
+Algumas conclusões, até agora:
+
+* não consigo estilizar elementos do svg usando o meu chunk css.
+* consigo acessar no d3 qq coisa do documento (o container do htmlwidget não é um iframe, é um div), então consigo fazer o d3 escutar coisas q estão acontecendo fora.
