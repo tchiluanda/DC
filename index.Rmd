@@ -301,16 +301,14 @@ tabela_mun <- rbind(tabela_mun1, tabela_mun2) %>%
 
 # população atualizada
 pop_UFs <- perfil_mun %>%
+  rename(nomes = UF) %>%
+  left_join(estados) %>%
   group_by(UF, REGIAO) %>%
   summarise(pop = sum(`POP EST`))
 
 tabela_estados <- tabela_estados_raw %>%
-  left_join(estados) %>%
-  rename(siglaUF = UF,
-         UF = nomes) %>%
   inner_join(pop_UFs) %>%
-  mutate(`CLASSE POP` = NA) %>%
-  select(-siglaUF)
+  mutate(`CLASSE POP` = NA)
 
 tabela_municipios <- perfil_mun %>%
   select(Cod.IBGE = `Cod Municipio`, REGIAO, pop = `POP EST`, `CLASSE POP`) %>%
@@ -570,7 +568,7 @@ sumario_estados <- tabela_estados %>%
   filter(Conta %in% contas_interesse) %>%
   filter(Coluna == "Até o 3º Quadrimestre") %>%
   left_join(tab_contas) %>%
-  select(nomes = UF, REGIAO, Conta_red, pop, Valor) %>%
+  select(UF, REGIAO, Conta_red, pop, Valor) %>%
   spread(Conta_red, value = Valor) %>%
   mutate(DCL_pop = DCL / pop) %>%
   left_join(estados)
@@ -613,8 +611,8 @@ Após garantir que todos colocam os mesmos tipos de dívidas na dívida consolid
 ```{r ranking, fig.height=7.5, fig.width=5, fig.align="center"}
 
 ranking_estados <- sumario_estados %>%
-  mutate_at(vars(c(-UF, -pop, -REGIAO, -nomes)), .funs = ~dense_rank(-.)) %>%
-  gather(-UF, -pop, -REGIAO, -nomes, key = Variavel, value = Valor) %>%
+  mutate_at(vars(c(-UF, -pop, -REGIAO)), .funs = ~dense_rank(-.)) %>%
+  gather(-UF, -pop, -REGIAO, key = Variavel, value = Valor) %>%
   filter(Variavel %in% c("DCL", "pct_DCL_RCL", "DCL_pop"))
 
 qde_estados <- length(unique(sumario_estados$UF))
@@ -668,7 +666,7 @@ dados_composicoes <- sumario_estados_regionalizado %>%
 
 ggplot(dados_composicoes, aes(y = valor/100, x = UF, fill = variavel)) +
   geom_col(width = 0.7, position = "stack") +
-  geom_text(aes(label = percent(valor/100, accuracy = .1)),
+  geom_text(aes(label = percent(valor/100, accuracy = 1)),
             family = "Varela Round", size = 3, hjust = "inward", 
             position = "stack", vjust = 0.3, color = "white") +
   scale_fill_manual(labels = c("Ded_pct" = "Deduções", "DCL_pct" = "DCL"),
@@ -744,13 +742,15 @@ ggplot(total_DCL, aes(y = UF, color = Escopo, x = DCL_percent)) +
                            ifelse(Escopo == "Estados",
                                   DCL_percent - 0.15,
                                   DCL_percent + 0.18)),
-                label = percent(DCL_percent)), family = "Varela Round", size = 3) +
+                label = percent(DCL_percent, accuracy = 1)), family = "Varela Round", size = 3) +
   annotate(geom = "text", x = 2.01, y = 16, label = "Limite definido \npelo Senado Federal \npara os Estados",
            family = "Varela Round", color = tres_cores[1], size = 2.5, hjust = "left") +
   annotate(geom = "text", x = 1.21, y = 16, label = "Limite definido \npelo Senado Federal \npara os Municípios",
            family = "Varela Round", color = tres_cores[2], size = 2.5, hjust = "left") +
   scale_x_continuous(labels = percent) +
-  scale_color_manual(values = c("Estados" = tres_cores[1], "Municípios" = tres_cores[2])) +
+  scale_color_manual(values = c("Estados" = tres_cores[1], "Municípios" = tres_cores[2]),
+                     breaks = c("Municípios", "Estados"),
+                     labels = c("Estados" = "Estado", "Municípios" = "Conjunto dos municípios")) +
   labs(x = "Percentual DCL/RCL",
        y = NULL,
        title = "Dívida Consolidada Líquida",
@@ -763,7 +763,7 @@ ggplot(total_DCL, aes(y = UF, color = Escopo, x = DCL_percent)) +
 Aqui, o percentual da relação DCL/RCL de cada estado é comparado com o percentual da relação DCL/RCL de todos os municípios (na verdade, todos os que apresentaram seus relatórios) do estado. Ou seja, o índice dos municípios é calculado pela soma de todas as DCLs dos municípios do estado, dividida pela soma de todas as RCLs desses municípios.
 :::::
 
-```{r municipios, fig.align="center", fig.height=7.5, fig.width=5.5}
+```{r municipios, fig.align="center", fig.height=8, fig.width=6}
 sumario_municipios <- tabela_municipios %>%
   filter(
     Coluna %in% c("Até o 3º Quadrimestre", "Até o 2º Semestre") & 
@@ -775,10 +775,10 @@ sumario_municipios <- tabela_municipios %>%
                            Conta == "DÍVIDA CONSOLIDADA LÍQUIDA (DCL) (III) = (I - II)" ~"DCL",
                            Conta == "DÍVIDA CONSOLIDADA - DC (I)" ~ "DC",
                            Conta == "DEDUÇÕES (II)" ~ "Ded")) %>%
-  select(REGIAO, Instituicao, Valor, Conta, pop, UF, Escopo, CodMun = Cod.IBGE) %>%
+  select(REGIAO, Instituicao, Valor, Conta, pop, UF, Escopo, Cod.IBGE) %>%
   spread(Conta, Valor, fill = 0) %>%
   mutate(REGIAO = str_sub(REGIAO, 5)) %>%
-  left_join(select(perfil_mun, CodMun, nome_mun = `NOME MUNIC`)) %>%
+  left_join(select(perfil_mun, Cod.IBGE = `Cod Municipio`, nome_mun = `NOME MUNIC`)) %>%
   filter(`Instituicao` != "Prefeitura Municipal de Itaíba - PE") %>%
   mutate(categorias = cut(pct_DCL_RCL, breaks = c(-Inf, 0, 25, 120, Inf),
                           labels = c("DCL negativa", "Até 25% da RCL", "Até 120% da RCL", "Acima do Limite")))
@@ -797,7 +797,8 @@ ggplot(sumario_municipios, aes(y = pct_DCL_RCL, x = 0, color = categorias, text 
   geom_quasirandom(varwidth = TRUE, alpha = 0.5, size = 1) +
   scale_color_brewer(palette = "Spectral", type = "div", direction = 1) +
   #scale_color_manual(values = c("yellow" = "yellow", "TRUE" = "dodgerblue", "FALSE" = "firebrick")) +
-  scale_y_continuous(labels = function(x) {percent(x/100)}) +
+  scale_y_continuous(labels = function(x) {percent(x/100)},
+                     limits = c(NA, 300)) +
   labs(y = "% DCL / RCL", title = "Distribuição dos municípios em 2018", 
        subtitle = "Segundo o percentual de sua DCL em relação à RCL") +
   tema() + theme(axis.line.x = element_blank(), axis.ticks.x = element_blank(),
@@ -806,7 +807,7 @@ ggplot(sumario_municipios, aes(y = pct_DCL_RCL, x = 0, color = categorias, text 
   geom_hline(yintercept = 25, linetype = "dotted", color = paleta_swarm[2]) +
   geom_hline(yintercept = 120, linetype = "dotted", color = paleta_swarm[1]) + 
   geom_text(aes(y = posicoes, 
-                label = paste0(categorias, "\n(", qde, " municípios)")), vjust = "top", family = "Open Sans SemiBold",
+                label = paste0(categorias, "\n(", format(qde, big.mark = "."), " municípios)")), vjust = "top", family = "Varela Round",
             size = 2.5, x = -0.42, check_overlap = TRUE, hjust = "inward")
 
 #ggplot(sumario_municipios, aes(pct_DCL_RCL)) + geom_histogram() + scale_x_continuous(breaks = seq(-200,200,25))
@@ -824,7 +825,9 @@ ggplot(sumario_municipios, aes(y = pct_DCL_RCL, x = 0, color = categorias, text 
 
 ```
 
-<p class="disclaimer">Cada município é representado por um ponto no gráfico acima, e sua posição vertical e sua cor correspondem ao valor da relação entre sua Dívida Consolidada Líquida e sua Receita Corrente Líquida. Assim, quanto mais pra cima no gráfico, maior a relação Dívida/Receita do município -- lembrando que o limite máximo para essa relação é de 120%, segundo o Senado. Mas veja que não são muitos os municípios que estão ultrapassando esse limite.</p>
+:::::{.diclaimer}
+Cada município é representado por um ponto no gráfico acima, e sua posição vertical e sua cor correspondem ao valor da relação entre sua Dívida Consolidada Líquida e sua Receita Corrente Líquida. Assim, quanto mais pra cima no gráfico, maior a relação Dívida/Receita do município -- lembrando que o limite máximo para essa relação é de 120%, segundo o Senado. Mas veja que não são muitos os municípios que estão ultrapassando esse limite.
+:::::
 
 Agora, uma pergunta ~~para saber se você está atento~~: toda dívida entra no cálculo da dívida consolidada? Para onde vão os precatórios que não estão vencidos, por acaso? 
 
@@ -877,10 +880,11 @@ ggplot(precat, aes(x = Conta, y = Valor, fill = Escopo, color = Escopo)) +
                               "Precatórios Posteriores a 05/05/2000 (inclusive) Vencidos e Não Pagos" = "Precatórios Posteriores \na 05/05/2000 (inclusive) \nVencidos e Não Pagos",
                               "Precatórios Posteriores a 05/05/2000 (Não incluídos na DC)" = "Precatórios Posteriores \na 05/05/2000 \n(Não incluídos na DC)")) +
   #expand_limits(y = max(DCLs_entes$DC * 1.2)) +
-  labs(x = NULL, y = "R$ bi", title = "Saldo de Precatórios ao final de 2018",
+  labs(x = NULL, y = "R$ bi", title = "Saldo de Precatórios ao final de 2019",
        subtitle = "Estados, Municípios e União") +
   coord_flip() + 
-  tema() + theme(legend.position = "bottom")
+  tema() + theme(legend.position = "bottom",
+                 axis.ticks.y = element_blank())
   
 ```
 
