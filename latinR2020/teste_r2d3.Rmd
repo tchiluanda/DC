@@ -54,6 +54,52 @@ div.container-d3 {
 svg { /*não funciona*/
   background-color: whitesmoke;
 } 
+
+#scrolly {
+  position: relative;
+  display: flex;
+}
+
+#scrolly figure {
+  position: sticky;
+  width: 100%;
+  margin: 0;
+}
+
+#scrolly figure p {
+  position: absolute;
+  padding: 1rem;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 8rem;
+  color: #fff;
+}
+
+#scrolly .steps {
+  position: relative;
+  padding: 0 1rem;
+  max-width: 20rem;
+}
+
+# scrolly .steps p {
+  margin: 0 auto 2rem auto;
+  background-color: #3b3b3b;
+  color: #fff;
+  text-align: center;
+  padding: 1rem;
+  font-size: 1.5rem;
+}
+
+# scrolly .steps p:last-child {
+  margin-bottom: 0;
+}
+
+# scrolly .steps p.is-active {
+  background-color: goldenrod;
+  color: #3b3b3b;
+}
+
 ```
 
 
@@ -68,6 +114,7 @@ Desenhe um...
 * círculo
 :::::
 
+Teste de um container...
 <div class="container-d3">
 
 ```{d3, echo = FALSE}
@@ -106,7 +153,30 @@ d3.selectAll(".seletor li").on("click", function() {
 ```
 </div>
 
+<div id="scrolly">
+
+<figure>
+
+```{d3}
+
+```
+
+</figure>
+
+::::: {.steps}
+
+Primeiro step.
+
+Segundo step.
+
+:::::
+
+</div>
+
+
 Algumas conclusões, até agora:
 
-* não consigo estilizar elementos do svg usando o meu chunk css.
+* não consigo estilizar elementos do svg usando o meu chunk css. Isso porque, descobri, o svg está dentro de um shadow dom. vai ter q ser tudo inline.
 * consigo acessar no d3 qq coisa do documento (o container do htmlwidget não é um iframe, é um div), então consigo fazer o d3 escutar coisas q estão acontecendo fora.
+
+
