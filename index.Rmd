@@ -449,19 +449,19 @@ ggplot(DCLs_entes, aes(y = DC, x = reorder(Escopo, DC), fill = Escopo, color = E
   geom_col() +
   geom_text(aes(y = DC + 1e11, label = paste0(
           format(round(DC/1e9,0), big.mark = ".", decimal.mark = ","),
-          " bi")), family = "Open Sans", hjust = "left", size = 3.5) +
+          " bi")), family = "Varela Round", hjust = "left", size = 3.5) +
   scale_fill_manual(values = tres_cores) +
   scale_color_manual(values = tres_cores) +
   scale_y_continuous(labels=function(x) {format(x/1e9, big.mark = ".", decimal.mark=",", scientific = FALSE)}) +
   expand_limits(y = max(DCLs_entes$DC * 1.2)) +
   labs(x = NULL, y = "R$ bi", title = "Dívida Consolidada dos níveis de Governo",
-       subtitle = "O Estado de Goiás e alguns municípios não estão incluídos (ver \"Abrangência\")") +
+       subtitle = "O Estado de Goiás e alguns municípios não estão incluídos \n(ver \"Abrangência\")") +
   coord_flip() + 
   tema()
 
 graf_abrang_m <- ggplot(abrangencia_m, aes(y = Valor, x = Variavel, fill = categorias)) +
   geom_col(position = "fill", width=0.6, color = "white", size = 1) +
-  geom_text(aes(label = percent(percent), y = percent), family = "Open Sans", color = "white", position = position_stack(vjust = 0.5), size = 3) +
+  geom_text(aes(label = percent(percent), y = percent), family = "Varela Round", color = "white", position = position_stack(vjust = 0.5), size = 3) +
   scale_fill_manual(values = c("RGF" = tres_cores[2], "faltantes" = "#02dba9"), 
                     labels = c("faltantes" = "Não declararam", "RGF" = "Declararam")) +
   scale_y_continuous(labels = percent) +
@@ -475,7 +475,7 @@ graf_abrang_m <- ggplot(abrangencia_m, aes(y = Valor, x = Variavel, fill = categ
 
 graf_abrang_e <- ggplot(abrangencia_e, aes(y = Valor, x = Variavel, fill = categorias)) +
   geom_col(position = "fill", width=0.6, color = "white", size = 1) +
-  geom_text(aes(label = percent(percent), y = percent), family = "Open Sans", color = "#1E4C7A", position = position_stack(vjust = 0.5), size = 3) +
+  geom_text(aes(label = ifelse(Variavel == "qde", Valor, percent(percent)), y = percent), family = "Varela Round", color = "#1E4C7A", position = position_stack(vjust = 0.5), size = 3) +
   scale_fill_manual(values = c("RGF" = tres_cores[1], "faltantes" = "#f4d99f"), 
                     labels = c("faltantes" = "Não declararam", "RGF" = "Declararam")) +
   scale_y_continuous(labels = percent) +
@@ -487,7 +487,10 @@ graf_abrang_e <- ggplot(abrangencia_e, aes(y = Valor, x = Variavel, fill = categ
        fill = NULL) +
   tema() + theme(legend.position = "bottom")
 
-# vou incluir as imagens como figuras.
+# vou incluir as imagens da abrangência como figuras.
+ggsave(filename="abrangencia_m.png", plot = graf_abrang_m, type = "cairo-png", units = "in", width = 6, height = 3, dpi = 400)
+ggsave(filename="abrangencia_e.png", plot = graf_abrang_e, type = "cairo-png", units = "in", width = 6, height = 3, dpi = 400)
+
 
 # png(filename="abrangencia_m.png", 
 #     type="cairo",
@@ -580,7 +583,7 @@ plota_DC_estados <- function(dados) {
           format(round(DC/1e9,0), big.mark = ".", decimal.mark = ","),
           " bi"),
         y = DC/1e9 + 1), 
-      family = "Open Sans", size = 3, color = azul, vjust = 0.3, hjust = 'left') +
+      family = "Varela Round", size = 3, color = azul, vjust = 0.3, hjust = 'left') +
     scale_y_continuous(label = formata_BR) +
     scale_fill_manual(values = cores_temas_TT) +
     coord_flip() +
@@ -657,7 +660,7 @@ dados_composicoes <- sumario_estados_regionalizado %>%
 ggplot(dados_composicoes, aes(y = valor/100, x = UF, fill = variavel)) +
   geom_col(width = 0.7, position = "stack") +
   geom_text(aes(label = percent(valor/100)),
-            family = "Open Sans", size = 3, hjust = "inward", 
+            family = "Varela Round", size = 3, hjust = "inward", 
             position = "stack", vjust = 0.3, color = "white") +
   scale_fill_manual(labels = c("Ded_pct" = "Deduções", "DCL_pct" = "DCL"),
                     values = c("Ded_pct" = vermelho, "DCL_pct" = azul_claro)) +
@@ -732,11 +735,11 @@ ggplot(total_DCL, aes(y = UF, color = Escopo, x = DCL_percent)) +
                            ifelse(Escopo == "Estados",
                                   DCL_percent - 0.15,
                                   DCL_percent + 0.18)),
-                label = percent(DCL_percent)), family = "Open Sans", size = 3) +
+                label = percent(DCL_percent)), family = "Varela Round", size = 3) +
   annotate(geom = "text", x = 2.01, y = 16, label = "Limite definido \npelo Senado Federal \npara os Estados",
-           family = "Open Sans", color = tres_cores[1], size = 2.5, hjust = "left") +
+           family = "Varela Round", color = tres_cores[1], size = 2.5, hjust = "left") +
   annotate(geom = "text", x = 1.21, y = 16, label = "Limite definido \npelo Senado Federal \npara os Municípios",
-           family = "Open Sans", color = tres_cores[2], size = 2.5, hjust = "left") +
+           family = "Varela Round", color = tres_cores[2], size = 2.5, hjust = "left") +
   scale_x_continuous(labels = percent) +
   scale_color_manual(values = c("Estados" = tres_cores[1], "Municípios" = tres_cores[2])) +
   labs(x = "Percentual DCL/RCL",
@@ -854,7 +857,7 @@ ggplot(precat, aes(x = Conta, y = Valor, fill = Escopo, color = Escopo)) +
   geom_col(width = 0.7, position = position_dodge2(preserve = "single", width = 0.7, padding = 0.2)) +
   geom_text(aes(y = Valor + 1e9, label = paste0(
           format(round(Valor/1e9,1), big.mark = ".", decimal.mark = ","),
-          " bi")), family = "Open Sans", size = 3, 
+          " bi")), family = "Varela Round", size = 3, 
           position = position_dodge2(width = 0.7, preserve = "single", padding = 0.2), vjust = "center", hjust = "left") +
   scale_fill_manual(values = tres_cores) +
   scale_color_manual(values = tres_cores) +
