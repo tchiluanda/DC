@@ -217,7 +217,7 @@ tema <- function(){
     theme(
       text = element_text(family = "Varela Round", colour = "grey20"),
       title = element_text(family = "Lora", face = "bold", size = 10, color = "#1E4C7A"), 
-      plot.subtitle = element_text(color = "grey20", face = "plain", size = 10),
+      plot.subtitle = element_text(color = "grey20", face = "plain", size = 8),
       axis.text = element_text(colour = "grey20", size = 8),
       plot.caption = element_text(family = "Lora", face = "italic"),
       panel.grid.major = element_blank(), 
@@ -463,7 +463,8 @@ graf_abrang_m <- ggplot(abrangencia_m, aes(y = Valor, x = Variavel, fill = categ
   geom_col(position = "fill", width=0.6, color = "white", size = 1) +
   geom_text(aes(label = percent(percent), y = percent), family = "Varela Round", color = "white", position = position_stack(vjust = 0.5), size = 3) +
   scale_fill_manual(values = c("RGF" = tres_cores[2], "faltantes" = "#02dba9"), 
-                    labels = c("faltantes" = "Não declararam", "RGF" = "Declararam")) +
+                    labels = c("faltantes" = "Não declararam", "RGF" = "Declararam"),
+                    breaks = c("RGF", "faltantes")) + # o breaks define a ordem dos itens na legenda
   scale_y_continuous(labels = percent) +
   scale_x_discrete(labels = c("qde" = "Quantidade \nde municípios",
                               "pop" = "População \ncontemplada")) +
@@ -477,7 +478,8 @@ graf_abrang_e <- ggplot(abrangencia_e, aes(y = Valor, x = Variavel, fill = categ
   geom_col(position = "fill", width=0.6, color = "white", size = 1) +
   geom_text(aes(label = ifelse(Variavel == "qde", Valor, percent(percent)), y = percent), family = "Varela Round", color = "#1E4C7A", position = position_stack(vjust = 0.5), size = 3) +
   scale_fill_manual(values = c("RGF" = tres_cores[1], "faltantes" = "#f4d99f"), 
-                    labels = c("faltantes" = "Não declararam", "RGF" = "Declararam")) +
+                    labels = c("faltantes" = "Não declararam", "RGF" = "Declararam"),
+                    breaks = c("RGF", "faltantes")) +
   scale_y_continuous(labels = percent) +
   scale_x_discrete(labels = c("qde" = "Quantidade \nde estados",
                               "pop" = "População \ncontemplada")) +
@@ -568,9 +570,10 @@ sumario_estados <- tabela_estados %>%
   filter(Conta %in% contas_interesse) %>%
   filter(Coluna == "Até o 3º Quadrimestre") %>%
   left_join(tab_contas) %>%
-  select(UF, REGIAO, Conta_red, pop, Valor) %>%
+  select(nomes = UF, REGIAO, Conta_red, pop, Valor) %>%
   spread(Conta_red, value = Valor) %>%
-  mutate(DCL_pop = DCL / pop)
+  mutate(DCL_pop = DCL / pop) %>%
+  left_join(estados)
 
 plota_DC_estados <- function(dados) {
   ggplot(dados, 
@@ -588,8 +591,8 @@ plota_DC_estados <- function(dados) {
     scale_fill_manual(values = cores_temas_TT) +
     coord_flip() +
     expand_limits(y = max(dados$DC)/1e9 * 1.1) +
-    labs(y = "R$ bilhões", x = NULL, title = "Dívida Consolidada dos Estados em 2018",
-         caption = "Mato Grosso do Sul e Rio Grande do Norte não haviam informado\nseus dados até fevereiro de 2019.",
+    labs(y = "R$ bilhões", x = NULL, title = "Dívida Consolidada dos Estados em 2019",
+         caption = "Goiás não havia informado seus dados até abril de 2020.",
          fill = "Região") +
     tema() + theme(legend.position = "bottom") + theme(legend.key.size = unit(0.5,"line"))
 }
@@ -601,22 +604,26 @@ plota_DC_estados(sumario_estados %>% filter(!(UF %in% c("SP", "RJ", "MG", "RS"))
 
 ```
 
-<p class="disclaimer">Este gráfico é idêntico ao anterior, com a exclusão dos valores de São Paulo, Rio de Janeiro, Minas Gerais e Rio Grande do Sul, que juntos representam 80% da dívida consolidada dos Estados.</p>
+::::: {.disclaimer}
+Este gráfico é idêntico ao anterior, com a exclusão dos valores de São Paulo, Rio de Janeiro, Minas Gerais e Rio Grande do Sul, que juntos representam 80% da dívida consolidada dos Estados.
+:::::
 
 Após garantir que todos colocam os mesmos tipos de dívidas na dívida consolidada, voltamos à pergunta: a dívida está grande ou pequena? Como comparar?
 
 ```{r ranking, fig.height=7.5, fig.width=5, fig.align="center"}
 
 ranking_estados <- sumario_estados %>%
-  mutate_at(vars(c(-UF, -pop, -REGIAO)), .funs = ~dense_rank(-.)) %>%
-  gather(-UF, -pop, - REGIAO, key = Variavel, value = Valor) %>%
+  mutate_at(vars(c(-UF, -pop, -REGIAO, -nomes)), .funs = ~dense_rank(-.)) %>%
+  gather(-UF, -pop, -REGIAO, -nomes, key = Variavel, value = Valor) %>%
   filter(Variavel %in% c("DCL", "pct_DCL_RCL", "DCL_pop"))
+
+qde_estados <- length(unique(sumario_estados$UF))
 
 ggplot(ranking_estados, aes(x = Variavel, y = Valor, color = REGIAO, fill = REGIAO, group = UF)) +
   geom_line(size = 1) + 
   geom_label(aes(label = UF), color = "white", family = "Fira Code",
              size = 3) + 
-  scale_y_reverse(labels = 1:25, breaks = 1:25) +
+  scale_y_reverse(labels = 1:qde_estados, breaks = 1:qde_estados) +
   scale_fill_manual(values = cores_temas_TT) +
   scale_color_manual(values = cores_temas_TT) +
   scale_x_discrete(limits = c("DCL",
@@ -630,7 +637,9 @@ ggplot(ranking_estados, aes(x = Variavel, y = Valor, color = REGIAO, fill = REGI
   tema()
 ```
 
-<p class="disclaimer">Neste gráfico, na primeira coluna, os estados estão ordenados de acordo com o tamanho de sua Dívida Consolidada Líquida (já já falaremos sobre ela). Como os estados são muito diferentes entre si, às vezes fica difícil comparar valores absolutos. Assim, as duas outras colunas mostram como ficaria essa ordem se comparássemos os valores das dívidas de forma proporcional, seja considerando a relação entre a dívida do estado e sua capacidade de arrecadação (também já já falaremos sobre isso) ou a sua população. Observe o caso do Paraná: tem a nona maior dívida, mas quando comparamos com sua receita, sua dívida proporcional cai para a 16ª posição, ou para a 17ª quando ponderamos o valor de sua dívida pelo tamanho de sua população.</p>
+::::: {.disclaimer}
+Neste gráfico, na primeira coluna, os estados estão ordenados de acordo com o tamanho de sua Dívida Consolidada Líquida (já já falaremos sobre ela). Como os estados são muito diferentes entre si, às vezes fica difícil comparar valores absolutos. Assim, as duas outras colunas mostram como ficaria essa ordem se comparássemos os valores das dívidas de forma proporcional, seja considerando a relação entre a dívida do estado e sua capacidade de arrecadação (também já já falaremos sobre isso) ou a sua população. Observe o caso do Paraná: tem a nona maior dívida, mas quando comparamos com sua receita, sua dívida proporcional cai para a 16ª posição, ou para a 17ª quando ponderamos o valor de sua dívida pelo tamanho de sua população.
+:::::
 
 Essa avaliação depende da condição financeira de cada um para pagar a dívida. Assim, uma comparação com a arrecadação da prefeitura ou do governo pode ajudar nessa resposta. 
 
@@ -659,7 +668,7 @@ dados_composicoes <- sumario_estados_regionalizado %>%
 
 ggplot(dados_composicoes, aes(y = valor/100, x = UF, fill = variavel)) +
   geom_col(width = 0.7, position = "stack") +
-  geom_text(aes(label = percent(valor/100)),
+  geom_text(aes(label = percent(valor/100, accuracy = .1)),
             family = "Varela Round", size = 3, hjust = "inward", 
             position = "stack", vjust = 0.3, color = "white") +
   scale_fill_manual(labels = c("Ded_pct" = "Deduções", "DCL_pct" = "DCL"),
@@ -750,7 +759,9 @@ ggplot(total_DCL, aes(y = UF, color = Escopo, x = DCL_percent)) +
   tema() + theme(legend.position = "top")
 ```
 
-<p class="disclaimer">Aqui, o percentual da relação DCL/RCL de cada estado é comparado com o percentual da relação DCL/RCL de todos os municípios (na verdade, todos os que apresentaram seus relatórios) do estado. Ou seja, o índice dos municípios é calculado pela soma de todas as DCLs dos municípios do estado, dividida pela soma de todas as RCLs desses municípios.</p>
+::::: {.disclaimer}
+Aqui, o percentual da relação DCL/RCL de cada estado é comparado com o percentual da relação DCL/RCL de todos os municípios (na verdade, todos os que apresentaram seus relatórios) do estado. Ou seja, o índice dos municípios é calculado pela soma de todas as DCLs dos municípios do estado, dividida pela soma de todas as RCLs desses municípios.
+:::::
 
 ```{r municipios, fig.align="center", fig.height=7.5, fig.width=5.5}
 sumario_municipios <- tabela_municipios %>%
