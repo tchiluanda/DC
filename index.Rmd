@@ -745,7 +745,7 @@ ggplot(total_DCL, aes(y = UF, color = Escopo, x = DCL_percent)) +
                 label = percent(DCL_percent, accuracy = 1)), family = "Varela Round", size = 3) +
   annotate(geom = "text", x = 2.01, y = 16, label = "Limite definido \npelo Senado Federal \npara os Estados",
            family = "Varela Round", color = tres_cores[1], size = 2.5, hjust = "left") +
-  annotate(geom = "text", x = 1.21, y = 16, label = "Limite definido \npelo Senado Federal \npara os Municípios",
+  annotate(geom = "text", x = 1.21, y = 12, label = "Limite definido \npelo Senado Federal \npara os Municípios",
            family = "Varela Round", color = tres_cores[2], size = 2.5, hjust = "left") +
   scale_x_continuous(labels = percent) +
   scale_color_manual(values = c("Estados" = tres_cores[1], "Municípios" = tres_cores[2]),
