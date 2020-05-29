@@ -115,6 +115,8 @@ Desenhe um...
 :::::
 
 Teste de um container...
+
+::::: {.super}
 <div class="container-d3">
 
 ```{d3, echo = FALSE}
@@ -152,6 +154,8 @@ d3.selectAll(".seletor li").on("click", function() {
 
 ```
 </div>
+
+:::::
 
 <div id="scrolly">
 
