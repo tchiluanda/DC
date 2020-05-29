@@ -571,6 +571,15 @@ Veja o valor da dívida consolidada do estado e/ou do município em que você mo
 
 </div>
 
+:::::{.container-d3}
+
+```{d3 data=}
+
+```
+
+
+:::::
+
 <div class="wrapper">
 
 Difícil responder olhando só para os números, não é? O ideal seria buscar referências de comparação.
