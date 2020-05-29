@@ -161,7 +161,16 @@ d3.selectAll(".seletor li").on("click", function() {
 
 <figure>
 
-```{d3}
+```{r}
+x <- list("primeiro" = data.frame("a" = c(1,2), "b" = c(4,5)),
+          "segundo" = data.frame("c" = c(1,2), "d" = c(4,5)))
+```
+
+
+```{d3 data = x}
+
+//console.log(Object.keys(data))
+console.log(data["primeiro"]["a"][0])
 
 ```
 
