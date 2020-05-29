@@ -7,20 +7,45 @@ output:
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(
-	echo = TRUE,
+	echo = FALSE,
 	message = FALSE,
 	warning = FALSE
 )
 ```
 
 ```{css, echo=FALSE}
+
+* {
+  box-sizing: border-box;
+}
+
+.container-fluid.main-container {
+  margin: 0;
+  padding: 0;
+}
+
+.main-container {
+  max-width: unset;
+}
+
 body {
-  font-family: 'Lora', sans-serif;
-  font-size: 15px;
+  font-family: 'EB Garamond', sans-serif;
+  font-size: 18px;
   line-height: 1.4;
-  max-width: 650px;
-  margin-left: auto;
-  margin-right: auto;
+}
+
+.wrapper {
+  max-width: 580px;
+  margin: 0 auto;
+  font-size: 1.15em;
+}
+
+.wrapper.primeiro-wrapper {
+  margin-top: -50vh;
+}
+
+.wrapper p {
+  margin: 0.7em 0;
 }
 
 h1, h2, h3, h4 {
@@ -39,16 +64,9 @@ h1, h2, h3, h4 {
 }
 
 .conceito {
-    padding: 2px;
-    background-color: lightblue;
-    cursor: pointer;
-}
-
-.descricao {
-    background-color: lightblue;
-    margin: 8px;
-    font-size: 0.9em;
-
+  padding: 2px;
+  background-color: lightblue;
+  cursor: pointer;
 }
 
 .fechamento {
@@ -66,55 +84,51 @@ h1, h2, h3, h4 {
   display: none;
 }
 
-del {
-    color: darkgrey;
-    text-decoration: none;
+.descricao {
+  background-color: lightblue;
+  margin: 1em;
+  font-size: 0.7em;
+  font-family: "Roboto";
 }
 
-del::before {
-    content: "(";
+.descricao > p, .descricao > li {
+    margin: 1.5rem;
 }
 
-del::after {
-    content: ")";
+.descricao > p.titulo-card {
+  margin: 0;
+  font-weight: bold;
+  letter-spacing: 0.05em;
+  padding: 1.5rem;
+  font-size: 1.2em;
+  position: relative;
 }
 
-del.del-de-verdade {
-  text-decoration: line-through;
-  color: #333;
+.descricao > p.titulo-card:after {
+  content:"";
+  background: #333;
+  position: absolute;
+  bottom: 0;
+  left: 1.5rem;
+  height: 5px;
+  width: 75px;
+  background-color: #333;
 }
 
-.descricao>p {
-    padding: 0 8px;
-    margin: 0px;
-}
+
 
 .disclaimer {
-    font-size: 0.8em;
-    padding: 8px;
-    margin: 8px;
-    background-color: ghostwhite;
-    color: dimgray;
-    font-style: italic;
-}
-
-.descricao > h2 {
-    text-transform: uppercase;
-    background-color: steelblue;
-    color: white;
-    margin: 0;
-    font-weight: bold;
-    letter-spacing: 0.2em;
-}
-
-.descricao>p:not(.titulo-card):not(.fechar-card) {
-    padding-top: 4px;
+  font-size: 0.6em;
+  font-family: "Roboto";
+  padding: 8px;
+  margin: 8px;
+  background-color: ghostwhite;
+  color: dimgray;
 }
 
 p.fechar-card{
-    background-color: lightsteelblue;
+    background-color: #333;
     color: lightgray;
-    letter-spacing: 0.2em;
     margin: 0;
     text-align: right;
     font-size: 0.7em;
@@ -125,50 +139,54 @@ p.fechar-card>a{
     color: white;
 }
 
-h1 {
-    padding-top: 20px;
-    padding-bottom: 20px;
-    margin: auto;
-    text-align: center;
-    position: relative;
-    //font-style: italic;
-    letter-spacing: 0.1em;
-    line-height: 1.5em;
-    font-size: 1.7em;
-    font-family: "Vollkorn";
+div.figura-inicial {
+  pointer-events: none;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  width: 100vw;
+  padding-top: 5em;
+  padding-bottom: 5em;
+  padding-left: calc(50vw - 290px);
+  padding-right: calc(50vw - 290px);
+  margin: 0;
 }
 
-h1>em {
-    font-size: 1.8em;
-    color: firebrick;
-    //text-transform: uppercase;
-    letter-spacing: 0.1em;
-    display: block;
-    font-style:normal;
-    padding-top: 0.1em;
-    //text-shadow: 0.07em 0.07em 0 rgba(0, 0, 0, 0.1);
+div.titulo-inicial img {
+  position: absolute;
+  top: 1em;
+  left: 10vw;
 }
-    
-h1>em::before, h1>em::after {
-    content: "§";
-    display: inline-block;
-    -webkit-transform: rotate(90deg);
-    -moz-transform: rotate(90deg);
-    -o-transform: rotate(90deg);
-    -ms-transform: rotate(90deg);
-    transform: rotate(90deg);
-        opacity: 0.2;
-    margin: 0 0.6em;
-    font-size: 0.5em;
 
+div.titulo-inicial {
+  margin-top: 0;
+  padding-top: 15vh;
+  padding-left: 10vw;
+  transform: translateY(-100vh);
+  position: relative;
+  height: 100vh;
+  width: 100vw;
+  background-color: #1E4C7A;
+}
+
+div.titulo-inicial h1 {
+  font-size: 20vh;
+  color: rgb(255,213,0);
+  margin-top: 0;
+  line-height: 1;
+}
+
+div.titulo-inicial p {
+  font-size: calc(1em + 2vh);
+  color: ghostwhite;
+  margin-top: 2em;
 }
 
 img.abertura {
-    margin-left: auto;
-    margin-right: auto;
-    display: block;
-    width: 100%;
-    height: auto;
+  margin: 0 auto;
+  display: block;
+  max-width: 580px;
+  height: auto;
 }
 
 .abertura p {
@@ -185,6 +203,21 @@ img.abertura {
   margin-bottom: 10px;
 }
 
+@media (max-width: 580px) {
+  div.wrapper {
+    margin-left: 1em;
+    margin-right: 1em;
+  }
+  
+  div.titulo-inicial {
+    padding: 1em 5em;
+  }
+  
+  div.titulo-inicial h1 {
+    font-size: 15vw;
+  }
+}
+
 
 
 ```
@@ -194,6 +227,8 @@ img.abertura {
 @import url('https://fonts.googleapis.com/css?family=Vollkorn');
 @import url('https://fonts.googleapis.com/css?family=Lora&display=swap');
 @import url('https://fonts.googleapis.com/css?family=Lora|Varela+Round&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=Roboto&display=swap');
+
 </style>
 
 ```{r init}
@@ -205,21 +240,24 @@ library(extrafont)
 library(RColorBrewer)
 #library(ckanr)
 #library(skimr)
-library(shiny)
+#library(shiny)
 #library(leaflet)
 library(ggbeeswarm)
 #library(plotly)
 library(viridis)
 library(ggrepel)
 
+fonte_pri <- "Roboto"
+fonte_sec <- "Roboto"
+
 tema <- function(){
     theme_minimal() +
     theme(
-      text = element_text(family = "Varela Round", colour = "grey20"),
-      title = element_text(family = "Lora", face = "bold", size = 10, color = "#1E4C7A"), 
-      plot.subtitle = element_text(color = "grey20", face = "plain", size = 8),
+      text = element_text(family = fonte_sec, colour = "grey20"),
+      title = element_text(family = fonte_pri, face = "bold", size = 12, color = "#1E4C7A"), 
+      plot.subtitle = element_text(color = "grey20", face = "plain", size = 10),
       axis.text = element_text(colour = "grey20", size = 8),
-      plot.caption = element_text(family = "Lora", face = "italic"),
+      plot.caption = element_text(family = fonte_pri, face = "italic"),
       panel.grid.major = element_blank(), 
       panel.grid.minor = element_blank(),
       legend.text = element_text(size = 8),
@@ -254,7 +292,7 @@ cores_temas_TT <- c("#643275", "#03859a", "#1f476a", "#709a2d", "#ba3917")
 # problemas de encoding...
 estados <- data.frame(
   UF = c("AC", "AL", "AM", "AP", "BA", "CE", "DF", "ES", "GO", "MA", "MG", "MS", "MT", "PA", "PB", "PE", "PI", "PR", "RJ", "RN", "RO", "RR", "RS", "SC", "SE", "SP", "TO"), 
-  nomes = c("Acre", "Alagoas", "Amazonas", "Amapá", "Bahia", "Ceará", "Distrito Federal", "Espírito Santo", "Goias", "Maranhão", "Minas Gerais", "Mato Grosso do Sul", "Mato Grosso", "Pará", "Paraíba","Pernambuco", "Piauí", "Paraná", "Rio de Janeiro", "Rio Grande do Norte", "Rondônia", "Roraima", "Rio Grande do Sul", 
+  nomes = c("Acre", "Alagoas", "Amazonas", "Amapá", "Bahia", "Ceará", "Distrito Federal", "Espírito Santo", "Goiás", "Maranhão", "Minas Gerais", "Mato Grosso do Sul", "Mato Grosso", "Pará", "Paraíba","Pernambuco", "Piauí", "Paraná", "Rio de Janeiro", "Rio Grande do Norte", "Rondônia", "Roraima", "Rio Grande do Sul", 
 "Santa Catarina",  "Sergipe", "São Paulo", "Tocantins"))
 
 # estou comentando toda a leitura de dados externos para bypassar erro do Shiny. Salvei os dados em .RData e vou lê-los diretamente. 
@@ -328,17 +366,35 @@ tabela_completa <- rbind(tabela_estados, tabela_municipios)
 #tabela_estados %>% skim()
 #tabela_estados %>% str()
 ```
-<h1><em>Dívidas</em>pra que te quero</h1>
+::::: {.capa}
+
+:::::: {.figura-inicial}
 
 <img class ="abertura" src="prefeito_divida.png"
          alt="tirinha brincando com a mania dos prefeitos de jogar a culpa nos antecessores"
          style="margin-right: auto; margin-left: auto; display: block;"/>
 <p style = "text-align: center; font-size: 0.7em;">Créditos da imagem: <a href="http://www.willtirando.com.br/" target="blank">William Leite</a></p>
 
+::::::
+
+:::::: {.titulo-inicial #titulo}
+
+![](tt-logo-int.png)
+
+# Dívidas pra que te quero
+
+As dívidas de Estados, Municípios e União
+
+::::::
+
+
+:::::
+
+<div class="wrapper primeiro-wrapper">
 
 Dívida é uma quantia que se tem de pagar a alguém. O que interessa bastante para esse alguém. E muito importante para quem deve. Caso você não seja nenhum dos dois, por que continuar lendo sobre esse assunto?
 
-Bom, vivemos em uma cidade, que tem uma prefeitura, certo? Essa cidade está dentro de um estado, que tem um governo. E isso tudo (incluindo você) fica em um país. Você teria curiosidade em saber o quanto eles [declaram]{.conceito #conceito-declaram} que ~~nós devemos~~ devem?
+Bom, vivemos em uma cidade, que tem uma prefeitura, certo? Essa cidade está dentro de um estado, que tem um governo. E isso tudo (incluindo você) fica em um país. Você teria curiosidade em saber o quanto eles [declaram]{.conceito #conceito-declaram} que devem?
 
 ::::: {.disclaimer}
 Ao longo do texto, existem vários termos destacados com o fundo azul. Para não interromper a narrativa com tecnicismos, os conceitos envolvidos estão descritos de forma mais precisa e rigorosa em quadros que podem ser exibidos (e ocultados) clicando-se sobre esses termos com fundo em azul.
@@ -346,7 +402,7 @@ Ao longo do texto, existem vários termos destacados com o fundo azul. Para não
 
 ::::: {.descricao #descricao-declaram}
 
-## Origem e Abrangência das informações
+<p class="titulo-card">Origem e Abrangência das informações</p>
 
 A principal fonte de dados deste painel é o Sistema de Informações Contábeis e Fiscais do Setor Público Brasileiro - SICONFI, em especial, os dados declarados pelos entes federativos através dos Relatórios de Gestão Fiscal - RGF.
 
@@ -358,15 +414,11 @@ O Tesouro Nacional vem trabalhando para melhorar a qualidade e para aumentar a d
 
 <img src="abrangencia_e.png">
 
-Os dados são referentes ao dia 31 de dezembro do exercício anterior. E a atualização dos dados será mensal.
+Os dados são referentes ao dia 31 de dezembro do exercício anterior.
 
 <p class="fechar-card"><a class="link-fechar" id="fechar-declaram" href="#conceito-declaram">^ Fechar e voltar ao texto ^</a></p>
 
 :::::
-
-
-</div>
-
 
 ```{r, fig.height=3, fig.align="center"}
 totalDCL <- function(tabelinhas) {
@@ -447,19 +499,19 @@ ggplot(DCLs_entes, aes(y = DC, x = reorder(Escopo, DC), fill = Escopo, color = E
   geom_col() +
   geom_text(aes(y = DC + 1e11, label = paste0(
           format(round(DC/1e9,0), big.mark = ".", decimal.mark = ","),
-          " bi")), family = "Varela Round", hjust = "left", size = 3.5) +
+          " bi")), family = fonte_sec, hjust = "left", size = 3.5) +
   scale_fill_manual(values = tres_cores) +
   scale_color_manual(values = tres_cores) +
   scale_y_continuous(labels=function(x) {format(x/1e9, big.mark = ".", decimal.mark=",", scientific = FALSE)}) +
   expand_limits(y = max(DCLs_entes$DC * 1.2)) +
   labs(x = NULL, y = "R$ bi", title = "Dívida Consolidada dos níveis de Governo",
-       subtitle = "O Estado de Goiás e alguns municípios não estão incluídos \n(ver \"Abrangência\")") +
+       subtitle = "O Estado de Roraima e alguns municípios não estão incluídos \n(ver \"Abrangência\")") +
   coord_flip() + 
   tema()
 
 graf_abrang_m <- ggplot(abrangencia_m, aes(y = Valor, x = Variavel, fill = categorias)) +
   geom_col(position = "fill", width=0.6, color = "white", size = 1) +
-  geom_text(aes(label = percent(percent), y = percent), family = "Varela Round", color = "white", position = position_stack(vjust = 0.5), size = 3) +
+  geom_text(aes(label = percent(percent), y = percent), family = fonte_sec, color = "white", position = position_stack(vjust = 0.5), size = 3) +
   scale_fill_manual(values = c("RGF" = tres_cores[2], "faltantes" = "#02dba9"), 
                     labels = c("faltantes" = "Não declararam", "RGF" = "Declararam"),
                     breaks = c("RGF", "faltantes")) + # o breaks define a ordem dos itens na legenda
@@ -474,7 +526,7 @@ graf_abrang_m <- ggplot(abrangencia_m, aes(y = Valor, x = Variavel, fill = categ
 
 graf_abrang_e <- ggplot(abrangencia_e, aes(y = Valor, x = Variavel, fill = categorias)) +
   geom_col(position = "fill", width=0.6, color = "white", size = 1) +
-  geom_text(aes(label = ifelse(Variavel == "qde", Valor, percent(percent)), y = percent), family = "Varela Round", color = "#1E4C7A", position = position_stack(vjust = 0.5), size = 3) +
+  geom_text(aes(label = ifelse(Variavel == "qde", Valor, percent(percent)), y = percent), family = fonte_sec, color = "#1E4C7A", position = position_stack(vjust = 0.5), size = 3) +
   scale_fill_manual(values = c("RGF" = tres_cores[1], "faltantes" = "#f4d99f"), 
                     labels = c("faltantes" = "Não declararam", "RGF" = "Declararam"),
                     breaks = c("RGF", "faltantes")) +
@@ -515,11 +567,15 @@ ggsave(filename="abrangencia_e.png", plot = graf_abrang_e, type = "cairo-png", u
 
 ```
 
-~~Se você está ansioso,~~ <a href="https://tiagombp.shinyapps.io/painel/" class="link-painel" target="blank">Veja o valor da dívida consolidada do estado e/ou do município em que você mora</a>. Pode-se dizer que está grande ou pequena? 
+Veja o valor da dívida consolidada do estado e/ou do município em que você mora. Pode-se dizer que está grande ou pequena?
+
+</div>
+
+<div class="wrapper">
 
 Difícil responder olhando só para os números, não é? O ideal seria buscar referências de comparação.
 
-Antes disso, porém, é preciso garantir que estamos falando de coisas iguais ~~e não de melancias e de bananas~~. No caso da <span class="conceito" id="conceito-dc">dívida consolidada</span>, entram, essencialmente, a dívida mobiliária, quando o país emite títulos públicos para captar dinheiro; a dívida contratual, quando os governos estaduais e municipais recorrem a empréstimos e (re)financiamentos, inclusive com o próprio governo federal; e a dívida de <span class="conceito" id="conceito-precatorios">precatórios</span> que venceram e não foram pagos, aquelas impostas por ações judiciais. 
+Antes disso, porém, é preciso garantir que estamos falando de coisas iguais. No caso da <span class="conceito" id="conceito-dc">dívida consolidada</span>, entram, essencialmente, a dívida mobiliária, quando o país emite títulos públicos para captar dinheiro; a dívida contratual, quando os governos estaduais e municipais recorrem a empréstimos e (re)financiamentos, inclusive com o próprio governo federal; e a dívida de <span class="conceito" id="conceito-precatorios">precatórios</span> que venceram e não foram pagos, aquelas impostas por ações judiciais. 
 
 <div class="descricao" id="descricao-dc"> 
 <p class="titulo-card">Dívida Consolidada e as várias formas de se medir a dívida pública</p> 
@@ -584,13 +640,13 @@ plota_DC_estados <- function(dados) {
           format(round(DC/1e9,0), big.mark = ".", decimal.mark = ","),
           " bi"),
         y = DC/1e9 + 1), 
-      family = "Varela Round", size = 3, color = azul, vjust = 0.3, hjust = 'left') +
+      family = fonte_sec, size = 3, color = azul, vjust = 0.3, hjust = 'left') +
     scale_y_continuous(label = formata_BR) +
     scale_fill_manual(values = cores_temas_TT) +
     coord_flip() +
     expand_limits(y = max(dados$DC)/1e9 * 1.1) +
     labs(y = "R$ bilhões", x = NULL, title = "Dívida Consolidada dos Estados em 2019",
-         caption = "Goiás não havia informado seus dados até abril de 2020.",
+         caption = "Roraima não havia informado seus dados até abril de 2020.",
          fill = "Região") +
     tema() + theme(legend.position = "bottom") + theme(legend.key.size = unit(0.5,"line"))
 }
@@ -598,7 +654,7 @@ plota_DC_estados <- function(dados) {
 plota_DC_estados(sumario_estados)
 
 plota_DC_estados(sumario_estados %>% filter(!(UF %in% c("SP", "RJ", "MG", "RS")))) +
-  labs(subtitle = "Exceto São Paulo, Rio de Janeiro, Minas Gerais e Rio Grande do Sul")
+  labs(subtitle = "Exceto SP, RJ, MG e RS")
 
 ```
 
@@ -667,7 +723,7 @@ dados_composicoes <- sumario_estados_regionalizado %>%
 ggplot(dados_composicoes, aes(y = valor/100, x = UF, fill = variavel)) +
   geom_col(width = 0.7, position = "stack") +
   geom_text(aes(label = percent(valor/100, accuracy = 1)),
-            family = "Varela Round", size = 3, hjust = "inward", 
+            family = fonte_sec, size = 3, hjust = "inward", 
             position = "stack", vjust = 0.3, color = "white") +
   scale_fill_manual(labels = c("Ded_pct" = "Deduções", "DCL_pct" = "DCL"),
                     values = c("Ded_pct" = vermelho, "DCL_pct" = azul_claro)) +
@@ -742,11 +798,11 @@ ggplot(total_DCL, aes(y = UF, color = Escopo, x = DCL_percent)) +
                            ifelse(Escopo == "Estados",
                                   DCL_percent - 0.15,
                                   DCL_percent + 0.18)),
-                label = percent(DCL_percent, accuracy = 1)), family = "Varela Round", size = 3) +
+                label = percent(DCL_percent, accuracy = 1)), family = fonte_sec, size = 3) +
   annotate(geom = "text", x = 2.01, y = 16, label = "Limite definido \npelo Senado Federal \npara os Estados",
-           family = "Varela Round", color = tres_cores[1], size = 2.5, hjust = "left") +
+           family = fonte_sec, color = tres_cores[1], size = 2.5, hjust = "left") +
   annotate(geom = "text", x = 1.21, y = 12, label = "Limite definido \npelo Senado Federal \npara os Municípios",
-           family = "Varela Round", color = tres_cores[2], size = 2.5, hjust = "left") +
+           family = fonte_sec, color = tres_cores[2], size = 2.5, hjust = "left") +
   scale_x_continuous(labels = percent) +
   scale_color_manual(values = c("Estados" = tres_cores[1], "Municípios" = tres_cores[2]),
                      breaks = c("Municípios", "Estados"),
@@ -798,7 +854,7 @@ ggplot(sumario_municipios, aes(y = pct_DCL_RCL, x = 0, color = categorias, text 
   scale_color_brewer(palette = "Spectral", type = "div", direction = 1) +
   #scale_color_manual(values = c("yellow" = "yellow", "TRUE" = "dodgerblue", "FALSE" = "firebrick")) +
   scale_y_continuous(labels = function(x) {percent(x/100)},
-                     limits = c(NA, 300)) +
+                     limits = c(NA, 250)) +
   labs(y = "% DCL / RCL", title = "Distribuição dos municípios em 2018", 
        subtitle = "Segundo o percentual de sua DCL em relação à RCL") +
   tema() + theme(axis.line.x = element_blank(), axis.ticks.x = element_blank(),
@@ -807,7 +863,7 @@ ggplot(sumario_municipios, aes(y = pct_DCL_RCL, x = 0, color = categorias, text 
   geom_hline(yintercept = 25, linetype = "dotted", color = paleta_swarm[2]) +
   geom_hline(yintercept = 120, linetype = "dotted", color = paleta_swarm[1]) + 
   geom_text(aes(y = posicoes, 
-                label = paste0(categorias, "\n(", format(qde, big.mark = "."), " municípios)")), vjust = "top", family = "Varela Round",
+                label = paste0(categorias, "\n(", format(qde, big.mark = "."), " municípios)")), vjust = "top", family = fonte_sec,
             size = 2.5, x = -0.42, check_overlap = TRUE, hjust = "inward")
 
 #ggplot(sumario_municipios, aes(pct_DCL_RCL)) + geom_histogram() + scale_x_continuous(breaks = seq(-200,200,25))
@@ -829,9 +885,9 @@ ggplot(sumario_municipios, aes(y = pct_DCL_RCL, x = 0, color = categorias, text 
 Cada município é representado por um ponto no gráfico acima, e sua posição vertical e sua cor correspondem ao valor da relação entre sua Dívida Consolidada Líquida e sua Receita Corrente Líquida. Assim, quanto mais pra cima no gráfico, maior a relação Dívida/Receita do município -- lembrando que o limite máximo para essa relação é de 120%, segundo o Senado. Mas veja que não são muitos os municípios que estão ultrapassando esse limite.
 :::::
 
-Agora, uma pergunta ~~para saber se você está atento~~: toda dívida entra no cálculo da dívida consolidada? Para onde vão os precatórios que não estão vencidos, por acaso? 
+Agora, uma pergunta: toda dívida entra no cálculo da dívida consolidada? Para onde vão os precatórios que não estão vencidos, por acaso? 
 
-O fato de não contar para a dívida consolidada não significa ~~longe disso~~ que não sejam relevantes, muito menos que não mereçam nossa atenção. É o caso, por exemplo, da obrigação com os pagamentos futuros de benefícios previdenciários, conhecido como <span class="conceito" id="conceito-passivoatuarial">passivo atuarial</span>. Apesar de não afetar a capacidade financeira hoje, irá impactar nos próximos anos. Outro tipo ocorre quando a prefeitura ou o governo utiliza recursos que ainda estão em <span class="conceito" id="conceito-disputajudicial">disputa judicial</span>. Se perder a disputa, tem que devolver e isso precisa ser monitorado. Entendeu a importância?
+O fato de não contar para a dívida consolidada não significa que não sejam relevantes, muito menos que não mereçam nossa atenção. É o caso, por exemplo, da obrigação com os pagamentos futuros de benefícios previdenciários, conhecido como <span class="conceito" id="conceito-passivoatuarial">passivo atuarial</span>. Apesar de não afetar a capacidade financeira hoje, irá impactar nos próximos anos. Outro tipo ocorre quando a prefeitura ou o governo utiliza recursos que ainda estão em <span class="conceito" id="conceito-disputajudicial">disputa judicial</span>. Se perder a disputa, tem que devolver e isso precisa ser monitorado. Entendeu a importância?
 
 <div class="descricao" id="descricao-passivoatuarial"> 
 <p class="titulo-card">Passivo Atuarial</p> 
@@ -849,7 +905,7 @@ Os depósitos judiciais são valores depositados em contas específicas sob a gu
 <p class="fechar-card"><a class="link-fechar" id="fechar-disputajudicial" href="#conceito-disputajudicial">^ Fechar e voltar ao texto ^</a></p>
 </div>
 
-Por outro lado, existem disputas judiciais que já foram perdidas e exigem pagamento, são os precatórios. Pela ~~grande~~ quantidade, eles entram em uma fila para serem quitados a cada ano. Isto é, **todo ano a prefeitura ou o governo tem que pagar um certo número de precatórios. Quando deveria pagar em um ano e não paga, temos os precatórios vencidos e não pagos**. Lembra deles? Eles entram na dívida consolidada. Perceba que, por uma questão de tempo, os outros ~~ainda~~ não entram nesse cálculo, mas estão na fila e ~~em breve~~ vão afetar as finanças dessa prefeitura ou desse governo. Por isso, que tal ver o tamanho da conta de precatórios?
+Por outro lado, existem disputas judiciais que já foram perdidas e exigem pagamento, são os precatórios. Pela quantidade, eles entram em uma fila para serem quitados a cada ano. Isto é, **todo ano a prefeitura ou o governo tem que pagar um certo número de precatórios. Quando deveria pagar em um ano e não paga, temos os precatórios vencidos e não pagos**. Lembra deles? Eles entram na dívida consolidada. Perceba que, por uma questão de tempo, os outros não entram nesse cálculo, mas estão na fila e vão afetar as finanças dessa prefeitura ou desse governo. Por isso, que tal ver o tamanho da conta de precatórios?
 
 ```{r precatorios, fig.height=4}
 precat <- tabela_completa %>%
@@ -871,7 +927,7 @@ ggplot(precat, aes(x = Conta, y = Valor, fill = Escopo, color = Escopo)) +
   geom_col(width = 0.7, position = position_dodge2(preserve = "single", width = 0.7, padding = 0.2)) +
   geom_text(aes(y = Valor + 1e9, label = paste0(
           format(round(Valor/1e9,1), big.mark = ".", decimal.mark = ","),
-          " bi")), family = "Varela Round", size = 3, 
+          " bi")), family = fonte_sec, size = 3, 
           position = position_dodge2(width = 0.7, preserve = "single", padding = 0.2), vjust = "center", hjust = "left") +
   scale_fill_manual(values = tres_cores) +
   scale_color_manual(values = tres_cores) +
@@ -888,7 +944,7 @@ ggplot(precat, aes(x = Conta, y = Valor, fill = Escopo, color = Escopo)) +
   
 ```
 
-Além dessas obrigações, um compromisso também pode causar preocupação a uma prefeitura ou a um governo. E que tipo de compromisso seria esse? Aquele que pode virar uma dívida. Explicando melhor: algumas vezes uma prefeitura ou um governo entra como ~~fiador~~ garantidor de um empréstimo. Essa <span class="conceito" id="conceito-garantia">garantia concedida</span> pode se transformar em dívida se quem pegou o dinheiro emprestado não conseguir pagar. Viu como esse ponto é sensível? Por via das dúvidas, melhor acompanhar essas garantias.
+Além dessas obrigações, um compromisso também pode causar preocupação a uma prefeitura ou a um governo. E que tipo de compromisso seria esse? Aquele que pode virar uma dívida. Explicando melhor: algumas vezes uma prefeitura ou um governo entra como garantidor de um empréstimo. Essa <span class="conceito" id="conceito-garantia">garantia concedida</span> pode se transformar em dívida se quem pegou o dinheiro emprestado não conseguir pagar. Viu como esse ponto é sensível? Por via das dúvidas, melhor acompanhar essas garantias.
 
 <div class="descricao" id="descricao-garantia"> 
 <p class="titulo-card">Garantias Concedidas</p> 
@@ -904,9 +960,11 @@ Relembrando, dívida é uma quantia que se tem de pagar a alguém.
 
 Acrescentando: público é aquilo que pertence ao governo de um país, de um estado, de uma cidade. Também é aquilo que pertence a um povo, a uma coletividade. 
 
-~~E o que seria dívida pública?~~
+(E o que seria dívida pública?)
 
 <p class="fechamento">Feito com dados, códigos e <span class="coracoes">&hearts; &hearts;</span> abertos.</p>
+
+</div>
 
 ```{js, echo=FALSE}
 const conceitos = document.getElementsByClassName('conceito');
@@ -966,3 +1024,16 @@ document.addEventListener('click', function (event) {
 
 // Quem me ajudou: https://gomakethings.com/why-event-delegation-is-a-better-way-to-listen-for-events-in-vanilla-js/#web-performance
 ```
+
+```{js}
+let titulo = document.getElementById("titulo");
+let altura = titulo.getBoundingClientRect().height;
+let pos_final = titulo.getBoundingClientRect().bottom;
+
+window.addEventListener('scroll', function() { if (window.scrollY <= window.innerHeight) {
+    pos_final = titulo.getBoundingClientRect().bottom;
+    titulo.style.opacity = pos_final/altura;  
+  }
+});
+```
+
