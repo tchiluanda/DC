@@ -119,7 +119,7 @@ Teste de um container...
 ::::: {.super}
 <div class="container-d3">
 
-```{d3, echo = FALSE}
+```{d3, options = list(r2d3.shadow = FALSE), echo = FALSE}
 d3.select(".fora-d3").style("color", "blue");
 
 svg.append("text")
