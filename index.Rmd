@@ -45,7 +45,7 @@ body {
 }
 
 .wrapper.primeiro-wrapper {
-  margin-top: -50vh;
+  margin-top: -60vh;
 }
 
 .wrapper p {
@@ -687,11 +687,37 @@ dados_d3_ <- data_to_json(dados_d3)
 
 :::::{.container-d3}
 
-```{d3 data=dados_d3_, d3_version=c("5")}
+```{d3 data=dados_d3_, height=240, width=580}
+
+// funções úteis para o resto do código
+const localeBrasil = {
+  "decimal": ",",
+  "thousands": ".",
+  "grouping": [3],
+  "currency": ["R$", ""]};
+
+const formataBR_1 = d3.formatDefaultLocale(localeBrasil).format(",.1f");
+
+const multiplos = [1, 1e3, 1e6, 1e9, 1e12];
+const sufixo    = ["", "mil", "mi", "bi", "tri"];
+const obj_mult = multiplos.map((d,i) => ({
+  valor: d,
+  sufixo: sufixo[i]
+}));
+
+const valor_formatado = function(x) {
+  for (mult of obj_mult) {
+    const val = x/mult.valor;
+    if (val < 1000) return formataBR_1(val) + " " + mult.sufixo;
+  }
+}
+
+//
+
 
 let margin = {
     "left"   : 80,
-    "right"  : 20,
+    "right"  : 80,
     "top"    : 20,
     "bottom" : 20
 };
@@ -701,6 +727,8 @@ let margin = {
 //let svg = d3.select("svg");
 
 //d3.select("svg").attr("height", height).attr("width", width);
+
+svg.append("text").classed("aviso", true).attr("x", 10).attr("y", 30).attr("font-family", "Merriweather Sans").style("font-size", "12px").text("Faça uma seleção para visualizar o gráfico!")
 
 
 function obtem_lista(dataset, variavel) {
@@ -728,7 +756,7 @@ let municipios = data["municipios"]
                     "Ded": +d["Ded"]}))
 .filter((v, i, a) => a.indexOf(v) === i); 
 
-console.log(municipios)
+//console.log(municipios)
 
 // popular os menus
 const $menu_estado = d3.select("#menu-estado");
@@ -752,7 +780,7 @@ let posicoes_y = [{"DC" : pad},
 
 function atualiza_menu_municipios(UF_selecionada) {
 
-console.log(UF_selecionada);
+//console.log(UF_selecionada);
 
 let municipios_do_estado = municipios
     .filter(d => d.UF == UF_selecionada)
@@ -775,6 +803,8 @@ $menu_municipio_options.exit()
 
 function draw_card(UF, opcao_municipio) {
 
+    svg.select("text.aviso").remove();
+
     const mini_dados = opcao_municipio == "dados-estado" ?
                        estados.filter(d => d.UF == UF)[0] :
                        municipios.filter(d => d.UF == UF)
@@ -788,7 +818,7 @@ function draw_card(UF, opcao_municipio) {
     //                                 .filter(d => d.nome_mun == opcao_municipio)[0];
     // }
 
-    console.log(mini_dados, mini_dados["DC"]);
+    //console.log(mini_dados, mini_dados["DC"]);
 
     // testa de DCL é negativa:
     if (mini_dados["DCL"] < 0) mini_dados["DCL"] = 0;
@@ -799,7 +829,7 @@ function draw_card(UF, opcao_municipio) {
         mini_dados.DCL
     );
 
-    console.log(max_valor);
+    //console.log(max_valor);
     
     //svg.append("text").attr("x", 50).attr("y", 150).text("Maximo valor " + max_valor)
     
@@ -831,7 +861,7 @@ function draw_card(UF, opcao_municipio) {
 
     let y = d3.scaleBand()
                 .domain(categorias.map(d => d.tipo))
-                .range([margin.top, margin.top + 200]);
+                .range([margin.top, height - margin.bottom]);
 
     let bar_height = y.bandwidth()*0.5;
     let pad = 5;
@@ -892,7 +922,7 @@ function draw_card(UF, opcao_municipio) {
                             x(mini_dados[d.tipo]) + pad + "px")
         .style("font-size", "12px")
         .style("text-align", "left")
-        .text(d => mini_dados[d.tipo])
+        .text(d => "R$ "+valor_formatado(mini_dados[d.tipo]))
         .style("top", function(d) {
             const altura = d3.select(this).node().offsetHeight;
             return y(d.tipo) - (altura/2 - bar_height/2) + "px"
@@ -913,7 +943,7 @@ atualiza_menu_municipios(UF_selecionada);
 $menu_municipio.on("change", function() {
     //const 
     opcao_mun_selecionada = $menu_municipio.property("value");
-    console.log(opcao_mun_selecionada);
+    //console.log(opcao_mun_selecionada);
     draw_card(UF_selecionada, opcao_mun_selecionada);
     
 })
