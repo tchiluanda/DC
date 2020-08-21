@@ -34,10 +34,14 @@ body {
   line-height: 1.4;
 }
 
-.wrapper {
+.wrapper, .container-d3 {
   max-width: 580px;
   margin: 0 auto;
   font-size: 1em;
+}
+
+.container-d3 {
+  position: relative;
 }
 
 .wrapper.primeiro-wrapper {
@@ -48,10 +52,20 @@ body {
   margin: 0.7em 0;
 }
 
+.controls {
+  display: flex;
+  justify-content: center;
+}
+
+.controls > p:first-child {
+  margin-right: 1em;
+}
+
 select {
   font-family: "Merriweather Sans";
   font-size: 1.2rem;
 }
+
 
 h1, h2, h3, h4 {
   color: #353E57 // #1E4C7A;
@@ -865,7 +879,9 @@ function draw_card(UF, opcao_municipio) {
         .selectAll("p.labels")
         .data(categorias, d => d.tipo);
         
-    let labels_enter = labels.enter().append("p").classed("axis-text", true);
+    let labels_enter = labels.enter().append("p").classed("labels", true);
+    
+    labels.exit().remove();
     
     labels = labels.merge(labels_enter);
     
@@ -904,9 +920,9 @@ $menu_municipio.on("change", function() {
 });
 
 // apagar depois
-UF_selecionada = "PR";
-opcao_mun_selecionada = "Ponta Grossa";
-draw_card(UF_selecionada, opcao_mun_selecionada);
+//UF_selecionada = "PR";
+//opcao_mun_selecionada = "Ponta Grossa";
+//draw_card(UF_selecionada, opcao_mun_selecionada);
 ```
 
 
