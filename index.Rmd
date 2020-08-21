@@ -45,7 +45,7 @@ body {
 }
 
 .wrapper.primeiro-wrapper {
-  margin-top: -60vh;
+  margin-top: -50vh;
 }
 
 .wrapper p {
