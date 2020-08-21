@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div class="container-d3" style ="position:relative;">
+    <svg></svg>
+    </div>
+    <script src="https://d3js.org/d3.v5.min.js"></script>
+    <script>
+        d3.json("dados_d3.json").then(function(data) {
+            console.log(data);
+            let margin = {
+                "left"   : 80,
+                "right"  : 20,
+                "top"    : 20,
+                "bottom" : 20
+            };
+
+            let width = 600;
+            let height = 400;
+            let svg = d3.select("svg");
+
+            d3.select("svg").attr("height", height).attr("width", width);
+
+
+            function obtem_lista(dataset, variavel) {
+                const valores_unicos = dataset
+                .map(d => d[variavel])
+                .filter((v, i, a) => a.indexOf(v) === i);
+                return valores_unicos
+            }
+
+            //let colunas_estados    = Object.keys(data["estados"]);
+            //let colunas_municipios = Object.keys(data["municipios"]);
+
+            let estados = data["estados"]
+            .map(d => ({"nome_est" : d["nomes"],
+                                "UF" : d["UF"],
+                                "DC" : +d["DC"],
+                                "DCL": +d["DCL"],
+                                "Ded": +d["Ded"]}));
+
+            let municipios = data["municipios"]
+            .map(d => ({"nome_mun" : d["nome_mun"],
+                                "UF" : d["UF"],
+                                "DC" : +d["DC"],
+                                "DCL": +d["DCL"],
+                                "Ded": +d["Ded"]}))
+            .filter((v, i, a) => a.indexOf(v) === i); 
+
+            console.log(municipios)
+
+            // popular os menus
+            const $menu_estado = d3.select("#menu-estado");
+            const $menu_municipio = d3.select("#menu-municipio");
+
+            const $menu_estado_options = $menu_estado
+            .selectAll("option.populados")
+            .data(estados)
+            .enter()
+            .append("option")
+            .classed("populados", true)
+            .attr("value", d => d.UF)
+            .text(d => d.nome_est);
+            
+            let pad = height / 10;
+            let bar_height = 2*pad;
+            let posicoes_y = [{"DC" : pad}, 
+                            {"Ded" : 2*pad + bar_height}, 
+                            {"DCL" : 3*pad + 2*bar_height}];
+
+
+            function atualiza_menu_municipios(UF_selecionada) {
+
+            console.log(UF_selecionada);
+
+            let municipios_do_estado = municipios
+                .filter(d => d.UF == UF_selecionada)
+                .map(d => d.nome_mun)
+                .sort();
+
+            let $menu_municipio_options = $menu_municipio
+                .selectAll("option.populados")
+                .data(municipios_do_estado, d => d);
+                
+            $menu_municipio_options.enter()
+                .append("option")
+                .classed("populados", true)
+                .attr("value", d => d)
+                .text(d => d);
+                
+            $menu_municipio_options.exit()
+                .remove();
+            }
+
+            function draw_card(UF, opcao_municipio) {
+
+                const mini_dados = opcao_municipio == "dados-estado" ?
+                                   estados.filter(d => d.UF == UF)[0] :
+                                   municipios.filter(d => d.UF == UF)
+                                             .filter(d => d.nome_mun == opcao_municipio)[0];
+
+                                   
+                // if (opcao_municipio == "dados-estado") {
+                //     const mini_dados = estados.filter(d => d.UF == UF)[0];
+                // } else {
+                //     const mini_dados = municipios.filter(d => d.UF == UF)
+                //                                 .filter(d => d.nome_mun == opcao_municipio)[0];
+                // }
+
+                console.log(mini_dados, mini_dados["DC"]);
+
+                // testa de DCL é negativa:
+                if (mini_dados["DCL"] < 0) mini_dados["DCL"] = 0;
+                
+                let max_valor = Math.max(
+                    mini_dados.Ded,
+                    mini_dados.DC,
+                    mini_dados.DCL
+                );
+
+                console.log(max_valor);
+                
+                //svg.append("text").attr("x", 50).attr("y", 150).text("Maximo valor " + max_valor)
+                
+                let x = d3.scaleLinear()
+                            .domain([0, max_valor])
+                            .range([0, width-margin.right-margin.left]);
+
+                
+
+                let categorias = [
+                    {
+                        tipo: "DC",
+                        cor: "#1f476a",
+                        label: "Dívida Consolidada"
+                    },
+
+                    {
+                        tipo: "Ded",
+                        cor: "#E41A1C",
+                        label: "Deduções"
+                    },
+
+                    {
+                        tipo: "DCL",
+                        cor: "#2c90bf",
+                        label: "Dívida Consolidada Líquida"
+                    }
+                ];
+
+                let y = d3.scaleBand()
+                            .domain(categorias.map(d => d.tipo))
+                            .range([margin.top, margin.top + 200]);
+
+                let bar_height = y.bandwidth()*0.5;
+                let pad = 5;
+                            
+                let bars = svg
+                    .selectAll("rect")
+                    .data(categorias, d => d.tipo)
+                    .join("rect")
+                    .classed("barras", true)
+                    .attr("y", d => y(d.tipo))
+                    .attr("height", bar_height)
+                    .attr("fill", d => d.cor)
+                    .transition()
+                    .duration(500)
+                    .attr("x", d => d.tipo == "Ded" ? x(mini_dados["DCL"]) + margin.left : margin.left)
+                    .attr("width", d => x(mini_dados[d.tipo]));
+
+                let axisText = d3.select("div.container-d3")
+                    .selectAll("p.axis-text")
+                    .data(categorias, d => d.tipo)
+                    .join("p")
+                    .classed("axis-text", true)
+                    .style("position", "absolute")
+                    .style("margin", 0)
+                    .style("left", "0px")
+                    .style("width", margin.left - 2*pad + "px")
+                    //.style("line-height", bar_height + "px")
+                    .style("font-size", "12px")
+                    .style("text-align", "right")
+                    .text(d => d.label)
+                    .style("top", function(d) {
+                        const altura = d3.select(this).node().offsetHeight;
+                        return y(d.tipo) - (altura/2 - bar_height/2) + "px"
+                    });     
+
+                let labels = d3.select("div.container-d3")
+                    .selectAll("p.labels")
+                    .data(categorias, d => d.tipo)
+                    .join("p")
+                    .classed("axis-text", true)
+                    .style("position", "absolute")
+                    .style("margin", 0)
+                    .style("left", d => (d.tipo == "Ded" ? x(mini_dados["DCL"]) + margin.left : margin.left) +
+                                        x(mini_dados[d.tipo]) + pad + "px")
+                    .style("font-size", "12px")
+                    .style("text-align", "left")
+                    .text(d => mini_dados[d.tipo])
+                    .style("top", function(d) {
+                        const altura = d3.select(this).node().offsetHeight;
+                        return y(d.tipo) - (altura/2 - bar_height/2) + "px"
+                    }); 
+            }
+
+            let UF_selecionada;
+            let opcao_mun_selecionada;
+
+            $menu_estado.on("change", function() {
+            const valor_selecionado = $menu_estado.property("value");
+            //const 
+            UF_selecionada = valor_selecionado;
+            
+            atualiza_menu_municipios(UF_selecionada);
+            
+            $menu_municipio.on("change", function() {
+                //const 
+                opcao_mun_selecionada = $menu_municipio.property("value");
+                console.log(opcao_mun_selecionada);
+                draw_card(UF_selecionada, opcao_mun_selecionada);
+                
+            })
+            });
+
+            // apagar depois
+            UF_selecionada = "PR";
+            opcao_mun_selecionada = "Ponta Grossa";
+            draw_card(UF_selecionada, opcao_mun_selecionada);
+        });
+        
+    </script>    
+</body>
+</html>
