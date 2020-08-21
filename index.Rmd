@@ -222,7 +222,7 @@ img.abertura {
   margin-bottom: 10px;
 }
 
-p.label, p.axis-text {
+p.axis-text {
   position: absolute;
   font-family: "Merriweather Sans";
 }
@@ -687,7 +687,7 @@ dados_d3_ <- data_to_json(dados_d3)
 
 :::::{.container-d3}
 
-```{d3 data=dados_d3_, height=240, width=580}
+```{d3 data=dados_d3_, height=240}
 
 // funções úteis para o resto do código
 const localeBrasil = {
@@ -905,27 +905,28 @@ function draw_card(UF, opcao_municipio) {
             return y(d.tipo) - (altura/2 - bar_height/2) + "px"
         });     
 
-    let labels = d3.select("div.container-d3")
-        .selectAll("p.labels")
+    let labels = svg//d3.select("div.container-d3")
+        .selectAll("text.labels")
         .data(categorias, d => d.tipo);
         
-    let labels_enter = labels.enter().append("p").classed("labels", true);
+    let labels_enter = labels.enter().append("text").classed("labels", true);
     
     labels.exit().remove();
     
     labels = labels.merge(labels_enter);
     
     labels
-        .style("position", "absolute")
-        .style("margin", 0)
-        .style("left", d => (d.tipo == "Ded" ? x(mini_dados["DCL"]) + margin.left : margin.left) +
+        //.style("position", "absolute")
+        //.style("margin", 0)
+        .attr("x", d => (d.tipo == "Ded" ? x(mini_dados["DCL"]) + margin.left : margin.left) +
                             x(mini_dados[d.tipo]) + pad + "px")
         .style("font-size", "12px")
+        .style("font-family", "Merriweather Sans")
         .style("text-align", "left")
         .text(d => "R$ "+valor_formatado(mini_dados[d.tipo]))
-        .style("top", function(d) {
-            const altura = d3.select(this).node().offsetHeight;
-            return y(d.tipo) - (altura/2 - bar_height/2) + "px"
+        .attr("y", function(d) {
+            const altura = d3.select(this).node().getBoundingClientRect().height;
+            return y(d.tipo) + (bar_height/2 - altura/2) + altura
         }); 
 }
 
