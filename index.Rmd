@@ -30,7 +30,7 @@ knitr::opts_chunk$set(
 
 body {
   font-family: 'Merriweather', sans-serif;
-  font-size: 18px;
+  font-size: 16px;
   line-height: 1.4;
 }
 
@@ -91,7 +91,7 @@ h1, h2, h3, h4 {
 .descricao {
   background-color: lightblue;
   margin: 1em;
-  font-size: 0.7em;
+  font-size: 0.8em;
   font-family: "Merriweather Sans";
 }
 
@@ -122,7 +122,7 @@ h1, h2, h3, h4 {
 
 
 .disclaimer {
-  font-size: 0.6em;
+  font-size: 0.7em;
   font-family: 'Merriweather Sans';
   padding: 8px;
   margin: 8px;
@@ -257,8 +257,8 @@ tema <- function(){
     theme_minimal() +
     theme(
       text = element_text(family = fonte_sec, colour = "grey20"),
-      title = element_text(family = fonte_pri, face = "bold", size = 12, color = "#1E4C7A"), 
-      plot.subtitle = element_text(color = "grey20", face = "plain", size = 10),
+      title = element_text(family = fonte_pri, face = "bold", size = 10, color = "#1E4C7A"), 
+      plot.subtitle = element_text(color = "grey20", face = "plain", size = 9),
       axis.text = element_text(colour = "grey20", size = 8),
       plot.caption = element_text(family = fonte_pri, face = "italic"),
       panel.grid.major = element_blank(), 
@@ -667,6 +667,14 @@ dados_d3_ <- data_to_json(dados_d3)
 :::::{.container-d3}
 
 ```{d3 data=dados_d3_}
+let margin = {
+  "left"   : 20,
+  "right"  : 20,
+  "top"    : 20,
+  "bottom" : 20
+};
+
+
 function obtem_lista(dataset, variavel) {
     const valores_unicos = dataset
       .map(d => d[variavel])
@@ -738,30 +746,64 @@ function atualiza_menu_municipios(UF_selecionada) {
 function draw_card(UF, opcao_municipio) {
   if (opcao_municipio == "dados-estado") {
     const mini_dados = estados.filter(d => d.UF == UF)[0];
-    console.log(mini_dados);
-    let y = d3.scaleLinear()
-              .domain(d3.extent([mini_dados.DC, mini_dados.Ded, mini_dados.DCL]))
-              .scale([wid])
-    
+  } else {
+    const mini_dados = municipios.filter(d => d.UF == UF)
+                                 .filter(d => d.nome_mun == opcao_municipio)[0];
   }
+  console.log(mini_dados);
+  
+  let max_valor = Math.max(
+    d3.max(mini_dados, d => d.Ded),
+    d3.max(mini_dados, d => d.DC),
+    d3.max(mini_dados, d => d.DCL)
+  );
+  
+  svg.append("text").attr("x", 50).attr("y", 150).text("Maximo valor " + max_valor)
+  
+  let x = d3.scaleLinear()
+            .domain(0, max_valor)
+            .range([margin.left, width-margin.right]);
+  let y = d3.scaleBand()
+            .domain(["DC", "Ded", "DCL"])
+            .range([margin.top, margin.top + 300]);
+            
+  let bars = svg
+    .selectAll("rect")
+    .data(mini_dados, d => d.UF)
+    .join("rect")
+    .classed("barras")
+    .attr("x", d => x)
   
 }
 
+let UF_selecionada;
+let opcao_mun_selecionada;
+
 $menu_estado.on("change", function() {
    const valor_selecionado = $menu_estado.property("value");
-   const UF_selecionada = valor_selecionado;
+   //const 
+   UF_selecionada = valor_selecionado;
    
    atualiza_menu_municipios(UF_selecionada);
    
    $menu_municipio.on("change", function() {
-      const opcao_mun_selecionada = $menu_municipio.property("value");
+      //const 
+      opcao_mun_selecionada = $menu_municipio.property("value");
       console.log(opcao_mun_selecionada);
       draw_card(UF_selecionada, opcao_mun_selecionada);
       
    })
 });
 
-svg.append("rect").attr("x", 50).attr("y", 50).attr("width", 20).attr("height", 20);
+// apagar depois
+UF_selecionada = "PR";
+opcao_mun_selecionada = "Ponta Grossa";
+draw_card(UF_selecionada, opcao_mun_selecionada);
+
+//
+
+//svg.append("rect").attr("x", 50).attr("y", 50).attr("width", 20).attr("height", 20);
+svg.append("text").attr("x", 50).attr("y", 100).text(UF_selecionada + ", e mun: " + opcao_mun_selecionada + " e width, height: " + width + " x " + height)
 
 //console.log(Object.keys(estados));
 
