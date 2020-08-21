@@ -50,6 +50,7 @@ body {
 
 select {
   font-family: "Merriweather Sans";
+  font-size: 1.2rem;
 }
 
 h1, h2, h3, h4 {
@@ -237,7 +238,7 @@ p.label, p.axis-text {
 
 @import url('https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=Roboto&display=swap');
 </style>
-<script src="https://d3js.org/d3.v5.min.js"></script>
+
 
 ```{r init}
 library(tidyverse)
@@ -823,9 +824,13 @@ function draw_card(UF, opcao_municipio) {
                 
     let bars = svg
         .selectAll("rect")
-        .data(categorias, d => d.tipo)
-        .join("rect")
-        .classed("barras", true)
+        .data(categorias, d => d.tipo);
+        
+    let bars_enter = bars.enter().append("rect").classed("barras", true);
+    
+    bars = bars.merge(bars_enter);
+    
+    bars
         .attr("y", d => y(d.tipo))
         .attr("height", bar_height)
         .attr("fill", d => d.cor)
@@ -836,9 +841,13 @@ function draw_card(UF, opcao_municipio) {
 
     let axisText = d3.select("div.container-d3")
         .selectAll("p.axis-text")
-        .data(categorias, d => d.tipo)
-        .join("p")
-        .classed("axis-text", true)
+        .data(categorias, d => d.tipo);
+      
+    let axisText_enter = axisText.enter().append("p").classed("axis-text", true);
+    
+    axisText = axisText.merge(axisText_enter);
+
+    axisText
         .style("position", "absolute")
         .style("margin", 0)
         .style("left", "0px")
@@ -854,9 +863,13 @@ function draw_card(UF, opcao_municipio) {
 
     let labels = d3.select("div.container-d3")
         .selectAll("p.labels")
-        .data(categorias, d => d.tipo)
-        .join("p")
-        .classed("axis-text", true)
+        .data(categorias, d => d.tipo);
+        
+    let labels_enter = labels.enter().append("p").classed("axis-text", true);
+    
+    labels = labels.merge(labels_enter);
+    
+    labels
         .style("position", "absolute")
         .style("margin", 0)
         .style("left", d => (d.tipo == "Ded" ? x(mini_dados["DCL"]) + margin.left : margin.left) +
